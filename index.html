@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SMC-Signal Pro</title>
-    <!-- Stable Tailwind CSS Framework -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Lucide Icons Link -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body {
@@ -23,20 +21,17 @@
 </head>
 <body class="flex flex-col min-h-screen max-w-md mx-auto bg-white shadow-xl relative pb-24">
 
-    <!-- Active Trading Sessions Banner (Replaced Fake Status Bar) -->
-    <div class="px-6 pt-4">
+    <div class="px-6 pt-4 select-none">
         <div class="bg-slate-900 text-white rounded-xl p-3 flex flex-col gap-1 shadow-sm">
             <div class="flex justify-between items-center">
                 <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Live Market Sessions</span>
                 <span id="liveClock" class="text-xs font-mono font-bold text-emerald-400">00:00:00 UTC</span>
             </div>
             <div id="sessionBadges" class="flex flex-wrap gap-1.5 mt-1">
-                <!-- Sessions inject here dynamically via JS -->
-            </div>
+                </div>
         </div>
     </div>
 
-    <!-- Application Main Header -->
     <header class="px-6 pt-4 pb-2 flex justify-between items-center select-none">
         <h1 class="text-2xl font-black text-slate-900 tracking-tight">SMC-Signal <span class="text-gray-500 font-normal">Pro</span></h1>
         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-600 border border-emerald-200">
@@ -45,9 +40,7 @@
         </span>
     </header>
 
-    <!-- ================= VIEW WINDOW 1: SIGNALS TAB ================= -->
     <main id="signalsTab" class="tab-content active flex-1 px-6 space-y-6">
-        <!-- Parameter Selection Dropdowns -->
         <div class="bg-white border border-gray-100 rounded-2xl p-4 shadow-xs grid grid-cols-2 gap-4">
             <div>
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Asset Pair</label>
@@ -67,7 +60,6 @@
             </div>
         </div>
 
-        <!-- MTF Chart States Grid -->
         <div>
             <h2 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-3">Multi-Timeframe Charts</h2>
             <div class="grid grid-cols-2 gap-3">
@@ -90,17 +82,14 @@
             </div>
         </div>
 
-        <!-- Action Processing Trigger Button -->
         <button id="validateBtn" onclick="handleValidation()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 px-4 rounded-xl transition duration-200 shadow-md shadow-slate-900/10 active:scale-[0.99] cursor-pointer">
             Run Strategy Validation
         </button>
 
-        <!-- Current Output Status Indicators -->
         <div class="flex items-center justify-center gap-2 text-sm font-extrabold text-slate-800 py-1">
             <span>⚡</span> <span id="statusText">Ready for matrix structure analysis...</span>
         </div>
 
-        <!-- Evaluation Panel Display Logs -->
         <div>
             <h2 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-3">Analysis Evaluation</h2>
             <div class="bg-white border border-gray-100 shadow-xs rounded-2xl p-5 min-h-[120px]">
@@ -111,26 +100,21 @@
         </div>
     </main>
 
-    <!-- ================= VIEW WINDOW 2: AUTOMATIC JOURNAL TAB ================= -->
     <main id="journalTab" class="tab-content flex-1 px-6 space-y-4">
-        <div class="flex justify-between items-center">
+        <div class="flex justify-between items-center select-none">
             <h2 class="text-xs font-black text-gray-400 uppercase tracking-widest">Trading Journal Log</h2>
             <button onclick="clearJournalLogs()" class="text-[10px] bg-red-50 text-red-600 font-bold px-2 py-1 rounded border border-red-100 cursor-pointer">Clear Records</button>
         </div>
         
-        <!-- Live Database Journal Mapping Array Layout Container -->
         <div id="journalEntriesList" class="space-y-3">
-            <!-- Appended automatically via script database array runtime -->
-        </div>
+            </div>
     </main>
 
-    <!-- ================= VIEW WINDOW 3: SETTINGS CONFIGURATION ================= -->
     <main id="settingsTab" class="tab-content flex-1 px-6 space-y-4">
         <h2 class="text-xs font-black text-gray-400 uppercase tracking-widest">Configuration Engine</h2>
         <div class="bg-white border border-gray-100 rounded-2xl p-4 shadow-xs space-y-4">
             <div>
                 <label class="block text-xs font-bold text-slate-700 mb-1">Groq API Token Key</label>
-                <!-- Reactive direct typing key framework monitor input -->
                 <input id="apiKeyInput" type="text" oninput="saveApiKey(this.value)" placeholder="gsk_xxxxxxxxxxxxxxxx" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900">
                 <p class="text-[10px] text-emerald-600 font-semibold mt-1.5 flex items-center gap-1">
                     <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Key isolates safely to your device's memory.
@@ -146,7 +130,6 @@
         </div>
     </main>
 
-    <!-- Navigation Global Menu Action Dock Footer -->
     <nav class="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-8 py-3 flex justify-between items-center select-none z-50">
         <button id="nav-signals" onclick="switchTab('signals')" class="nav-btn flex flex-col items-center gap-1 text-slate-900 font-black cursor-pointer">
             <i data-lucide="zap" class="w-5 h-5 stroke-[2.5]"></i>
@@ -162,7 +145,6 @@
         </button>
     </nav>
 
-    <!-- Debugged Script Runtime Processing Architecture Engines -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             lucide.createIcons();
@@ -179,7 +161,7 @@
             const utcMinute = now.getUTCMinutes();
             const utcSecond = now.getUTCSeconds();
 
-            // Format global live digital system clock string display
+            // Format global live digital system clock display
             const pad = (num) => String(num).padStart(2, '0');
             document.getElementById("liveClock").innerText = `${pad(utcHour)}:${pad(utcMinute)}:${pad(utcSecond)} UTC`;
 
@@ -230,6 +212,7 @@
             localStorage.setItem("smc_groq_api_token", keyValue.trim());
         }
 
+        // Auto loaded whenever page mounts onto phone viewport
         function loadSavedApiKey() {
             const token = localStorage.getItem("smc_groq_api_token");
             if (token) {
@@ -241,18 +224,18 @@
         function registerJournalEntry(asset, bias, validationSummary) {
             const logs = JSON.parse(localStorage.getItem("smc_trade_journal_vault") || "[]");
             
-            // Logic parses content validation response strings directly to flag structural risk probabilities
             const lowerText = validationSummary.toLowerCase();
-            const isApproved = !lowerText.includes("fail") && !lowerText.includes("invalid") && !lowerText.includes("high risk");
+            // Looks for setup confirmations or structural execution flags from LLM outputs
+            const isApproved = lowerText.includes("align") || lowerText.includes("valid") || lowerText.includes("confirm") || lowerText.includes("high probability");
             
             const payload = {
                 id: Date.now(),
                 timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
                 assetPair: asset,
                 intendedBias: bias,
-                status: isApproved ? "HIGH PROBABILITY SETUP (WIN CONFIRMATION)" : "INVALID STRUCTURE ALIGNMENT (RISK TRAP)",
+                status: isApproved ? "VALIDATED STRUCTURE MATCH (WIN ANALYSIS)" : "INVALID STRUCTURE MISMATCH (LOSS AVOIDANCE)",
                 colorCode: isApproved ? "emerald" : "red",
-                summaryText: validationSummary.substring(0, 100) + "..."
+                summaryText: validationSummary.substring(0, 120) + "..."
             };
 
             logs.unshift(payload);
@@ -289,15 +272,15 @@
             renderJournalLogs();
         }
 
-        // CHART DATA VECTOR INTERFACES FOR BACKEND POST
+        // DUMMY BASE64 COMPACT CANVAS BLOCKS ENCODED WITH VALID 4x4 PIXEL DIMENSIONS
         const mockChartImages = [
-            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
-            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
-            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
-            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+            "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAD0lEQVR42mNkQAOMpAsAAADFABA6U6rSAAAAAElFTkSuQmCC",
+            "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAD0lEQVR42mNkQAOMpAsAAADFABA6U6rSAAAAAElFTkSuQmCC",
+            "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAD0lEQVR42mNkQAOMpAsAAADFABA6U6rSAAAAAElFTkSuQmCC",
+            "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAD0lEQVR42mNkQAOMpAsAAADFABA6U6rSAAAAAElFTkSuQmCC"
         ];
 
-        // HANDLER FOR PROCESS MANAGEMENT RUNTIME ACTION DISPATCHER
+        // LIVE CORE VALIDATION EXECUTION ENGINE ACTION DISPATCHER
         async function handleValidation() {
             const btn = document.getElementById("validateBtn");
             const statusText = document.getElementById("statusText");
@@ -332,7 +315,6 @@
                 statusText.innerText = "Execution failed.";
                 output.innerText = `Error: ${error.message}. Confirm the accuracy of your token key in Settings.`;
             } finally {
-                // FIXED THE TYPO HERE: Was 'finalY', now properly 'finally' so JS execution never bricks.
                 btn.disabled = false;
                 btn.className = "w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 px-4 rounded-xl transition duration-200 shadow-md shadow-slate-900/10 active:scale-[0.99] cursor-pointer";
                 btn.innerText = "Run Strategy Validation";
@@ -340,7 +322,7 @@
             }
         }
 
-        // RAW BACKEND ROUTER COMPLETION HANDLER BLOCK
+        // ASYNC EXTERNAL ENDPOINT API CALL MATRIX
         async function validateSMCStrategy(images, assetPair, bias, activeKey) {
             try {
                 const imageContent = images.map((base64Data) => ({
