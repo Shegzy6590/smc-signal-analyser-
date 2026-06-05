@@ -37,15 +37,6 @@
 
     <main id="signalsTab" class="tab-content active flex-1 px-5 space-y-5">
         
-        <div class="bg-white border border-stone-200/60 rounded-xl p-4 shadow-xs text-center space-y-2">
-            <label class="block text-[10px] font-black text-stone-400 uppercase tracking-wider text-left">Market Chart Input</label>
-            <label for="chartFilePicker" class="flex items-center justify-center gap-2 w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-4 rounded-xl cursor-pointer text-xs uppercase tracking-wider transition">
-                <i data-lucide="image" class="w-4 h-4"></i> Upload Chart Screenshot
-            </label>
-            <input type="file" id="chartFilePicker" accept="image/png, image/jpeg" class="hidden" onchange="processUploadedChart(event)">
-            <p id="uploadStatusLabel" class="text-[11px] text-stone-400 font-bold">No live chart uploaded yet (Using standard structural fallback)</p>
-        </div>
-
         <div class="bg-white border border-stone-200/60 rounded-xl p-4 shadow-xs grid grid-cols-2 gap-4">
             <div>
                 <label class="block text-[10px] font-black text-stone-400 uppercase tracking-wider mb-1">Asset Pair</label>
@@ -61,6 +52,35 @@
                     <option value="BUY / LONG">BUY / LONG</option>
                     <option value="SELL / SHORT">SELL / SHORT</option>
                 </select>
+            </div>
+        </div>
+
+        <div class="space-y-2">
+            <h2 class="text-[11px] font-black text-stone-400 uppercase tracking-widest px-1">Multi-Timeframe Charts</h2>
+            <div class="grid grid-cols-2 gap-3">
+                <label for="upload-daily" class="bg-white border border-dashed border-stone-300 rounded-xl p-4 text-center cursor-pointer hover:bg-stone-50 block transition shadow-xs">
+                    <h4 class="text-xs font-black text-slate-800">Daily</h4>
+                    <p id="status-daily" class="text-[10px] text-stone-400 font-bold mt-1">Tap to Upload</p>
+                    <input type="file" id="upload-daily" accept="image/png, image/jpeg" class="hidden" onchange="processTimeframeChart(event, 0, 'daily')">
+                </label>
+
+                <label for="upload-4h" class="bg-white border border-dashed border-stone-300 rounded-xl p-4 text-center cursor-pointer hover:bg-stone-50 block transition shadow-xs">
+                    <h4 class="text-xs font-black text-slate-800">4H</h4>
+                    <p id="status-4h" class="text-[10px] text-stone-400 font-bold mt-1">Tap to Upload</p>
+                    <input type="file" id="upload-4h" accept="image/png, image/jpeg" class="hidden" onchange="processTimeframeChart(event, 1, '4h')">
+                </label>
+
+                <label for="upload-1h" class="bg-white border border-dashed border-stone-300 rounded-xl p-4 text-center cursor-pointer hover:bg-stone-50 block transition shadow-xs">
+                    <h4 class="text-xs font-black text-slate-800">1H</h4>
+                    <p id="status-1h" class="text-[10px] text-stone-400 font-bold mt-1">Tap to Upload</p>
+                    <input type="file" id="upload-1h" accept="image/png, image/jpeg" class="hidden" onchange="processTimeframeChart(event, 2, '1h')">
+                </label>
+
+                <label for="upload-15m" class="bg-white border border-dashed border-stone-300 rounded-xl p-4 text-center cursor-pointer hover:bg-stone-50 block transition shadow-xs">
+                    <h4 class="text-xs font-black text-slate-800">15M (Entry)</h4>
+                    <p id="status-15m" class="text-[10px] text-stone-400 font-bold mt-1">Tap to Upload</p>
+                    <input type="file" id="upload-15m" accept="image/png, image/jpeg" class="hidden" onchange="processTimeframeChart(event, 3, '15m')">
+                </label>
             </div>
         </div>
 
@@ -117,8 +137,11 @@
     </nav>
 
     <script>
-        // Array starts with valid 4x4 image matrices to completely avoid dimension errors
+        // Holds 4 valid base64 fallbacks to start with so the engine never throws layout dimension errors
         let targetLiveCharts = [
+            "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVR42mNkYGD4DwYMDAwM4MIEBv6DwA8A7vYCBXas3mAAAAAElFTkSuQmCC",
+            "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVR42mNkYGD4DwYMDAwM4MIEBv6DwA8A7vYCBXas3mAAAAAElFTkSuQmCC",
+            "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVR42mNkYGD4DwYMDAwM4MIEBv6DwA8A7vYCBXas3mAAAAAElFTkSuQmCC",
             "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVR42mNkYGD4DwYMDAwM4MIEBv6DwA8A7vYCBXas3mAAAAAElFTkSuQmCC"
         ];
 
@@ -130,21 +153,21 @@
             setInterval(updateLiveClock, 1000);
         });
 
-        // Live image processor engine
-        function processUploadedChart(event) {
+        // Processes files individually into their exact index positions inside the array
+        function processTimeframeChart(event, indexPosition, idLabel) {
             const file = event.target.files[0];
-            const label = document.getElementById("uploadStatusLabel");
+            const labelElement = document.getElementById(`status-${idLabel}`);
             if (!file) return;
 
-            label.innerText = "Encoding chart processing data...";
+            labelElement.innerText = "Encoding...";
             const reader = new FileReader();
             
             reader.onload = function(e) {
                 const base64DataRaw = e.target.result.split(',')[1];
-                // Replace the default array content directly with the user's real screenshot payload
-                targetLiveCharts = [base64DataRaw];
-                label.innerText = `✅ Loaded: ${file.name}`;
-                label.className = "text-[11px] text-emerald-600 font-black";
+                // Updates only the specific timeframe inside the matrix payload array
+                targetLiveCharts[indexPosition] = base64DataRaw;
+                labelElement.innerText = "Loaded ✓";
+                labelElement.className = "text-[10px] text-emerald-600 font-black mt-1";
             };
             reader.readAsDataURL(file);
         }
@@ -165,8 +188,8 @@
 
             btn.disabled = true;
             btn.className = "w-full bg-stone-200 text-stone-400 font-bold py-3.5 px-4 rounded-xl cursor-not-allowed text-center text-xs uppercase tracking-wider";
-            btn.innerText = "Analyzing chart structure details...";
-            statusText.innerText = "Processing system execution vectors...";
+            btn.innerText = "Analyzing multi-timeframe arrays...";
+            statusText.innerText = "Processing execution tokens...";
 
             try {
                 const responseText = await sendToGroq(targetLiveCharts, pair, bias, savedToken);
@@ -184,6 +207,7 @@
         }
 
         async function sendToGroq(images, assetPair, bias, activeKey) {
+            // Converts all 4 base64 variables dynamically inside the API request content payload
             const imagePayload = images.map(b64 => ({
                 type: "image_url",
                 image_url: { url: `data:image/png;base64,${b64}` }
@@ -203,14 +227,14 @@
                             content: [
                                 {
                                     type: "text",
-                                    text: `Analyze this market chart for ${assetPair}. The intended bias direction is ${bias}. Scan for key Smart Money Concepts: Order Blocks, Breaker Blocks, Fair Value Gaps, or liquidity sweeps. Deliver a high-probability validation evaluation outcome.`
+                                    text: `Analyze these 4 multi-timeframe market charts for ${assetPair} (Ordered sequentially: Daily, 4H, 1H, and 15M entry). The target bias direction is ${bias}. Evaluate the institutional market narrative down through the timeframes. Highlight explicitly if the 15M entry chart aligns with higher-frame Order Blocks, liquidities, or FVGs for an entry.`
                                 },
                                 ...imagePayload
                             ]
                         }
                     ],
                     temperature: 0.2,
-                    max_completion_tokens: 512
+                    max_completion_tokens: 650
                 })
             });
 
