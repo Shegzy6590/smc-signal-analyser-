@@ -39,7 +39,7 @@
     <!-- ================= SIGNALS TAB ================= -->
     <main id="signalsTab" class="tab-content active flex-1 px-5 space-y-5">
         
-        <!-- Asset Filter Card (Bias Selector Completely Removed) -->
+        <!-- Asset Filter Card -->
         <div class="bg-white border border-stone-200/60 rounded-xl p-4 shadow-xs">
             <label class="block text-[10px] font-black text-stone-400 uppercase tracking-wider mb-1">Asset Pair</label>
             <div class="relative">
@@ -237,7 +237,7 @@
                             content: [
                                 {
                                     type: "text",
-                                    text: `You are an elite, risk-averse institutional Smart Money Concepts (SMC) analyst. Analyze these 4 multi-timeframe charts for ${assetPair} (Daily, 4H, 1H, and 15M execution). You have total autonomy—there are no pre-existing user bias inputs. Evaluate higher timeframe order flow, liquidity pools, sweeps, market structure shifts (MSS), mitigation blocks, and fair value gaps. If the setup is complex, choppy, counter-trend, or lacking ironclad high-probability institutional confluences, you MUST choose to pass on the setup. You MUST end your response with a section starting exactly with "FINAL RECOMMENDATION:" followed strictly by either "EXECUTE A BUY ORDER", "EXECUTE A SELL ORDER", or "NO TRADE (STAND DOWN)". If you recommend an execution (BUY/SELL), state the precise numeric values from the charts for: 1. Entry Price, 2. Stop Loss, and 3. Take Profit, strictly keeping a 1:2 to 1:3 risk-to-reward ratio. If you output "NO TRADE (STAND DOWN)", explain cleanly why the structural edge is missing.`
+                                    text: `You are an extremely meticulous, precision-focused Smart Money Concepts (SMC) risk manager. Carefully scrutinize these 4 multi-timeframe charts for ${assetPair} across Daily, 4H, 1H, and 15M periods to generate highly valid institutional trade setups. You must be heavily skeptical: inspect order flow, liquidity pools, internal vs. swing structure breaks (BOS/CHoCH), mitigation blocks, and premium/discount zones. If the structural setups across timeframes do not map out flawlessly, or if the market is choppy, sideways, or ambiguous, you MUST issue a "NO TRADE (STAND DOWN)" recommendation. For execution setups to be valid, the Stop Loss must be exceptionally precise; you are STRICTLY FORBIDDEN from calculating a Stop Loss wider than a maximum of 65 pips. If a valid setup requires more than 65 pips of risk room to survive institutional invalidation, you MUST reject the trade completely and output "NO TRADE (STAND DOWN)". Conclude your analysis at the very bottom with a clear section starting exactly with "FINAL RECOMMENDATION:" followed strictly by either "EXECUTE A BUY ORDER", "EXECUTE A SELL ORDER", or "NO TRADE (STAND DOWN)". If executing a trade, list precise numeric data from the charts for Entry Price, Stop Loss (Max 65 pips), and Take Profit adhering to a strict 1:2 to 1:3 risk-to-reward matrix.`
                                 },
                                 ...imagePayload
                             ]
@@ -256,7 +256,6 @@
             return resData.choices[0].message.content;
         }
 
-        // Keep standard clock, navigation, and journal data structures intact
         function updateLiveClock() {
             const now = new Date();
             const hour = now.getUTCHours();
