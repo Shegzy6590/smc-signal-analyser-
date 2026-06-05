@@ -17,6 +17,7 @@
 </head>
 <body class="flex flex-col min-h-screen max-w-md mx-auto bg-[#fdfcf7] shadow-xl relative pb-28">
 
+    <!-- Header Banner -->
     <header class="px-5 pt-4 pb-2 space-y-3 select-none">
         <div class="flex justify-between items-center">
             <h1 class="text-2xl font-black text-slate-900 tracking-tight">SMC-Signal <span class="text-gray-400 font-normal text-lg">Pro</span></h1>
@@ -35,15 +36,23 @@
         </div>
     </header>
 
+    <!-- ================= SIGNALS TAB ================= -->
     <main id="signalsTab" class="tab-content active flex-1 px-5 space-y-5">
         
+        <!-- Parameters Filter Grid -->
         <div class="bg-white border border-stone-200/60 rounded-xl p-4 shadow-xs grid grid-cols-2 gap-4">
             <div>
                 <label class="block text-[10px] font-black text-stone-400 uppercase tracking-wider mb-1">Asset Pair</label>
                 <select id="assetPair" class="w-full bg-stone-50 border border-stone-200 rounded-lg px-2.5 py-2 text-xs font-bold text-slate-800 focus:outline-none appearance-none">
                     <option value="XAUUSD (Gold)">XAUUSD (Gold)</option>
+                    <option value="BTCUSD (Bitcoin)">BTCUSD (Bitcoin)</option>
                     <option value="EURUSD">EURUSD</option>
                     <option value="GBPUSD">GBPUSD</option>
+                    <option value="USDJPY">USDJPY</option>
+                    <option value="AUDUSD">AUDUSD</option>
+                    <option value="USDCAD">USDCAD</option>
+                    <option value="USDCHF">USDCHF</option>
+                    <option value="NZDUSD">NZDUSD</option>
                 </select>
             </div>
             <div>
@@ -55,27 +64,32 @@
             </div>
         </div>
 
+        <!-- Multi-Timeframe Charts Grid Selector -->
         <div class="space-y-2">
             <h2 class="text-[11px] font-black text-stone-400 uppercase tracking-widest px-1">Multi-Timeframe Charts</h2>
             <div class="grid grid-cols-2 gap-3">
+                <!-- Daily Slot -->
                 <label for="upload-daily" class="bg-white border border-dashed border-stone-300 rounded-xl p-4 text-center cursor-pointer hover:bg-stone-50 block transition shadow-xs">
                     <h4 class="text-xs font-black text-slate-800">Daily</h4>
                     <p id="status-daily" class="text-[10px] text-stone-400 font-bold mt-1">Tap to Upload</p>
                     <input type="file" id="upload-daily" accept="image/png, image/jpeg" class="hidden" onchange="processTimeframeChart(event, 0, 'daily')">
                 </label>
 
+                <!-- 4H Slot -->
                 <label for="upload-4h" class="bg-white border border-dashed border-stone-300 rounded-xl p-4 text-center cursor-pointer hover:bg-stone-50 block transition shadow-xs">
                     <h4 class="text-xs font-black text-slate-800">4H</h4>
                     <p id="status-4h" class="text-[10px] text-stone-400 font-bold mt-1">Tap to Upload</p>
                     <input type="file" id="upload-4h" accept="image/png, image/jpeg" class="hidden" onchange="processTimeframeChart(event, 1, '4h')">
                 </label>
 
+                <!-- 1H Slot -->
                 <label for="upload-1h" class="bg-white border border-dashed border-stone-300 rounded-xl p-4 text-center cursor-pointer hover:bg-stone-50 block transition shadow-xs">
                     <h4 class="text-xs font-black text-slate-800">1H</h4>
                     <p id="status-1h" class="text-[10px] text-stone-400 font-bold mt-1">Tap to Upload</p>
                     <input type="file" id="upload-1h" accept="image/png, image/jpeg" class="hidden" onchange="processTimeframeChart(event, 2, '1h')">
                 </label>
 
+                <!-- 15M Entry Slot -->
                 <label for="upload-15m" class="bg-white border border-dashed border-stone-300 rounded-xl p-4 text-center cursor-pointer hover:bg-stone-50 block transition shadow-xs">
                     <h4 class="text-xs font-black text-slate-800">15M (Entry)</h4>
                     <p id="status-15m" class="text-[10px] text-stone-400 font-bold mt-1">Tap to Upload</p>
@@ -84,6 +98,7 @@
             </div>
         </div>
 
+        <!-- Strategy Run Processing Button -->
         <div class="space-y-3">
             <button id="validateBtn" onclick="handleValidation()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 px-4 rounded-xl transition duration-200 shadow-md active:scale-[0.99] cursor-pointer text-center text-xs tracking-wider uppercase">
                 Run Strategy Validation
@@ -93,16 +108,18 @@
             </div>
         </div>
 
+        <!-- Strategy Verification Output Logs -->
         <div class="space-y-2">
             <h2 class="text-[11px] font-black text-stone-400 uppercase tracking-widest px-1">Analysis Evaluation</h2>
             <div class="bg-white border border-stone-200/60 shadow-xs rounded-xl p-4 min-h-[90px]">
-                <p id="evaluationOutput" class="text-xs font-medium text-stone-600 leading-relaxed">
-                    Awaiting structural input mapping data...
-                </p>
+                <div id="evaluationOutput" class="text-xs font-medium text-stone-600 leading-relaxed space-y-3">
+                    <p>Awaiting structural input mapping data...</p>
+                </div>
             </div>
         </div>
     </main>
 
+    <!-- ================= AUTOMATIC JOURNAL TAB ================= -->
     <main id="journalTab" class="tab-content flex-1 px-5 space-y-4">
         <div class="flex justify-between items-center select-none pt-2">
             <h2 class="text-[11px] font-black text-stone-400 uppercase tracking-widest">Trading Journal Log</h2>
@@ -111,6 +128,7 @@
         <div id="journalEntriesList" class="space-y-3"></div>
     </main>
 
+    <!-- ================= SETTINGS CONFIGURATION ================= -->
     <main id="settingsTab" class="tab-content flex-1 px-5 space-y-4">
         <h2 class="text-[11px] font-black text-stone-400 uppercase tracking-widest pt-2">Configuration Engine</h2>
         <div class="bg-white border border-stone-200/60 rounded-xl p-4 shadow-xs space-y-4">
@@ -121,6 +139,7 @@
         </div>
     </main>
 
+    <!-- Navigation Global Menu Action Dock Footer -->
     <nav class="absolute bottom-0 left-0 right-0 bg-white border-t border-stone-200/60 px-8 py-3 flex justify-between items-center select-none z-50">
         <button id="nav-signals" onclick="switchTab('signals')" class="nav-btn flex flex-col items-center gap-1 text-slate-900 font-black">
             <i data-lucide="zap" class="w-5 h-5 stroke-[2.5]"></i>
@@ -137,7 +156,6 @@
     </nav>
 
     <script>
-        // Holds 4 valid base64 fallbacks to start with so the engine never throws layout dimension errors
         let targetLiveCharts = [
             "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVR42mNkYGD4DwYMDAwM4MIEBv6DwA8A7vYCBXas3mAAAAAElFTkSuQmCC",
             "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVR42mNkYGD4DwYMDAwM4MIEBv6DwA8A7vYCBXas3mAAAAAElFTkSuQmCC",
@@ -153,7 +171,6 @@
             setInterval(updateLiveClock, 1000);
         });
 
-        // Processes files individually into their exact index positions inside the array
         function processTimeframeChart(event, indexPosition, idLabel) {
             const file = event.target.files[0];
             const labelElement = document.getElementById(`status-${idLabel}`);
@@ -164,7 +181,6 @@
             
             reader.onload = function(e) {
                 const base64DataRaw = e.target.result.split(',')[1];
-                // Updates only the specific timeframe inside the matrix payload array
                 targetLiveCharts[indexPosition] = base64DataRaw;
                 labelElement.innerText = "Loaded ✓";
                 labelElement.className = "text-[10px] text-emerald-600 font-black mt-1";
@@ -194,7 +210,11 @@
             try {
                 const responseText = await sendToGroq(targetLiveCharts, pair, bias, savedToken);
                 statusText.innerText = "Analysis matrix synchronized.";
-                output.innerText = responseText;
+                
+                // Formats response cleanly to break out the concluding recommendation boldly
+                let formattedText = responseText.replace(/FINAL RECOMMENDATION:/g, '<div class="mt-4 pt-3 border-t border-stone-200 font-black text-slate-950 text-sm uppercase tracking-wider">🎯 Final Recommendation:</div>');
+                output.innerHTML = `<div class="space-y-2">${formattedText}</div>`;
+                
                 registerJournalEntry(pair, bias, responseText);
             } catch (error) {
                 statusText.innerText = "Execution failed.";
@@ -207,7 +227,6 @@
         }
 
         async function sendToGroq(images, assetPair, bias, activeKey) {
-            // Converts all 4 base64 variables dynamically inside the API request content payload
             const imagePayload = images.map(b64 => ({
                 type: "image_url",
                 image_url: { url: `data:image/png;base64,${b64}` }
@@ -227,7 +246,7 @@
                             content: [
                                 {
                                     type: "text",
-                                    text: `Analyze these 4 multi-timeframe market charts for ${assetPair} (Ordered sequentially: Daily, 4H, 1H, and 15M entry). The target bias direction is ${bias}. Evaluate the institutional market narrative down through the timeframes. Highlight explicitly if the 15M entry chart aligns with higher-frame Order Blocks, liquidities, or FVGs for an entry.`
+                                    text: `Analyze these 4 multi-timeframe market charts for ${assetPair} (Daily, 4H, 1H, and 15M entry). The intended bias is ${bias}. Evaluate the institutional structure. You MUST conclude your analysis at the very bottom with a dedicated section starting exactly with the text "FINAL RECOMMENDATION:" stating clearly and boldly whether the trader should executing a BUY order, executing a SELL order, or STAND DOWN completely due to risk.`
                                 },
                                 ...imagePayload
                             ]
@@ -282,7 +301,7 @@
         function registerJournalEntry(asset, bias, summary) {
             const logs = JSON.parse(localStorage.getItem("smc_trade_journal_vault") || "[]");
             const low = summary.toLowerCase();
-            const pass = !low.includes("fail") && !low.includes("invalid");
+            const pass = !low.includes("fail") && !low.includes("invalid") && !low.includes("stand down");
             logs.unshift({
                 id: Date.now(),
                 timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
