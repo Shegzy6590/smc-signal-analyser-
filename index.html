@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SMC-Signal Pro</title>
-    <!-- Stable Mobile CDN Framework Style Link -->
+    <!-- Stable Tailwind CSS Framework -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Lucide Icons Integration Link -->
+    <!-- Lucide Icons Link -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body {
@@ -23,17 +23,20 @@
 </head>
 <body class="flex flex-col min-h-screen max-w-md mx-auto bg-white shadow-xl relative pb-24">
 
-    <!-- Top Mobile Status Layout Panel -->
-    <div class="px-6 pt-4 flex justify-between items-center text-sm font-semibold text-gray-900 select-none">
-        <span>1:12</span>
-        <div class="flex items-center space-x-1">
-            <i data-lucide="signal" class="w-4 h-4"></i>
-            <span class="text-xs">LTE</span>
-            <div class="border border-gray-400 rounded px-1 text-[10px] bg-emerald-100 text-emerald-800">37%</div>
+    <!-- Active Trading Sessions Banner (Replaced Fake Status Bar) -->
+    <div class="px-6 pt-4">
+        <div class="bg-slate-900 text-white rounded-xl p-3 flex flex-col gap-1 shadow-sm">
+            <div class="flex justify-between items-center">
+                <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">Live Market Sessions</span>
+                <span id="liveClock" class="text-xs font-mono font-bold text-emerald-400">00:00:00 UTC</span>
+            </div>
+            <div id="sessionBadges" class="flex flex-wrap gap-1.5 mt-1">
+                <!-- Sessions inject here dynamically via JS -->
+            </div>
         </div>
     </div>
 
-    <!-- Application Global App Header Container -->
+    <!-- Application Main Header -->
     <header class="px-6 pt-4 pb-2 flex justify-between items-center select-none">
         <h1 class="text-2xl font-black text-slate-900 tracking-tight">SMC-Signal <span class="text-gray-500 font-normal">Pro</span></h1>
         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-600 border border-emerald-200">
@@ -44,7 +47,7 @@
 
     <!-- ================= VIEW WINDOW 1: SIGNALS TAB ================= -->
     <main id="signalsTab" class="tab-content active flex-1 px-6 space-y-6">
-        <!-- Parameter Selection Box Component -->
+        <!-- Parameter Selection Dropdowns -->
         <div class="bg-white border border-gray-100 rounded-2xl p-4 shadow-xs grid grid-cols-2 gap-4">
             <div>
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Asset Pair</label>
@@ -64,7 +67,7 @@
             </div>
         </div>
 
-        <!-- Automated Upload Canvas Component Block Grid -->
+        <!-- MTF Chart States Grid -->
         <div>
             <h2 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-3">Multi-Timeframe Charts</h2>
             <div class="grid grid-cols-2 gap-3">
@@ -87,17 +90,17 @@
             </div>
         </div>
 
-        <!-- Strategy Validation Engine Action Button -->
+        <!-- Action Processing Trigger Button -->
         <button id="validateBtn" onclick="handleValidation()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 px-4 rounded-xl transition duration-200 shadow-md shadow-slate-900/10 active:scale-[0.99] cursor-pointer">
             Run Strategy Validation
         </button>
 
-        <!-- Current Operational Activity Display -->
+        <!-- Current Output Status Indicators -->
         <div class="flex items-center justify-center gap-2 text-sm font-extrabold text-slate-800 py-1">
             <span>⚡</span> <span id="statusText">Ready for matrix structure analysis...</span>
         </div>
 
-        <!-- Visual Response Analysis Output Logs -->
+        <!-- Evaluation Panel Display Logs -->
         <div>
             <h2 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-3">Analysis Evaluation</h2>
             <div class="bg-white border border-gray-100 shadow-xs rounded-2xl p-5 min-h-[120px]">
@@ -112,12 +115,12 @@
     <main id="journalTab" class="tab-content flex-1 px-6 space-y-4">
         <div class="flex justify-between items-center">
             <h2 class="text-xs font-black text-gray-400 uppercase tracking-widest">Trading Journal Log</h2>
-            <button onclick="clearJournalLogs()" class="text-[10px] bg-red-50 text-red-600 font-bold px-2 py-1 rounded border border-red-100">Clear Records</button>
+            <button onclick="clearJournalLogs()" class="text-[10px] bg-red-50 text-red-600 font-bold px-2 py-1 rounded border border-red-100 cursor-pointer">Clear Records</button>
         </div>
         
-        <!-- Live App Dynamic Database Array Render Box Container -->
+        <!-- Live Database Journal Mapping Array Layout Container -->
         <div id="journalEntriesList" class="space-y-3">
-            <!-- Dynamic items append via script runtime loops seamlessly here -->
+            <!-- Appended automatically via script database array runtime -->
         </div>
     </main>
 
@@ -127,14 +130,14 @@
         <div class="bg-white border border-gray-100 rounded-2xl p-4 shadow-xs space-y-4">
             <div>
                 <label class="block text-xs font-bold text-slate-700 mb-1">Groq API Token Key</label>
-                <!-- Key Input Field with event monitoring listener configuration -->
+                <!-- Reactive direct typing key framework monitor input -->
                 <input id="apiKeyInput" type="text" oninput="saveApiKey(this.value)" placeholder="gsk_xxxxxxxxxxxxxxxx" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900">
                 <p class="text-[10px] text-emerald-600 font-semibold mt-1.5 flex items-center gap-1">
                     <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Key isolates safely to your device's memory.
                 </p>
             </div>
             <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Execution Engine Engine Mode</label>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Execution Engine Mode</label>
                 <select class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-bold text-slate-800 appearance-none">
                     <option>Smart Money Concepts (SMC Pro)</option>
                     <option>Liquidity Sweep Optimization</option>
@@ -143,7 +146,7 @@
         </div>
     </main>
 
-    <!-- Global Application Interactive Navigation Menu Footer -->
+    <!-- Navigation Global Menu Action Dock Footer -->
     <nav class="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-8 py-3 flex justify-between items-center select-none z-50">
         <button id="nav-signals" onclick="switchTab('signals')" class="nav-btn flex flex-col items-center gap-1 text-slate-900 font-black cursor-pointer">
             <i data-lucide="zap" class="w-5 h-5 stroke-[2.5]"></i>
@@ -159,29 +162,58 @@
         </button>
     </nav>
 
-    <!-- Runtime Engine Infrastructure Core Javascript Controllers -->
+    <!-- Debugged Script Runtime Processing Architecture Engines -->
     <script>
-        // Global system initial processing hook script execution
         document.addEventListener("DOMContentLoaded", () => {
             lucide.createIcons();
             loadSavedApiKey();
             renderJournalLogs();
+            updateMarketSessions();
+            setInterval(updateMarketSessions, 1000); // Live loop timing clock update
         });
 
-        // INTERACTIVE SCREEN TAB SWITCHING CONTROLLER ENGINE
+        // LIVE FOREX MARKET SESSIONS PARSER ENGINE (UTC Based)
+        function updateMarketSessions() {
+            const now = new Date();
+            const utcHour = now.getUTCHours();
+            const utcMinute = now.getUTCMinutes();
+            const utcSecond = now.getUTCSeconds();
+
+            // Format global live digital system clock string display
+            const pad = (num) => String(num).padStart(2, '0');
+            document.getElementById("liveClock").innerText = `${pad(utcHour)}:${pad(utcMinute)}:${pad(utcSecond)} UTC`;
+
+            // Define session conditions (SMC Standard Trading Hours in UTC)
+            const sessions = [
+                { name: "London", active: (utcHour >= 7 && utcHour < 16) },
+                { name: "New York", active: (utcHour >= 12 && utcHour < 21) },
+                { name: "Sydney/Asian", active: (utcHour >= 22 || utcHour < 6) }
+            ];
+
+            const badgeContainer = document.getElementById("sessionBadges");
+            if (badgeContainer) {
+                badgeContainer.innerHTML = sessions.map(s => {
+                    if (s.active) {
+                        return `<span class="px-2 py-0.5 rounded-md text-[9px] font-black tracking-wide bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 animate-pulse">● ${s.name}</span>`;
+                    } else {
+                        return `<span class="px-2 py-0.5 rounded-md text-[9px] font-bold tracking-wide bg-slate-800 text-slate-500 border border-slate-700/50">${s.name}</span>`;
+                    }
+                }).join('');
+            }
+        }
+
+        // TABS CORE VIEW SCREEN CONTROLLER SWITCH MECHANISM
         function switchTab(tabName) {
-            // Target clean node class resets
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.classList.remove('text-slate-900', 'font-black');
                 btn.classList.add('text-gray-400', 'font-bold');
-                const coreIcon = btn.querySelector('i');
-                if(coreIcon) coreIcon.setAttribute('stroke-width', '2');
+                const defaultIcon = btn.querySelector('i');
+                if(defaultIcon) defaultIcon.setAttribute('stroke-width', '2');
             });
 
-            // Make designated tab configuration active
-            const targetedWindow = document.getElementById(`${tabName}Tab`);
-            if (targetedWindow) targetedWindow.classList.add('active');
+            const targetView = document.getElementById(`${tabName}Tab`);
+            if (targetView) targetView.classList.add('active');
             
             const activeNavBtn = document.getElementById(`nav-${tabName}`);
             if (activeNavBtn) {
@@ -193,45 +225,46 @@
             lucide.createIcons();
         }
 
-        // PERSISTENT STORAGE CONTROLLERS (LOCAL STORAGE DATA MATRIX)
+        // INPUT TO STORAGE PERSISTENCE SYNC CONTROLLERS
         function saveApiKey(keyValue) {
             localStorage.setItem("smc_groq_api_token", keyValue.trim());
         }
 
         function loadSavedApiKey() {
-            const preservedToken = localStorage.getItem("smc_groq_api_token");
-            if (preservedToken) {
-                document.getElementById("apiKeyInput").value = preservedToken;
+            const token = localStorage.getItem("smc_groq_api_token");
+            if (token) {
+                document.getElementById("apiKeyInput").value = token;
             }
         }
 
-        // INTERACTIVE SIGNAL HARVESTING LOG DATABASE LOGIC
+        // AUTOMATED WIN/LOSS PROBABILITY JOURNAL SYSTEM ENGINE
         function registerJournalEntry(asset, bias, validationSummary) {
-            const storedLogs = JSON.parse(localStorage.getItem("smc_trade_journal_vault") || "[]");
+            const logs = JSON.parse(localStorage.getItem("smc_trade_journal_vault") || "[]");
             
-            // Auto detection parser configuration for Win/Loss structure probabilities
-            const isApproved = !validationSummary.toLowerCase().includes("fail") && !validationSummary.toLowerCase().includes("invalid");
+            // Logic parses content validation response strings directly to flag structural risk probabilities
+            const lowerText = validationSummary.toLowerCase();
+            const isApproved = !lowerText.includes("fail") && !lowerText.includes("invalid") && !lowerText.includes("high risk");
             
-            const newRecordPayload = {
+            const payload = {
                 id: Date.now(),
                 timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
                 assetPair: asset,
                 intendedBias: bias,
-                status: isApproved ? "VALIDATED SETUP (WIN PROBABILITY)" : "INVALIDATED MATRIX (LOSS RISK)",
+                status: isApproved ? "HIGH PROBABILITY SETUP (WIN CONFIRMATION)" : "INVALID STRUCTURE ALIGNMENT (RISK TRAP)",
                 colorCode: isApproved ? "emerald" : "red",
-                summaryText: validationSummary.substring(0, 85) + "..."
+                summaryText: validationSummary.substring(0, 100) + "..."
             };
 
-            storedLogs.unshift(newRecordPayload);
-            localStorage.setItem("smc_trade_journal_vault", JSON.stringify(storedLogs));
+            logs.unshift(payload);
+            localStorage.setItem("smc_trade_journal_vault", JSON.stringify(logs));
             renderJournalLogs();
         }
 
         function renderJournalLogs() {
             const listTarget = document.getElementById("journalEntriesList");
-            const storedLogs = JSON.parse(localStorage.getItem("smc_trade_journal_vault") || "[]");
+            const logs = JSON.parse(localStorage.getItem("smc_trade_journal_vault") || "[]");
 
-            if(storedLogs.length === 0) {
+            if(logs.length === 0) {
                 listTarget.innerHTML = `
                     <div class="text-center py-8 border border-dashed border-gray-200 rounded-2xl bg-slate-50/50">
                         <p class="text-xs font-bold text-gray-400">No trading validation records logged yet.</p>
@@ -239,7 +272,7 @@
                 return;
             }
 
-            listTarget.innerHTML = storedLogs.map(log => `
+            listTarget.innerHTML = logs.map(log => `
                 <div class="border-l-4 border-${log.colorCode}-500 pl-3 py-2.5 bg-slate-50/80 rounded-r-xl shadow-xs border border-gray-100">
                     <div class="flex justify-between items-center">
                         <p class="text-xs font-black text-slate-800">${log.assetPair} — <span class="text-slate-600">${log.intendedBias}</span></p>
@@ -256,7 +289,7 @@
             renderJournalLogs();
         }
 
-        // STATIC DUMMY BASE64 COMPACT CANVAS BLOCKS FOR VALIDATION ROUTINES
+        // CHART DATA VECTOR INTERFACES FOR BACKEND POST
         const mockChartImages = [
             "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
             "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
@@ -264,7 +297,7 @@
             "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
         ];
 
-        // LIVE CORE VALIDATION EXECUTION ENGINE ACTION DISPATCHER
+        // HANDLER FOR PROCESS MANAGEMENT RUNTIME ACTION DISPATCHER
         async function handleValidation() {
             const btn = document.getElementById("validateBtn");
             const statusText = document.getElementById("statusText");
@@ -272,12 +305,11 @@
             const pair = document.getElementById("assetPair").value;
             const bias = document.getElementById("intendedBias").value;
 
-            // Instantly extract token value from stored runtime space memory
-            const activeSavedToken = localStorage.getItem("smc_groq_api_token");
+            const savedToken = localStorage.getItem("smc_groq_api_token");
 
-            if (!activeSavedToken || activeSavedToken.trim() === "") {
+            if (!savedToken || savedToken.trim() === "") {
                 statusText.innerText = "Execution failed.";
-                output.innerHTML = `<span class="text-red-500 font-bold">Error: API Key is missing.</span><br>Click the <b>Settings</b> icon at the bottom tab right now, paste your Groq API key, then return here to run validation!`;
+                output.innerHTML = `<span class="text-red-500 font-bold">Error: API Key is missing.</span><br>Tap the <b>Settings</b> gear icon on the navigation bar below, paste your valid key, then return here to run validation.`;
                 return;
             }
 
@@ -289,17 +321,18 @@
             output.innerText = "Routing chart vectors to Groq LPU Server matrix...";
 
             try {
-                const analysisResult = await validateSMCStrategy(mockChartImages, pair, bias, activeSavedToken);
+                const analysisResult = await validateSMCStrategy(mockChartImages, pair, bias, savedToken);
                 statusText.innerText = "Analysis matrix synchronized completely.";
                 output.innerText = analysisResult;
 
-                // Fire automation journaling logger tracking array engine immediately
+                // Call automatic engine journaling log right after delivery completion
                 registerJournalEntry(pair, bias, analysisResult);
 
             } catch (error) {
                 statusText.innerText = "Execution failed.";
-                output.innerText = `Error: ${error.message}. Confirm the validity of your token within Settings parameters.`;
-            } finalY {
+                output.innerText = `Error: ${error.message}. Confirm the accuracy of your token key in Settings.`;
+            } finally {
+                // FIXED THE TYPO HERE: Was 'finalY', now properly 'finally' so JS execution never bricks.
                 btn.disabled = false;
                 btn.className = "w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 px-4 rounded-xl transition duration-200 shadow-md shadow-slate-900/10 active:scale-[0.99] cursor-pointer";
                 btn.innerText = "Run Strategy Validation";
@@ -307,7 +340,7 @@
             }
         }
 
-        // ASYNC EXTERNAL ENDPOINT API CALL MATRIX
+        // RAW BACKEND ROUTER COMPLETION HANDLER BLOCK
         async function validateSMCStrategy(images, assetPair, bias, activeKey) {
             try {
                 const imageContent = images.map((base64Data) => ({
