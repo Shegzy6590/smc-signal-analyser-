@@ -227,14 +227,13 @@
             let pips = 0;
 
             if (asset.includes("XAUUSD") || asset.includes("Gold")) {
-                // Gold pip tracking: 0.10 variation is 1 pip ($1 move is 10 pips)
                 pips = difference * 10;
             } else if (asset.includes("JPY")) {
                 pips = difference * 100;
             } else if (asset.includes("BTCUSD")) {
-                pips = difference; // Bitcoin point index value mapping
+                pips = difference;
             } else {
-                pips = difference * 10000; // Standard 4-decimal currency mapping
+                pips = difference * 10000;
             }
 
             distanceOutput.innerText = `${pips.toFixed(2)} Pips`;
@@ -264,8 +263,11 @@
                 const responseText = await sendToGroq(targetLiveCharts, pair, savedToken);
                 statusText.innerText = "Analysis matrix synchronized.";
                 
-                let formattedText = responseText.replace(/CONDITION FOR EXECUTION:/g, '<div class="mt-4 pt-3 border-t border-amber-500/30 font-black text-amber-600 text-xs uppercase tracking-wider">⏳ Condition For Execution:</div>');
-                formattedText = formattedText.replace(/FINAL RECOMMENDATION:/g, '<div class="mt-3 pt-2 border-t border-stone-200 font-black text-slate-950 text-sm uppercase tracking-wider">🎯 Final Recommendation:</div>');
+                let formattedText = responseText.replace(/CONDITION FOR EXECUTION:/g, '<div class="mt-4 pt-3 border-t border-amber-500/30 font-black text-amber-600 text-xs uppercase tracking-wider">⏳ Condition For Execution (Strict Confirmation):</div>');
+                
+                // Enhanced visual parsing style layout block for Final Recommendation parameters
+                formattedText = formattedText.replace(/FINAL RECOMMENDATION:/g, '<div class="mt-3 pt-2 border-t border-stone-200 font-black text-slate-950 text-sm uppercase tracking-wider">🎯 Final Recommendation Execution Block:</div>');
+                
                 output.innerHTML = `<div class="space-y-2">${formattedText}</div>`;
                 
                 registerJournalEntry(pair, "RADAR MODE", responseText);
@@ -299,23 +301,34 @@
                             content: [
                                 {
                                     type: "text",
-                                    text: `You are an autonomous institutional Smart Money Concepts (SMC) risk engine evaluating ${assetPair}. You possess 100% analytical freedom and treat the Daily chart as an OPTIONAL directional filter; prioritize structural alignment on the 4H, 1H, and 15M execution charts. Scan for institutional setups (Order Blocks, Liquidity Sweeps, and FVG mitigations).
+                                    text: `You are an autonomous institutional Smart Money Concepts (SMC) risk engine evaluating ${assetPair}. You possess 100% analytical freedom and treat the Daily chart as an OPTIONAL directional filter; prioritize structural alignment on the 4H, 1H, and 15M charts. Scan for institutional setups (Order Blocks, Liquidity Sweeps, and FVG mitigations).
 
 CRITICAL ASSET LOCK-IN RULE:
 You are strictly evaluating the asset ${assetPair}. You are ABSOLUTELY FORBIDDEN from mentioning or outputting price figures or structures belonging to other asset classes. If the asset is XAUUSD (Gold), you must ONLY use whole numbers and gold index prices (e.g., $4328.50). Do not mix up currency decimals like 1.16140 into a Gold analysis.
 
-TWO-PHASE RADAR ASSIGNMENT MODE:
-Your primary function is to identify and track setups, even if the market has not triggered the entry coordinates yet. 
+TWO-PHASE RADAR ASSIGNMENT MODE WITH CONFIRMATION FILTER:
+Your function is to identify and track setups, preventing premature entries that cause large drawdowns.
 1. The Setup Tracker Phase: Scan the images to find chart patterns, liquidity sweeps, or mitigation gaps. Map out where they are sitting.
-2. The Trigger Condition Phase: Formulate a precise, mathematical conditional rule outlining exactly what needs to happen next for the setup to become valid.
+2. The Trigger Condition Phase: Formulate a precise, conditional rule outlining exactly what needs to happen next for the setup to become valid. 
+
+STRICT ENTRY CONFIRMATION RULE:
+You are STRONGLY PROHIBITED from recommending direct, unconfirmed 'single-touch' limit entries inside structural zones. Your execution conditions must explicitly instruct the trader to wait for an explicit lower-timeframe confirmation routine (e.g., waiting for clear lower-timeframe structural change or micro-candle body rejection inside the zone) before placing an entry order.
 
 CRITICAL RISK RULES:
 1. Your calculated Stop Loss distance from the Entry Price must be tight and precise, and it is ABSOLUTELY FORBIDDEN from exceeding a maximum of 65 pips.
 2. Your Take Profit distance from the Entry Price must mathematically equal EXACTLY either 2x (for a 1:2 RR) or 3x (for a 1:3 RR) the calculated Stop Loss distance. If the setup forces a Stop Loss wider than 65 pips, reject it and state "STAND DOWN".
 
-Conclude your analysis at the very bottom with two distinct final fields:
-First, a section starting exactly with "CONDITION FOR EXECUTION:" explaining the numeric price action trigger level.
-Second, a section starting exactly with "FINAL RECOMMENDATION:" followed strictly by either "EXECUTE A BUY ORDER", "EXECUTE A SELL ORDER", or "TRACKING SETUP (STAND DOWN UNTIL CONDITION MET)".`
+OUTPUT BLOCK ORDER SPECIFICATION:
+Conclude your analysis at the very bottom with two distinct fields in this exact sequence order:
+
+First, a section starting exactly with "CONDITION FOR EXECUTION:" explaining the numeric price action trigger level along with the exact confirmation behavior required.
+
+Second, a section starting exactly with "FINAL RECOMMENDATION:" which must contain a highly structured, clean, bulleted format containing the direct parameters so the trader doesn't have to look through prose paragraphs. It must strictly be structured exactly like this layout format:
+* **ACTION:** [EXECUTE A BUY ORDER / EXECUTE A SELL ORDER / TRACKING SETUP (STAND DOWN)]
+* **ENTRY LEVEL:** [Numeric Trigger Level Value]
+* **STOP LOSS:** [Numeric Stop Level Value] ([Calculated Pips Distance] Pips)
+* **TAKE PROFIT:** [Numeric Target Level Value] ([Calculated Pips Distance] Pips)
+* **RISK-TO-REWARD:** [1:2 or 1:3 mathematically verified]`
                                 },
                                 ...imagePayload
                             ]
