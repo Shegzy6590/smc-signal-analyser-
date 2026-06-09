@@ -1,13 +1,3 @@
-Integrating live macroeconomic news filtering is an excellent way to elevate this into a professional-grade trading application.
-Instead of adding a clunky, third-party News API that forces you to manage secondary subscription keys, pay-walls, or complicated background scraping, we can solve this cleanly by **instructing the AI engine to handle news tracking natively as part of its multi-timeframe analysis matrix.**
-When major institutional desks evaluate high-impact news like the **NFP (Non-Farm Payrolls)**, **CPI (Inflation data)**, or **FOMC (Interest Rate decisions)**, they track the release time and look for specific macro behavioral patterns.
-By hardcoding a strict **News Mitigation Framework** directly into the sendToGroq processing layer, your AI will intelligently cross-reference the timing, analyze the sudden expansion wicks, and auto-adjust its signal generation based on three core rules:
- 1. **The Pre-News Lockdown:** If high-impact news is dropping or has dropped within the hour, the AI must protect capital by invalidating aggressive limit entries that are vulnerable to extreme slippage.
- 2. **The Liquidity Hunt Logic:** It will look specifically for whether the news event acted as a predatory sweep of high-timeframe liquidity pools (Equal Highs/Lows).
- 3. **The Aftermath Filter:** It will only authorize a BUY or SELL *after* the news if a pristine, institutional **Market Structure Shift (MSS)** confirms that the market has stabilized and chosen its true direction.
-Here is your updated source code with the integrated institutional news engine:
-### Updated index.html
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -234,19 +224,19 @@ Here is your updated source code with the integrated institutional news engine:
                             content: [
                                 {
                                     type: "text",
-                                    text: `You are an autonomous institutional Smart Money Concepts (SMC) risk engine evaluating ${assetPair}. You possess 100% analytical freedom and must act with high-impact macroeconomic awareness. Treat the Daily chart as an OPTIONAL filter.
+                                    text: `You are an autonomous institutional Smart Money Concepts (SMC) risk engine evaluating ${assetPair}. You possess 100% analytical freedom and treat the Daily chart as an OPTIONAL directional filter; if it is messy or lacks clarity, look past it and prioritize structural alignment on the 4H, 1H, and 15M execution charts. Scan exclusively for institutional setups (Order Blocks, Liquidity Sweeps, and FVG mitigations).
 
-LIVE FUNDAMENTAL & HIGH-IMPACT NEWS ENVIRONMENT POLICY:
-Carefully inspect the candle wicks and structural behavior on the 4H, 1H, and 15M charts for recent massive, anomalous, high-velocity price expansions or aggressive unmitigated wicks (which typically signify high-impact macroeconomic news releases like NFP, CPI, or FOMC). 
-1. If you recognize that a major news event has occurred or is currently playing out, you must look closely for whether the spike successfully swept high-timeframe liquidity pools (Equal Highs or Equal Lows) and left an immediate, clear Market Structure Shift (MSS) on the 15M chart.
-2. If a clean 15M MSS is visible in the aftermath of the volatility, you are fully authorized to calculate a sniper entry inside the newly engineered Fair Value Gap (FVG) or Order Block mitigation zone.
-3. If the news spike caused chaotic, unmitigated, or messy price action without a sharp, clean structural shift, or if the price is stuck in highly unstable spread expansions, you MUST protect capital and immediately issue a "NO TRADE (STAND DOWN)".
+INTEGRATED LIVE MACROECONOMIC NEWS FILTERING:
+You must natively process high-impact news dynamics (like NFP, CPI, or FOMC) within your analysis matrix:
+1. The Pre-News Lockdown: If a major high-impact news event is dropping or has dropped within the hour, you must protect capital by invalidating aggressive limit entries vulnerable to extreme slippage.
+2. The Liquidity Hunt Logic: Check if the news event acted as a predatory sweep of high-timeframe liquidity pools (Equal Highs/Lows).
+3. The Aftermath Filter: You are only authorized to generate a BUY or SELL order *after* the news if a pristine, institutional Market Structure Shift (MSS) confirms that the market has stabilized and chosen its true direction.
 
-CRITICAL POSITION CONSTRAINTS:
-1. Your calculated Stop Loss distance from the Entry Price must be tight and precise, and it is ABSOLUTELY FORBIDDEN from exceeding a maximum of 65 pips. 
-2. Your Risk-to-Reward ratio rule is strict and uncompromised. Your Take Profit distance from Entry Price must mathematically equal EXACTLY either 2x (for 1:2 RR) or 3x (for 1:3 RR) the Stop Loss distance. Perform explicit mathematical confirmation before selecting values. If a setup requires a Stop Loss wider than 65 pips, reject the execution and stand down.
+CRITICAL RISK RULES:
+1. Your calculated Stop Loss distance from the Entry Price must be tight and precise, and it is ABSOLUTELY FORBIDDEN from exceeding a maximum of 65 pips.
+2. Your Risk-to-Reward ratio rule is strict and uncompromised. Your Take Profit distance from the Entry Price must mathematically equal EXACTLY either 2x (for a 1:2 RR) or 3x (for a 1:3 RR) the calculated Stop Loss distance. Perform precise subtraction and multiplication verification before providing any numbers. If the structural targets on the chart do not naturally yield an exact 1:2 or 1:3 ratio, or if the setup forces a Stop Loss wider than 65 pips, you must reject the trade completely and output "NO TRADE (STAND DOWN)".
 
-Conclude your analysis at the very bottom with a dedicated section starting exactly with "FINAL RECOMMENDATION:" followed strictly by either "EXECUTE A BUY ORDER", "EXECUTE A SELL ORDER", or "NO TRADE (STAND DOWN)". If executing, display the precise mathematical calculations demonstrating that your Take Profit target fits the strict 1:2 or 1:3 ratio rule relative to your entry and stop loss.`
+Conclude your analysis at the very bottom with a dedicated section starting exactly with "FINAL RECOMMENDATION:" followed strictly by either "EXECUTE A BUY ORDER", "EXECUTE A SELL ORDER", or "NO TRADE (STAND DOWN)". If executing, display the exact mathematical calculations demonstrating that your Take Profit target precisely fits the strict 1:2 or 1:3 ratio rule relative to your entry and stop loss.`
                                 },
                                 ...imagePayload
                             ]
@@ -341,5 +331,3 @@ Conclude your analysis at the very bottom with a dedicated section starting exac
     </script>
 </body>
 </html>
-
-```
