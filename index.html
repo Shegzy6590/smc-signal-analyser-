@@ -74,6 +74,16 @@
             </div>
         </div>
 
+        <div id="notificationStatusCard" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-3 flex justify-between items-center shadow-xs">
+            <div class="space-y-0.5">
+                <p class="text-[10px] font-black text-amber-800 uppercase tracking-wider">System Setup Required</p>
+                <p class="text-[10px] text-amber-700 font-bold leading-tight">Enable phone browser alerts for sniper triggers.</p>
+            </div>
+            <button onclick="requestBrowserNotificationAccess()" class="bg-amber-600 hover:bg-amber-700 text-white text-[10px] font-black px-2.5 py-1.5 rounded-md uppercase tracking-wide transition">
+                Grant Access
+            </button>
+        </div>
+
         <div class="bg-slate-900 text-white border border-slate-800 rounded-xl p-4 shadow-md space-y-3">
             <div class="flex justify-between items-center">
                 <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Setup Level Monitor</span>
@@ -158,6 +168,18 @@
                 <label class="block text-xs font-bold text-slate-700 mb-1">Groq API Token Key</label>
                 <input id="apiKeyInput" type="text" oninput="saveApiKey(this.value)" placeholder="gsk_xxxxxxxxxxxxxxxx" class="w-full bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 text-xs font-mono text-slate-800 focus:outline-none">
             </div>
+            <hr class="border-stone-100">
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Telegram Bot API Token</label>
+                <input id="tgTokenInput" type="text" oninput="saveTelegramConfig()" placeholder="123456789:ABCdef..." class="w-full bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 text-xs font-mono text-slate-800 focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Telegram Target Chat ID</label>
+                <input id="tgChatIdInput" type="text" oninput="saveTelegramConfig()" placeholder="987654321" class="w-full bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 text-xs font-mono text-slate-800 focus:outline-none">
+            </div>
+            <button onclick="triggerTestTelegramAlert()" class="w-full bg-stone-100 text-stone-700 font-bold text-xs py-2 px-3 rounded-lg border border-stone-200 hover:bg-stone-50 transition uppercase tracking-wide cursor-pointer">
+                Send Test Routing Alert
+            </button>
         </div>
     </main>
 
@@ -184,13 +206,36 @@
             "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVR42mNkYGD4DwYMDAwM4MIEBv6DwA8A7vYCBXas3mAAAAAElFTkSuQmCC"
         ];
 
+        let insideAlertWindowTriggered = false;
+
         document.addEventListener("DOMContentLoaded", () => {
             lucide.createIcons();
             loadSavedApiKey();
+            loadTelegramConfig();
             renderJournalLogs();
+            checkBrowserNotificationStatus();
             updateLiveClockAndMacroCalendar();
             setInterval(updateLiveClockAndMacroCalendar, 1000);
         });
+
+        function checkBrowserNotificationStatus() {
+            const card = document.getElementById("notificationStatusCard");
+            if (!("Notification" in window)) return;
+            
+            if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+                card.classList.remove("hidden");
+            }
+        }
+
+        function requestBrowserNotificationAccess() {
+            if (!("Notification" in window)) return;
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    document.getElementById("notificationStatusCard").classList.add("hidden");
+                    new Notification("SMC-Signal Pro", { body: "Browser push alerts successfully linked!" });
+                }
+            });
+        }
 
         function processTimeframeChart(event, indexPosition, idLabel) {
             const file = event.target.files[0];
@@ -220,6 +265,7 @@
                 distanceOutput.innerText = "0.00 Pips";
                 statusLabel.innerText = "NO ACTIVE TARGET";
                 statusLabel.className = "inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-black bg-stone-800 text-stone-400 uppercase tracking-wide";
+                insideAlertWindowTriggered = false;
                 return;
             }
 
@@ -239,6 +285,68 @@
             distanceOutput.innerText = `${pips.toFixed(2)} Pips`;
             statusLabel.innerText = "MONITORING SETUP LIVE";
             statusLabel.className = "inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-black bg-amber-500 text-slate-950 uppercase tracking-wide animate-pulse";
+
+            if (pips <= 5.0 && !insideAlertWindowTriggered) {
+                insideAlertWindowTriggered = true;
+                executeDualChannelAlerts(asset, pips.toFixed(2), target);
+            } else if (pips > 5.0) {
+                insideAlertWindowTriggered = false;
+            }
+        }
+
+        function executeDualChannelAlerts(asset, pipDistance, targetLevel) {
+            const txt = `🎯 SNIPER ALERT: ${asset} is only ${pipDistance} pips away from your trigger level (${targetLevel})! Check charts for immediate lower timeframe MSS confirmation setup.`;
+            
+            if ("Notification" in window && Notification.permission === "granted") {
+                new Notification("SMC TARGET LOCKED", { body: txt });
+            }
+
+            const botToken = localStorage.getItem("smc_tg_bot_token");
+            const chatId = localStorage.getItem("smc_tg_chat_id");
+            if (botToken && chatId) {
+                fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ chat_id: chatId, text: txt })
+                }).catch(e => console.error("Telegram error:", e));
+            }
+        }
+
+        async function triggerTestTelegramAlert() {
+            const botToken = document.getElementById("tgTokenInput").value.trim();
+            const chatId = document.getElementById("tgChatIdInput").value.trim();
+            if(!botToken || !chatId) { alert("Please input your Telegram configuration tokens first."); return; }
+            try {
+                let r = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ chat_id: chatId, text: "⚡ SMC-Signal Pro: Telegram alert engine bridge connected perfectly!" })
+                });
+                if(r.ok) alert("Test notification successfully routed to your Telegram app!");
+                else alert("Routing failed. Please double-check your Bot Token and Chat ID.");
+            } catch(e) { alert("Network communication error: " + e.message); }
+        }
+
+        // Automated Regex Level Scraping Function Engine
+        function extractAndInjectTargetLevel(aiText) {
+            // Searches for lines matching: **ENTRY LEVEL:** 4356.28 or entry level: 1.1234
+            const entryRegex = /\*\*ENTRY LEVEL:\*\*\s*([\d.]+)/i;
+            const match = aiText.match(entryRegex);
+            
+            if (match && match[1]) {
+                const scrapedLevel = parseFloat(match[1]);
+                if (!isNaN(scrapedLevel)) {
+                    document.getElementById("targetLevelInput").value = scrapedLevel;
+                    
+                    // If user hasn't typed a live market price, auto-populate current structure checkpoint
+                    const currentPriceInput = document.getElementById("currentPriceInput");
+                    if (!currentPriceInput.value || parseFloat(currentPriceInput.value) === 0) {
+                        currentPriceInput.value = (scrapedLevel * 0.995).toFixed(2); // Initial relative spatial offset anchor
+                    }
+                    
+                    calculateLiveSpreadDistance();
+                }
+            }
         }
 
         async function handleValidation() {
@@ -264,11 +372,12 @@
                 statusText.innerText = "Analysis matrix synchronized.";
                 
                 let formattedText = responseText.replace(/CONDITION FOR EXECUTION:/g, '<div class="mt-4 pt-3 border-t border-amber-500/30 font-black text-amber-600 text-xs uppercase tracking-wider">⏳ Condition For Execution (Strict Confirmation):</div>');
-                
-                // Enhanced visual parsing style layout block for Final Recommendation parameters
                 formattedText = formattedText.replace(/FINAL RECOMMENDATION:/g, '<div class="mt-3 pt-2 border-t border-stone-200 font-black text-slate-950 text-sm uppercase tracking-wider">🎯 Final Recommendation Execution Block:</div>');
                 
                 output.innerHTML = `<div class="space-y-2">${formattedText}</div>`;
+                
+                // Fire Automated Entry Level Injection Scraper Layer
+                extractAndInjectTargetLevel(responseText);
                 
                 registerJournalEntry(pair, "RADAR MODE", responseText);
             } catch (error) {
@@ -428,6 +537,17 @@ Second, a section starting exactly with "FINAL RECOMMENDATION:" which must conta
         function loadSavedApiKey() {
             const tk = localStorage.getItem("smc_groq_api_token");
             if (tk) document.getElementById("apiKeyInput").value = tk;
+        }
+
+        function saveTelegramConfig() {
+            localStorage.setItem("smc_tg_bot_token", document.getElementById("tgTokenInput").value.trim());
+            localStorage.setItem("smc_tg_chat_id", document.getElementById("tgChatIdInput").value.trim());
+        }
+        function loadTelegramConfig() {
+            const tok = localStorage.getItem("smc_tg_bot_token");
+            const cid = localStorage.getItem("smc_tg_chat_id");
+            if(tok) document.getElementById("tgTokenInput").value = tok;
+            if(cid) document.getElementById("tgChatIdInput").value = cid;
         }
 
         function registerJournalEntry(asset, bias, summary) {
