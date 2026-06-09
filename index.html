@@ -20,6 +20,13 @@
         .macro-alert-active {
             animation: micro-flash 2s infinite ease-in-out;
         }
+        
+        /* Added styling structure explicitly for your final consideration banner container */
+        .final-banner-card {
+            background-color: #1a1d24 !important;
+            border: 1px solid #262b35 !important;
+            color: #e3e6eb !important;
+        }
     </style>
 </head>
 <body class="flex flex-col min-h-screen max-w-md mx-auto bg-[#fdfcf7] shadow-xl relative pb-28">
@@ -312,21 +319,6 @@
             }
         }
 
-        async function triggerTestTelegramAlert() {
-            const botToken = document.getElementById("tgTokenInput").value.trim();
-            const chatId = document.getElementById("tgChatIdInput").value.trim();
-            if(!botToken || !chatId) { alert("Please input your Telegram configuration tokens first."); return; }
-            try {
-                let r = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ chat_id: chatId, text: "⚡ SMC-Signal Pro: Telegram alert engine bridge connected perfectly!" })
-                });
-                if(r.ok) alert("Test notification successfully routed to your Telegram app!");
-                else alert("Routing failed. Please double-check your Bot Token and Chat ID.");
-            } catch(e) { alert("Network communication error: " + e.message); }
-        }
-
         function extractAndInjectTargetLevel(aiText) {
             const entryRegex = /\*\*ENTRY LEVEL:\*\*\s*([\d.]+)/i;
             const match = aiText.match(entryRegex);
@@ -368,8 +360,12 @@
                 const responseText = await sendToGroq(targetLiveCharts, pair, savedToken);
                 statusText.innerText = "Analysis matrix synchronized.";
                 
-                let formattedText = responseText.replace(/CONDITION FOR EXECUTION:/g, '<div class="mt-4 pt-3 border-t border-amber-500/30 font-black text-amber-600 text-xs uppercase tracking-wider">⏳ Condition For Execution (Strict Confirmation):</div>');
-                formattedText = formattedText.replace(/FINAL RECOMMENDATION:/g, '<div class="mt-3 pt-2 border-t border-stone-200 font-black text-slate-950 text-sm uppercase tracking-wider">🎯 Final Recommendation Execution Block:</div>');
+                // FIXED THE PARSER LOGIC: Correctly captures our new banner block syntax and turns it into a visually distinct custom UI block
+                let formattedText = responseText.replace(/## CONDITION FOR EXECUTION \(STRICT CONFIRMATION\):/g, '<div class="mt-4 pt-3 border-t border-amber-500/30 font-black text-amber-600 text-xs uppercase tracking-wider">⏳ Condition For Execution (Strict Confirmation):</div>');
+                
+                if (formattedText.includes("### 🚨 FINAL CONSIDERATION BANNER 🚨")) {
+                    formattedText = formattedText.replace(/### 🚨 FINAL CONSIDERATION BANNER 🚨/g, '</div><div class="final-banner-card rounded-xl p-4 mt-4 shadow-inner space-y-2"><div class="font-black text-amber-400 text-sm tracking-wider uppercase flex items-center gap-1">🚨 FINAL CONSIDERATION BANNER 🚨</div>');
+                }
                 
                 output.innerHTML = `<div class="space-y-2">${formattedText}</div>`;
                 
@@ -431,14 +427,15 @@ CRITICAL RISK RULES:
 OUTPUT BLOCK ORDER SPECIFICATION:
 Conclude your analysis at the very bottom with two distinct fields in this exact sequence order:
 
-First, a section starting exactly with "CONDITION FOR EXECUTION:" explaining the numeric price action trigger level along with the exact confirmation behavior required.
+First, a section starting exactly with "## CONDITION FOR EXECUTION (STRICT CONFIRMATION):" explaining the numeric price action trigger level along with the exact confirmation behavior required.
 
-Second, a section starting exactly with "FINAL RECOMMENDATION:" which must contain a highly structured, clean, bulleted format containing the direct parameters so the trader doesn't have to look through prose paragraphs. It must strictly be structured exactly like this layout format:
-* **ACTION:** [EXECUTE A BUY ORDER / EXECUTE A SELL ORDER / TRACKING SETUP (STAND DOWN)]
+Second, a section starting exactly with "### 🚨 FINAL CONSIDERATION BANNER 🚨" which must contain a highly structured, clean, bulleted format containing the direct parameters so the trader doesn't have to look through prose paragraphs. It must strictly be structured exactly like this layout format:
+**DIRECTIONAL DECISION:** [EXECUTE BUY ORDER / EXECUTE SELL ORDER / STAND DOWN]
 * **ENTRY LEVEL:** [Numeric Trigger Level Value derived from 15M chart]
-* **STOP LOSS:** [Numeric Stop Level Value derived from 15M chart invalidation] ([Calculated Pips Distance] Pips)
-* **TAKE PROFIT:** [Numeric Target Level Value based on RR] ([Calculated Pips Distance] Pips)
-* **RISK-TO-REWARD:** [1:2 or 1:3 mathematically verified]`
+* **STOP LOSS:** [Numeric Stop Level Value derived from 15M chart invalidation] (Exact Distance: [Calculated Pips] Pips)
+* **TAKE PROFIT (1:2 Minimum RR):** [Numeric Value] (Target Yield: [Calculated Pips * 2] Pips clear of entry.)
+* **TAKE PROFIT (1:3 Maximum RR):** [Numeric Value] (Target Yield: [Calculated Pips * 3] Pips clear of entry.)
+**FINAL RATIONALE:** [Brief 1-sentence matrix justification]`
                                 },
                                 ...imagePayload
                             ]
@@ -521,7 +518,6 @@ Second, a section starting exactly with "FINAL RECOMMENDATION:" which must conta
             lucide.createIcons();
         }
 
-        // Keep tabs intact and bug-free
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(btn => {
