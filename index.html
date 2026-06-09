@@ -74,6 +74,27 @@
             </div>
         </div>
 
+        <div class="bg-slate-900 text-white border border-slate-800 rounded-xl p-4 shadow-md space-y-3">
+            <div class="flex justify-between items-center">
+                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Setup Level Monitor</span>
+                <span id="trackerStatus" class="inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-black bg-stone-800 text-stone-400 uppercase tracking-wide">NO ACTIVE TARGET</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="block text-[9px] font-bold text-slate-400 mb-0.5">Trigger Condition Level</label>
+                    <input id="targetLevelInput" type="number" step="any" placeholder="0.00" oninput="calculateLiveSpreadDistance()" class="w-full bg-slate-800 border border-slate-700 rounded-md px-2 py-1 text-xs font-mono text-white focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-[9px] font-bold text-slate-400 mb-0.5">Current Live Price</label>
+                    <input id="currentPriceInput" type="number" step="any" placeholder="0.00" oninput="calculateLiveSpreadDistance()" class="w-full bg-slate-800 border border-slate-700 rounded-md px-2 py-1 text-xs font-mono text-white focus:outline-none">
+                </div>
+            </div>
+            <div class="flex justify-between items-center pt-1 border-t border-slate-800/80">
+                <span class="text-[10px] font-bold text-slate-400">Distance to Sniper Trigger:</span>
+                <span id="distanceOutput" class="text-xs font-mono font-black text-amber-400">0.00 Pips</span>
+            </div>
+        </div>
+
         <div class="space-y-2">
             <h2 class="text-[11px] font-black text-stone-400 uppercase tracking-widest px-1">Multi-Timeframe Charts</h2>
             <div class="grid grid-cols-2 gap-3">
@@ -188,6 +209,39 @@
             reader.readAsDataURL(file);
         }
 
+        function calculateLiveSpreadDistance() {
+            const target = parseFloat(document.getElementById("targetLevelInput").value);
+            const current = parseFloat(document.getElementById("currentPriceInput").value);
+            const asset = document.getElementById("assetPair").value;
+            const distanceOutput = document.getElementById("distanceOutput");
+            const statusLabel = document.getElementById("trackerStatus");
+
+            if (isNaN(target) || isNaN(current)) {
+                distanceOutput.innerText = "0.00 Pips";
+                statusLabel.innerText = "NO ACTIVE TARGET";
+                statusLabel.className = "inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-black bg-stone-800 text-stone-400 uppercase tracking-wide";
+                return;
+            }
+
+            let difference = Math.abs(target - current);
+            let pips = 0;
+
+            if (asset.includes("XAUUSD") || asset.includes("Gold")) {
+                // Gold pip tracking: 0.10 variation is 1 pip ($1 move is 10 pips)
+                pips = difference * 10;
+            } else if (asset.includes("JPY")) {
+                pips = difference * 100;
+            } else if (asset.includes("BTCUSD")) {
+                pips = difference; // Bitcoin point index value mapping
+            } else {
+                pips = difference * 10000; // Standard 4-decimal currency mapping
+            }
+
+            distanceOutput.innerText = `${pips.toFixed(2)} Pips`;
+            statusLabel.innerText = "MONITORING SETUP LIVE";
+            statusLabel.className = "inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-black bg-amber-500 text-slate-950 uppercase tracking-wide animate-pulse";
+        }
+
         async function handleValidation() {
             const btn = document.getElementById("validateBtn");
             const statusText = document.getElementById("statusText");
@@ -210,10 +264,11 @@
                 const responseText = await sendToGroq(targetLiveCharts, pair, savedToken);
                 statusText.innerText = "Analysis matrix synchronized.";
                 
-                let formattedText = responseText.replace(/FINAL RECOMMENDATION:/g, '<div class="mt-4 pt-3 border-t border-stone-200 font-black text-slate-950 text-sm uppercase tracking-wider">🎯 Final Recommendation:</div>');
+                let formattedText = responseText.replace(/CONDITION FOR EXECUTION:/g, '<div class="mt-4 pt-3 border-t border-amber-500/30 font-black text-amber-600 text-xs uppercase tracking-wider">⏳ Condition For Execution:</div>');
+                formattedText = formattedText.replace(/FINAL RECOMMENDATION:/g, '<div class="mt-3 pt-2 border-t border-stone-200 font-black text-slate-950 text-sm uppercase tracking-wider">🎯 Final Recommendation:</div>');
                 output.innerHTML = `<div class="space-y-2">${formattedText}</div>`;
                 
-                registerJournalEntry(pair, "AUTONOMOUS", responseText);
+                registerJournalEntry(pair, "RADAR MODE", responseText);
             } catch (error) {
                 statusText.innerText = "Execution failed.";
                 output.innerText = `Error: ${error.message}`;
@@ -244,19 +299,23 @@
                             content: [
                                 {
                                     type: "text",
-                                    text: `You are an autonomous institutional Smart Money Concepts (SMC) risk engine evaluating ${assetPair}. You possess 100% analytical freedom and treat the Daily chart as an OPTIONAL directional filter; if it is messy or lacks clarity, look past it and prioritize structural alignment on the 4H, 1H, and 15M execution charts. Scan exclusively for institutional setups (Order Blocks, Liquidity Sweeps, and FVG mitigations).
+                                    text: `You are an autonomous institutional Smart Money Concepts (SMC) risk engine evaluating ${assetPair}. You possess 100% analytical freedom and treat the Daily chart as an OPTIONAL directional filter; prioritize structural alignment on the 4H, 1H, and 15M execution charts. Scan for institutional setups (Order Blocks, Liquidity Sweeps, and FVG mitigations).
 
-INTEGRATED LIVE MACROECONOMIC NEWS FILTERING:
-You must natively process high-impact news dynamics (like NFP, CPI, or FOMC) within your analysis matrix:
-1. The Pre-News Lockdown: If a major high-impact news event is dropping or has dropped within the hour, you must protect capital by invalidating aggressive limit entries vulnerable to extreme slippage.
-2. The Liquidity Hunt Logic: Check if the news event acted as a predatory sweep of high-timeframe liquidity pools (Equal Highs/Lows).
-3. The Aftermath Filter: You are only authorized to generate a BUY or SELL order *after* the news if a pristine, institutional Market Structure Shift (MSS) confirms that the market has stabilized and chosen its true direction.
+CRITICAL ASSET LOCK-IN RULE:
+You are strictly evaluating the asset ${assetPair}. You are ABSOLUTELY FORBIDDEN from mentioning or outputting price figures or structures belonging to other asset classes. If the asset is XAUUSD (Gold), you must ONLY use whole numbers and gold index prices (e.g., $4328.50). Do not mix up currency decimals like 1.16140 into a Gold analysis.
+
+TWO-PHASE RADAR ASSIGNMENT MODE:
+Your primary function is to identify and track setups, even if the market has not triggered the entry coordinates yet. 
+1. The Setup Tracker Phase: Scan the images to find chart patterns, liquidity sweeps, or mitigation gaps. Map out where they are sitting.
+2. The Trigger Condition Phase: Formulate a precise, mathematical conditional rule outlining exactly what needs to happen next for the setup to become valid.
 
 CRITICAL RISK RULES:
 1. Your calculated Stop Loss distance from the Entry Price must be tight and precise, and it is ABSOLUTELY FORBIDDEN from exceeding a maximum of 65 pips.
-2. Your Risk-to-Reward ratio rule is strict and uncompromised. Your Take Profit distance from the Entry Price must mathematically equal EXACTLY either 2x (for a 1:2 RR) or 3x (for a 1:3 RR) the calculated Stop Loss distance. Perform precise subtraction and multiplication verification before providing any numbers. If the structural targets on the chart do not naturally yield an exact 1:2 or 1:3 ratio, or if the setup forces a Stop Loss wider than 65 pips, you must reject the trade completely and output "NO TRADE (STAND DOWN)".
+2. Your Take Profit distance from the Entry Price must mathematically equal EXACTLY either 2x (for a 1:2 RR) or 3x (for a 1:3 RR) the calculated Stop Loss distance. If the setup forces a Stop Loss wider than 65 pips, reject it and state "STAND DOWN".
 
-Conclude your analysis at the very bottom with a dedicated section starting exactly with "FINAL RECOMMENDATION:" followed strictly by either "EXECUTE A BUY ORDER", "EXECUTE A SELL ORDER", or "NO TRADE (STAND DOWN)". If executing, display the exact mathematical calculations demonstrating that your Take Profit target precisely fits the strict 1:2 or 1:3 ratio rule relative to your entry and stop loss.`
+Conclude your analysis at the very bottom with two distinct final fields:
+First, a section starting exactly with "CONDITION FOR EXECUTION:" explaining the numeric price action trigger level.
+Second, a section starting exactly with "FINAL RECOMMENDATION:" followed strictly by either "EXECUTE A BUY ORDER", "EXECUTE A SELL ORDER", or "TRACKING SETUP (STAND DOWN UNTIL CONDITION MET)".`
                                 },
                                 ...imagePayload
                             ]
@@ -278,13 +337,12 @@ Conclude your analysis at the very bottom with a dedicated section starting exac
         function updateLiveClockAndMacroCalendar() {
             const now = new Date();
             const hour = now.getUTCHours();
-            const dayOfWeek = now.getUTCDay(); // 0 = Sun, 1 = Mon, ..., 5 = Fri, 6 = Sat
+            const dayOfWeek = now.getUTCDay();
             const dateStr = now.getUTCDate();
             
             const pad = (num) => String(num).padStart(2, '0');
             document.getElementById("liveClock").innerText = `${pad(hour)}:${pad(now.getUTCMinutes())}:${pad(now.getUTCSeconds())} UTC`;
             
-            // 1. Session Badging Engine logic
             const badge = document.getElementById("activeSessionBadge");
             if (badge) {
                 if (hour >= 7 && hour < 12) badge.innerText = "LONDON - ACTIVE";
@@ -293,25 +351,18 @@ Conclude your analysis at the very bottom with a dedicated section starting exac
                 else badge.innerText = "ASIA / PACIFIC";
             }
 
-            // 2. Automated High-Impact Macro Guardrail System
             const macroBanner = document.getElementById("macroAlertBanner");
             const macroIcon = document.getElementById("macroAlertIcon");
             const macroTitle = document.getElementById("macroAlertTitle");
             const macroDesc = document.getElementById("macroAlertDesc");
 
-            // NFP Logic: First Friday of the month (date points 1-7 on day 5)
             const isFriday = (dayOfWeek === 5);
             const isFirstWeek = (dateStr <= 7);
-            
-            // CPI Logic: Typically releases between the 10th and 15th of each month
             const isCPIDayWindow = (dateStr >= 10 && dateStr <= 15 && dayOfWeek >= 1 && dayOfWeek <= 5);
-
-            // FOMC Logic: Usually scheduled on specific mid-week Wednesdays (1st or 3rd/4th weeks)
             const isWed = (dayOfWeek === 3);
             const isFOMCWindow = (isWed && ((dateStr >= 1 && dateStr <= 4) || (dateStr >= 17 && dateStr <= 23)));
 
             if (isFriday && isFirstWeek) {
-                // NFP Red Zone Active
                 macroBanner.className = "p-2.5 rounded-lg border border-red-900 bg-red-950 text-white flex items-center gap-2 macro-alert-active";
                 macroIcon.className = "text-red-400 flex shrink-0";
                 macroIcon.innerHTML = `<i data-lucide="alert-triangle" class="w-4 h-4"></i>`;
@@ -320,7 +371,6 @@ Conclude your analysis at the very bottom with a dedicated section starting exac
                 macroDesc.className = "text-[10px] font-bold text-red-200 leading-tight";
                 macroDesc.innerText = "Non-Farm Payroll expansion wicks incoming. Avoid limit orders. Wait for the 15M MSS aftermath.";
             } else if (isCPIDayWindow) {
-                // CPI Window Active
                 macroBanner.className = "p-2.5 rounded-lg border border-amber-900 bg-amber-950 text-white flex items-center gap-2 macro-alert-active";
                 macroIcon.className = "text-amber-400 flex shrink-0";
                 macroIcon.innerHTML = `<i data-lucide="info" class="w-4 h-4"></i>`;
@@ -329,7 +379,6 @@ Conclude your analysis at the very bottom with a dedicated section starting exac
                 macroDesc.className = "text-[10px] font-bold text-amber-200 leading-tight";
                 macroDesc.innerText = "USD inflation data releasing this week. High structural volatility threat. Protect capital entries.";
             } else if (isFOMCWindow) {
-                // FOMC Window Active
                 macroBanner.className = "p-2.5 rounded-lg border border-slate-900 bg-slate-950 text-white flex items-center gap-2 macro-alert-active";
                 macroIcon.className = "text-blue-400 flex shrink-0";
                 macroIcon.innerHTML = `<i data-lucide="landmark" class="w-4 h-4"></i>`;
@@ -338,7 +387,6 @@ Conclude your analysis at the very bottom with a dedicated section starting exac
                 macroDesc.className = "text-[10px] font-bold text-gray-300 leading-tight";
                 macroDesc.innerText = "Federal Reserve rate decision Wednesday. Sudden high-volume liquidity hunts expected.";
             } else {
-                // Standard Market Conditions
                 macroBanner.className = "p-2.5 rounded-lg border border-stone-200 bg-stone-50 flex items-center gap-2";
                 macroIcon.className = "text-stone-400 flex shrink-0";
                 macroIcon.innerHTML = `<i data-lucide="calendar-days" class="w-4 h-4"></i>`;
@@ -372,14 +420,14 @@ Conclude your analysis at the very bottom with a dedicated section starting exac
         function registerJournalEntry(asset, bias, summary) {
             const logs = JSON.parse(localStorage.getItem("smc_trade_journal_vault") || "[]");
             const low = summary.toLowerCase();
-            const pass = !low.includes("stand down") && !low.includes("no trade");
+            const pass = !low.includes("stand down") && !low.includes("tracking setup");
             logs.unshift({
                 id: Date.now(),
                 timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
                 assetPair: asset,
                 intendedBias: bias,
-                status: pass ? "VALID STRUCTURE" : "NO TRADE PASS",
-                colorCode: pass ? "emerald" : "red",
+                status: pass ? "VALID STRUCTURE" : "RADAR MONITORING",
+                colorCode: pass ? "emerald" : "amber",
                 summaryText: summary.substring(0, 110) + "..."
             });
             localStorage.setItem("smc_trade_journal_vault", JSON.stringify(logs));
@@ -394,7 +442,7 @@ Conclude your analysis at the very bottom with a dedicated section starting exac
                 return;
             }
             list.innerHTML = logs.map(log => `
-                div class="border-l-4 border-${log.colorCode}-500 pl-3 py-2 bg-white rounded-r-lg border border-stone-200/60 shadow-xs">
+                <div class="border-l-4 border-${log.colorCode}-500 pl-3 py-2 bg-white rounded-r-lg border border-stone-200/60 shadow-xs">
                     <div class="flex justify-between items-center">
                         <p class="text-[11px] font-black text-slate-800">${log.assetPair} — <span class="text-stone-500">${log.intendedBias}</span></p>
                         <span class="text-[9px] font-bold text-stone-400">${log.timestamp}</span>
