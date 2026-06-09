@@ -13,6 +13,13 @@
         }
         .tab-content { display: none !important; }
         .tab-content.active { display: block !important; }
+        @keyframes micro-flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.75; }
+        }
+        .macro-alert-active {
+            animation: micro-flash 2s infinite ease-in-out;
+        }
     </style>
 </head>
 <body class="flex flex-col min-h-screen max-w-md mx-auto bg-[#fdfcf7] shadow-xl relative pb-28">
@@ -29,9 +36,22 @@
                 </span>
             </div>
         </div>
-        <div class="bg-white border border-stone-200/60 rounded-xl p-3 flex justify-between items-center shadow-xs">
-            <span class="text-xs font-bold text-stone-500 uppercase tracking-wider">Live Market Monitor</span>
-            <span id="liveClock" class="text-xs font-mono font-black text-slate-800">00:00:00 UTC</span>
+        
+        <div class="bg-white border border-stone-200/60 rounded-xl p-3 space-y-2 shadow-xs">
+            <div class="flex justify-between items-center">
+                <span class="text-xs font-bold text-stone-500 uppercase tracking-wider">Live Market Monitor</span>
+                <span id="liveClock" class="text-xs font-mono font-black text-slate-800">00:00:00 UTC</span>
+            </div>
+            
+            <div id="macroAlertBanner" class="p-2.5 rounded-lg border border-stone-200 bg-stone-50 flex items-center gap-2 transition-all duration-300">
+                <div id="macroAlertIcon" class="text-stone-400 flex shrink-0">
+                    <i data-lucide="calendar-days" class="w-4 h-4"></i>
+                </div>
+                <div class="space-y-0.5">
+                    <p id="macroAlertTitle" class="text-[10px] font-black text-stone-500 uppercase tracking-wider">Macro Calendar Engine</p>
+                    <p id="macroAlertDesc" class="text-[10px] font-bold text-stone-400 leading-tight">Scanning current date coordinates for high-volatility event windows...</p>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -147,8 +167,8 @@
             lucide.createIcons();
             loadSavedApiKey();
             renderJournalLogs();
-            updateLiveClock();
-            setInterval(updateLiveClock, 1000);
+            updateLiveClockAndMacroCalendar();
+            setInterval(updateLiveClockAndMacroCalendar, 1000);
         });
 
         function processTimeframeChart(event, indexPosition, idLabel) {
@@ -255,11 +275,16 @@ Conclude your analysis at the very bottom with a dedicated section starting exac
             return resData.choices[0].message.content;
         }
 
-        function updateLiveClock() {
+        function updateLiveClockAndMacroCalendar() {
             const now = new Date();
             const hour = now.getUTCHours();
+            const dayOfWeek = now.getUTCDay(); // 0 = Sun, 1 = Mon, ..., 5 = Fri, 6 = Sat
+            const dateStr = now.getUTCDate();
+            
             const pad = (num) => String(num).padStart(2, '0');
             document.getElementById("liveClock").innerText = `${pad(hour)}:${pad(now.getUTCMinutes())}:${pad(now.getUTCSeconds())} UTC`;
+            
+            // 1. Session Badging Engine logic
             const badge = document.getElementById("activeSessionBadge");
             if (badge) {
                 if (hour >= 7 && hour < 12) badge.innerText = "LONDON - ACTIVE";
@@ -267,6 +292,62 @@ Conclude your analysis at the very bottom with a dedicated section starting exac
                 else if (hour >= 16 && hour < 21) badge.innerText = "NEW YORK - HIGH";
                 else badge.innerText = "ASIA / PACIFIC";
             }
+
+            // 2. Automated High-Impact Macro Guardrail System
+            const macroBanner = document.getElementById("macroAlertBanner");
+            const macroIcon = document.getElementById("macroAlertIcon");
+            const macroTitle = document.getElementById("macroAlertTitle");
+            const macroDesc = document.getElementById("macroAlertDesc");
+
+            // NFP Logic: First Friday of the month (date points 1-7 on day 5)
+            const isFriday = (dayOfWeek === 5);
+            const isFirstWeek = (dateStr <= 7);
+            
+            // CPI Logic: Typically releases between the 10th and 15th of each month
+            const isCPIDayWindow = (dateStr >= 10 && dateStr <= 15 && dayOfWeek >= 1 && dayOfWeek <= 5);
+
+            // FOMC Logic: Usually scheduled on specific mid-week Wednesdays (1st or 3rd/4th weeks)
+            const isWed = (dayOfWeek === 3);
+            const isFOMCWindow = (isWed && ((dateStr >= 1 && dateStr <= 4) || (dateStr >= 17 && dateStr <= 23)));
+
+            if (isFriday && isFirstWeek) {
+                // NFP Red Zone Active
+                macroBanner.className = "p-2.5 rounded-lg border border-red-900 bg-red-950 text-white flex items-center gap-2 macro-alert-active";
+                macroIcon.className = "text-red-400 flex shrink-0";
+                macroIcon.innerHTML = `<i data-lucide="alert-triangle" class="w-4 h-4"></i>`;
+                macroTitle.className = "text-[10px] font-black text-red-300 uppercase tracking-wider";
+                macroTitle.innerText = "⚠️ HIGH RISK ALERT: NFP FRIDAY";
+                macroDesc.className = "text-[10px] font-bold text-red-200 leading-tight";
+                macroDesc.innerText = "Non-Farm Payroll expansion wicks incoming. Avoid limit orders. Wait for the 15M MSS aftermath.";
+            } else if (isCPIDayWindow) {
+                // CPI Window Active
+                macroBanner.className = "p-2.5 rounded-lg border border-amber-900 bg-amber-950 text-white flex items-center gap-2 macro-alert-active";
+                macroIcon.className = "text-amber-400 flex shrink-0";
+                macroIcon.innerHTML = `<i data-lucide="info" class="w-4 h-4"></i>`;
+                macroTitle.className = "text-[10px] font-black text-amber-300 uppercase tracking-wider";
+                macroTitle.innerText = "⚡ MACRO ZONE: CPI INFLATION DATA WEEK";
+                macroDesc.className = "text-[10px] font-bold text-amber-200 leading-tight";
+                macroDesc.innerText = "USD inflation data releasing this week. High structural volatility threat. Protect capital entries.";
+            } else if (isFOMCWindow) {
+                // FOMC Window Active
+                macroBanner.className = "p-2.5 rounded-lg border border-slate-900 bg-slate-950 text-white flex items-center gap-2 macro-alert-active";
+                macroIcon.className = "text-blue-400 flex shrink-0";
+                macroIcon.innerHTML = `<i data-lucide="landmark" class="w-4 h-4"></i>`;
+                macroTitle.className = "text-[10px] font-black text-blue-300 uppercase tracking-wider";
+                macroTitle.innerText = "🦅 ALGORITHMIC RISK: FOMC INTEREST RATES";
+                macroDesc.className = "text-[10px] font-bold text-gray-300 leading-tight";
+                macroDesc.innerText = "Federal Reserve rate decision Wednesday. Sudden high-volume liquidity hunts expected.";
+            } else {
+                // Standard Market Conditions
+                macroBanner.className = "p-2.5 rounded-lg border border-stone-200 bg-stone-50 flex items-center gap-2";
+                macroIcon.className = "text-stone-400 flex shrink-0";
+                macroIcon.innerHTML = `<i data-lucide="calendar-days" class="w-4 h-4"></i>`;
+                macroTitle.className = "text-[10px] font-black text-stone-500 uppercase tracking-wider";
+                macroTitle.innerText = "Macro Calendar Engine";
+                macroDesc.className = "text-[10px] font-bold text-stone-400 leading-tight";
+                macroDesc.innerText = "No immediate recurring red-folder macro events detected. Maintain standard 65-pip limit rules.";
+            }
+            lucide.createIcons();
         }
 
         function switchTab(tabName) {
