@@ -394,7 +394,7 @@ Conclude your analysis at the very bottom with a dedicated section starting exac
                 return;
             }
             list.innerHTML = logs.map(log => `
-                <div class="border-l-4 border-${log.colorCode}-500 pl-3 py-2 bg-white rounded-r-lg border border-stone-200/60 shadow-xs">
+                div class="border-l-4 border-${log.colorCode}-500 pl-3 py-2 bg-white rounded-r-lg border border-stone-200/60 shadow-xs">
                     <div class="flex justify-between items-center">
                         <p class="text-[11px] font-black text-slate-800">${log.assetPair} — <span class="text-stone-500">${log.intendedBias}</span></p>
                         <span class="text-[9px] font-bold text-stone-400">${log.timestamp}</span>
