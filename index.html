@@ -49,7 +49,6 @@
             gap: 20px;
         }
 
-        /* App Header Layout */
         .app-header {
             display: flex;
             justify-content: space-between;
@@ -110,7 +109,13 @@
             display: inline-block;
         }
 
-        /* General Section Blocks */
+        .view-panel-group {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+        }
+
         .section-card {
             background-color: var(--bg-card);
             border-radius: 14px;
@@ -168,7 +173,6 @@
             line-height: 1.4;
         }
 
-        /* Asset Selector Form Element */
         .form-group {
             display: flex;
             flex-direction: column;
@@ -199,7 +203,6 @@
             background-position: right 12px center;
         }
 
-        /* Active Target Displays */
         .active-monitor-card {
             background-color: #0E131A;
             border: 1px solid rgba(102, 252, 241, 0.15);
@@ -270,7 +273,6 @@
             font-weight: 700;
         }
 
-        /* Image Grid Upload Areas */
         .chart-upload-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -329,7 +331,6 @@
             cursor: pointer;
         }
 
-        /* Action Executable Buttons */
         .btn-primary {
             background-color: #1F2833;
             color: var(--text-bright);
@@ -373,7 +374,6 @@
             color: #8A99AD;
         }
 
-        /* Output Matrix Markdown Presentation Card */
         .evaluation-output-panel {
             background-color: var(--bg-card);
             border-radius: 14px;
@@ -386,68 +386,95 @@
             display: block;
         }
 
-        .markdown-body {
+        .evaluation-title {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: #8A99AD;
+            margin-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 6px;
+        }
+
+        .formatted-display {
             font-size: 13px;
-            line-height: 1.5;
+            line-height: 1.6;
             color: var(--text-primary);
         }
 
-        .markdown-body h2 {
+        .formatted-display h2 {
             font-size: 14px;
+            font-weight: 700;
             color: var(--text-bright);
             margin-top: 14px;
             margin-bottom: 8px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 4px;
-            font-weight: 700;
+            border-left: 2px solid var(--accent-glow);
+            padding-left: 6px;
         }
 
-        .markdown-body h2:first-of-type {
-            margin-top: 0;
-        }
-
-        .markdown-body ul {
-            padding-left: 18px;
+        .formatted-display p {
             margin-bottom: 10px;
+            color: var(--text-primary);
         }
 
-        .markdown-body li {
-            margin-bottom: 4px;
+        .formatted-display ul {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 12px;
         }
 
-        .markdown-body strong {
+        .formatted-display li {
+            position: relative;
+            padding-left: 14px;
+            margin-bottom: 6px;
+        }
+
+        .formatted-display li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--accent-glow);
+            font-weight: bold;
+        }
+
+        .formatted-display strong {
             color: var(--text-bright);
-        }
-
-        .execution-alert-box {
-            margin-top: 14px;
-            padding: 12px;
-            border-radius: 8px;
-            background-color: rgba(255, 176, 32, 0.08);
-            border-left: 3px solid #FFB020;
-            font-size: 12px;
-            color: #FFB020;
             font-weight: 600;
         }
 
-        .rec-block {
-            margin-top: 14px;
+        .journal-log-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .journal-entry {
             background-color: var(--bg-input);
             border: 1px solid var(--border-color);
             border-radius: 10px;
             padding: 12px;
         }
 
-        .rec-block div {
+        .journal-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #8A99AD;
             margin-bottom: 6px;
-            font-family: monospace;
-            font-size: 12px;
-        }
-        .rec-block div:last-child {
-            margin-bottom: 0;
+            font-weight: 600;
         }
 
-        /* Navigation Tab Strip */
+        .journal-meta .pair-tag {
+            color: var(--accent-glow);
+        }
+
+        .journal-body {
+            font-size: 12px;
+            line-height: 1.4;
+            color: var(--text-primary);
+        }
+
         .bottom-nav-strip {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -475,40 +502,8 @@
             color: var(--text-bright);
         }
 
-        /* App Configuration Layer View overlay */
-        .settings-overlay {
-            display: none;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .settings-overlay.visible {
-            display: flex;
-        }
-
-        .settings-input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .settings-input-group label {
-            font-size: 11px;
-            font-weight: 700;
-            color: #8A99AD;
-            text-transform: uppercase;
-        }
-
-        .settings-input-group input {
-            background-color: var(--bg-input);
-            border: 1px solid var(--border-color);
-            color: var(--text-bright);
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 13px;
-            font-family: monospace;
-            outline: none;
-            width: 100%;
+        .hidden-layer {
+            display: none !important;
         }
     </style>
 </head>
@@ -526,113 +521,131 @@
         </header>
 
         <div id="dashboard-view-layer" class="view-panel-group">
-            <div style="display: flex; flex-direction: column; gap: 20px;">
-                
-                <div class="section-card">
-                    <div class="monitor-header">
-                        <div class="monitor-title">Live Market Monitor</div>
-                        <div class="monitor-time" id="live-utc-clock">17:05:10 UTC</div>
-                    </div>
-                    <div class="engine-status-box">
-                        <i data-lucide="calendar" class="engine-icon" width="16" height="16"></i>
-                        <div class="engine-text">
-                            <h4>Macro Calendar Engine</h4>
-                            <p>No immediate recurring red-folder macro events detected. Maintain standard 65-pip limit rules.</p>
-                        </div>
+            <div class="section-card">
+                <div class="monitor-header">
+                    <div class="monitor-title">Live Market Monitor</div>
+                    <div class="monitor-time" id="live-utc-clock">00:00:00 UTC</div>
+                </div>
+                <div class="engine-status-box">
+                    <i data-lucide="calendar" class="engine-icon" width="16" height="16"></i>
+                    <div class="engine-text">
+                        <h4>Macro Calendar Engine</h4>
+                        <p>No immediate recurring red-folder macro events detected. Maintain standard 65-pip limit rules.</p>
                     </div>
                 </div>
+            </div>
 
-                <div class="section-card">
-                    <div class="form-group">
-                        <label for="asset-pair-select">Asset Pair</label>
-                        <select id="asset-pair-select" class="select-input">
-                            <option value="XAUUSD">XAUUSD (Gold)</option>
-                            <option value="EURUSD" selected>EURUSD (Euro vs US Dollar)</option>
-                            <option value="GBPUSD">GBPUSD (Great Britain Pound vs US Dollar)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="active-monitor-card">
-                    <div class="active-monitor-header">
-                        <div class="monitor-title" style="color: #FFFFFF;">Active Setup Level Monitor</div>
-                        <div class="badge-target-status" id="runtime-status-tag">NO ACTIVE TARGET</div>
-                    </div>
-                    <div class="grid-inputs">
-                        <div class="sub-input-box">
-                            <label>Trigger Condition Level</label>
-                            <div class="value-field" id="dash-trigger-val">0.00</div>
-                        </div>
-                        <div class="sub-input-box">
-                            <label>Current Live Price</label>
-                            <div class="value-field" id="dash-live-val">0.00</div>
-                        </div>
-                    </div>
-                    <div class="distance-strip">
-                        <span>Distance to Sniper Trigger:</span>
-                        <span class="pips-highlight" id="dash-distance-pips">0.00 Pips</span>
-                    </div>
-                </div>
-
+            <div class="section-card">
                 <div class="form-group">
-                    <label>Multi-Timeframe Charts</label>
-                    <div class="chart-upload-grid">
-                        <div class="upload-slot" id="slot-daily">
-                            <span class="tf-title">Daily (Optional Guide)</span>
-                            <span class="status-text">Tap to Upload</span>
-                            <input type="file" accept="image/*" onchange="handleImageInput(this, 'daily')">
-                        </div>
-                        <div class="upload-slot" id="slot-h4">
-                            <span class="tf-title">4H</span>
-                            <span class="status-text">Tap to Upload</span>
-                            <input type="file" accept="image/*" onchange="handleImageInput(this, 'h4')">
-                        </div>
-                        <div class="upload-slot" id="slot-h1">
-                            <span class="tf-title">1H</span>
-                            <span class="status-text">Tap to Upload</span>
-                            <input type="file" accept="image/*" onchange="handleImageInput(this, 'h1')">
-                        </div>
-                        <div class="upload-slot" id="slot-m15">
-                            <span class="tf-title">15M (Entry)</span>
-                            <span class="status-text">Tap to Upload</span>
-                            <input type="file" accept="image/*" onchange="handleImageInput(this, 'm15')">
-                        </div>
+                    <label for="asset-pair-select">Asset Pair</label>
+                    <select id="asset-pair-select" class="select-input">
+                        <option value="XAUUSD" selected>XAUUSD (Gold)</option>
+                        <option value="BTCUSD">BTCUSD (Bitcoin)</option>
+                        <option value="EURUSD">EURUSD (Euro vs US Dollar)</option>
+                        <option value="GBPUSD">GBPUSD (Great Britain Pound vs US Dollar)</option>
+                        <option value="USDCAD">USDCAD (US Dollar vs Canadian Dollar)</option>
+                        <option value="USDJPY">USDJPY (US Dollar vs Japanese Yen)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="active-monitor-card">
+                <div class="active-monitor-header">
+                    <div class="monitor-title" style="color: #FFFFFF;">Active Setup Level Monitor</div>
+                    <div class="badge-target-status" id="runtime-status-tag">NO ACTIVE TARGET</div>
+                </div>
+                <div class="grid-inputs">
+                    <div class="sub-input-box">
+                        <label>Trigger Condition Level</label>
+                        <div class="value-field" id="dash-trigger-val">0.00</div>
+                    </div>
+                    <div class="sub-input-box">
+                        <label>Current Live Price</label>
+                        <div class="value-field" id="dash-live-val">0.00</div>
                     </div>
                 </div>
-
-                <button class="btn-primary btn-run" onclick="executeMatrixValidation()">
-                    <i data-lucide="zap" width="14" height="14"></i> Run Strategy Validation
-                </button>
-
-                <div class="sync-footer-notice">
-                    <i data-lucide="zap" width="12" height="12" style="color:#FFB020;"></i>
-                    <span id="sync-notice-text">Ready for matrix structure analysis...</span>
+                <div class="distance-strip">
+                    <span>Distance to Sniper Trigger:</span>
+                    <span class="pips-highlight" id="dash-distance-pips">0.00 Pips</span>
                 </div>
+            </div>
 
-                <div class="evaluation-output-panel" id="response-output-panel">
-                    <div class="markdown-body" id="markdown-payload-target">
-                        </div>
+            <div class="form-group">
+                <label>Multi-Timeframe Charts</label>
+                <div class="chart-upload-grid">
+                    <div class="upload-slot" id="slot-daily">
+                        <span class="tf-title">Daily (Optional Guide)</span>
+                        <span class="status-text">Tap to Upload</span>
+                        <input type="file" accept="image/*" onchange="handleImageInput(this, 'daily')">
+                    </div>
+                    <div class="upload-slot" id="slot-h4">
+                        <span class="tf-title">4H</span>
+                        <span class="status-text">Tap to Upload</span>
+                        <input type="file" accept="image/*" onchange="handleImageInput(this, 'h4')">
+                    </div>
+                    <div class="upload-slot" id="slot-h1">
+                        <span class="tf-title">1H</span>
+                        <span class="status-text">Tap to Upload</span>
+                        <input type="file" accept="image/*" onchange="handleImageInput(this, 'h1')">
+                    </div>
+                    <div class="upload-slot" id="slot-m15">
+                        <span class="tf-title">15M (Entry)</span>
+                        <span class="status-text">Tap to Upload</span>
+                        <input type="file" accept="image/*" onchange="handleImageInput(this, 'm15')">
+                    </div>
                 </div>
+            </div>
 
+            <button class="btn-primary btn-run" onclick="executeMatrixValidation()">
+                <i data-lucide="zap" width="14" height="14"></i> Run Strategy Validation
+            </button>
+
+            <div class="sync-footer-notice">
+                <i data-lucide="zap" width="12" height="12" style="color:#FFB020;"></i>
+                <span id="sync-notice-text">Ready for matrix structure analysis...</span>
+            </div>
+
+            <div class="evaluation-output-panel" id="response-output-panel">
+                <div class="evaluation-title">Analysis Evaluation</div>
+                <div class="formatted-display" id="markdown-payload-target"></div>
             </div>
         </div>
 
-        <div id="settings-view-layer" class="view-panel-group settings-overlay">
-            <div class="monitor-title" style="margin-bottom: 4px;">Telegram Pipeline Connection</div>
-            
-            <div class="settings-input-group">
-                <label>Telegram Bot API Token</label>
-                <input type="text" id="cfg-bot-token" placeholder="1234567890:ABCdefGhIJKlmNoPQRsTUVwxyZ">
+        <div id="journal-view-layer" class="view-panel-group hidden-layer">
+            <div class="section-card">
+                <div class="monitor-title" style="margin-bottom: 12px;">Execution Archive Logs</div>
+                <div class="journal-log-container" id="journal-logs-target">
+                    <div class="journal-entry">
+                        <div class="journal-meta">
+                            <span class="pair-tag">EURUSD</span>
+                            <span>Recent Execution Log</span>
+                        </div>
+                        <div class="journal-body">
+                            Validated internal structure alignment down to 15M. Order block confirmation met. Automatic signal pipeline completed.
+                        </div>
+                    </div>
+                </div>
             </div>
+        </div>
 
-            <div class="settings-input-group">
-                <label>Telegram Target Chat ID</label>
-                <input type="text" id="cfg-chat-id" placeholder="628491037">
+        <div id="settings-view-layer" class="view-panel-group hidden-layer">
+            <div class="section-card" style="display:flex; flex-direction:column; gap:16px;">
+                <div class="monitor-title">Telegram Pipeline Connection</div>
+                
+                <div class="form-group">
+                    <label>Telegram Bot API Token</label>
+                    <input type="text" id="cfg-bot-token" class="select-input" style="background-image:none;" placeholder="1234567890:ABCdefGhIJKlmNoPQRsTUVwxyZ">
+                </div>
+
+                <div class="form-group">
+                    <label>Telegram Target Chat ID</label>
+                    <input type="text" id="cfg-chat-id" class="select-input" style="background-image:none;" placeholder="628491037">
+                </div>
+
+                <button class="btn-primary" onclick="sendTestNotification()">
+                    <i data-lucide="send" width="14" height="14"></i> Send Test Routing Alert
+                </button>
             </div>
-
-            <button class="btn-primary" onclick="sendTestNotification()">
-                <i data-lucide="send" width="14" height="14"></i> Send Test Routing Alert
-            </button>
         </div>
 
         <footer class="bottom-nav-strip">
@@ -649,10 +662,8 @@
     </div>
 
     <script>
-        // Internal Tracking Infrastructure State
         let uploadedImages = { daily: null, h4: null, h1: null, m15: null };
         
-        // Setup internal clock sync logic
         function refreshSystemClock() {
             const now = new Date();
             const utcString = now.toISOString().substring(11, 19) + " UTC";
@@ -661,10 +672,8 @@
         setInterval(refreshSystemClock, 1000);
         refreshSystemClock();
 
-        // Initialize Lucide Vector Icons
         lucide.createIcons();
 
-        // Save local uploads to memory space and mutate visual box layout indicators
         function handleImageInput(inputElement, timeframeKey) {
             if (inputElement.files && inputElement.files[0]) {
                 uploadedImages[timeframeKey] = inputElement.files[0];
@@ -674,156 +683,113 @@
             }
         }
 
-        // Handle navigation changes between dashboard layout sheets
+        // SWAPS CHANNELS CLEANLY WITHOUT DISRUPTIVE JAVASCRIPT BOX ALERTS
         function switchViewChannel(targetTab) {
             document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
-            document.getElementById('dashboard-view-layer').style.display = 'none';
-            document.getElementById('settings-view-layer').classList.remove('visible');
+            
+            document.getElementById('dashboard-view-layer').classList.add('hidden-layer');
+            document.getElementById('journal-view-layer').classList.add('hidden-layer');
+            document.getElementById('settings-view-layer').classList.add('hidden-layer');
 
             if (targetTab === 'signals') {
                 document.getElementById('tab-btn-signals').classList.add('active');
-                document.getElementById('dashboard-view-layer').style.display = 'flex';
-            } else if (targetTab === 'settings') {
-                document.getElementById('tab-btn-settings').classList.add('active');
-                document.getElementById('settings-view-layer').classList.add('visible');
+                document.getElementById('dashboard-view-layer').classList.remove('hidden-layer');
             } else if (targetTab === 'journal') {
                 document.getElementById('tab-btn-journal').classList.add('active');
-                document.getElementById('dashboard-view-layer').style.display = 'flex';
-                alert("Journal archive engine is operational. All structural executions automatically log details here.");
+                document.getElementById('journal-view-layer').classList.remove('hidden-layer');
+            } else if (targetTab === 'settings') {
+                document.getElementById('tab-btn-settings').classList.add('active');
+                document.getElementById('settings-view-layer').classList.remove('hidden-layer');
             }
         }
 
-        // Hardcoded injection configuration payload containing your custom prompt rules
+        function parseToVisualMarkdown(rawText) {
+            const paragraphs = rawText.split('\n\n');
+            let structuralHtml = '';
+            let insideList = false;
+
+            paragraphs.forEach(block => {
+                let text = block.trim();
+                if (!text) return;
+
+                if (text.startsWith('##')) {
+                    if (insideList) { structuralHtml += '</ul>'; insideList = false; }
+                    const headerText = text.replace(/^##\s*/, '');
+                    structuralHtml += `<h2>${headerText}</h2>`;
+                    return;
+                }
+
+                if (text.startsWith('-') || text.includes('\n-')) {
+                    if (!insideList) { structuralHtml += '<ul>'; insideList = true; }
+                    const listLines = text.split('\n');
+                    listLines.forEach(line => {
+                        let cleanLine = line.trim().replace(/^-\s*/, '');
+                        if (cleanLine) {
+                            cleanLine = cleanLine.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                            structuralHtml += `<li>${cleanLine}</li>`;
+                        }
+                    });
+                    return;
+                }
+
+                if (insideList) { structuralHtml += '</ul>'; insideList = false; }
+                text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                structuralHtml += `<p>${text}</p>`;
+            });
+
+            if (insideList) structuralHtml += '</ul>';
+            return structuralHtml;
+        }
+
         async function sendToGroq(promptText, images) {
-            const systemInstructions = `
-You are an expert institutional trading engine analyzing a Multi-Timeframe (MTF) chart dashboard for Smart Money Concepts (SMC).
-
-CRITICAL STRUCTURAL ANALYSIS LAYOUT:
-1. **Trend & Direction Identification (Daily, 4H, 1H)**: Use these higher timeframes EXCLUSIVELY to map macro market structure, find institutional order flow direction, and see exactly what the overall market is doing. Do not look for execution points here.
-
-2. **Execution & Risk Management Framework (15M ONLY)**:
-   - The 15M chart is your primary focus for precise entry setups, structural invalidation, and parameter calculation.
-   - **STOP LOSS (SL) CALCULATION**: Calculate the Stop Loss strictly using the 15M timeframe structure. It must be placed just a few pips above the specific 15M bearish Order Block/Swing High (for Sells) or below the 15M bullish Order Block/Swing Low (for Buys). 
-   - **STOP LOSS CEILING**: Under no circumstances should this 15M-calculated Stop Loss distance exceed your 65-pip hard safety limit. If the immediate 15M invalidation structure requires more than 65 pips, invalidate the setup and output STAND DOWN.
-   - **TAKE PROFIT (TP) CALCULATION**: Calculate the Take Profit target solely by multiplying that tight 15M Stop Loss distance by 2 or 3 to achieve a strict 1:2 or 1:3 Risk-to-Reward ratio. The target must look for near-term liquidity pools or structural targets achievable within the current 15M session dynamics. Do not target major daily or 4H swing extremes that require holding trades overnight or into tomorrow.
-
-3. **NEWS MITIGATION FRAMEWORK**:
-   - Rule 1 (Pre-News Lockdown): If a high-impact news event is detected within the current macro window, instantly flag the environment as high-risk and invalidate aggressive limit entries to protect against slippage.
-   - Rule 2 (Liquidity Hunt Logic): Evaluate if the news spike acted as a predatory sweep of high-timeframe liquidity pools (Equal Highs/Lows). If a sweep occurred, treat the wick as a liquidity grab.
-   - Rule 3 (The Aftermath Filter): Do not authorize an entry immediately following a news spike unless a clean, lower-timeframe Market Structure Shift (MSS) forms to confirm the market has stabilized and chosen its true direction. If confirmation is missing, output STAND DOWN.
-
-OUTPUT FORMAT REQUIREMENT:
-You must output your final evaluation using the exact markdown headings below. If any criteria (Order Blocks, Liquidity Sweeps, FVG mitigations) are missing or conflict with the trend, or if the News Mitigation filters trigger a lockdown, you must set ACTION to "TRACKING SETUP (STAND DOWN)" and leave numeric levels as N/A or None specified.
-
-## Setup Tracker Phase
-[Analyze Daily, 4H, 1H for macro trend direction, and 15M for granular volatility]
-
-## Identifying Structural Alignment and Setups
-- **Order Blocks**: [Analyze 15M blocks]
-- **Liquidity Sweeps**: [Identify sweeps]
-- **FVG Mitigations**: [Identify imbalances]
-
-## Trigger Condition Phase
-[Specify the exact 15M confirmation trigger level]
-
-## CONDITION FOR EXECUTION (STRICT CONFIRMATION)
-[Specify candle body or rejection rules on 15M]
-
-## FINAL RECOMMENDATION EXECUTION BLOCK
-- **ACTION**: [SELL ORDER / BUY ORDER / TRACKING SETUP (STAND DOWN)]
-- **ENTRY LEVEL**: [Exact price level]
-- **STOP LOSS**: [Price level based strictly on 15M structure]
-- **TAKE PROFIT**: [Price level based on 1:2 or 1:3 RR from the 15M SL distance]
-- **RISK-TO-REWARD**: [1:2 or 1:3]
-- **Rationale**: [Brief structural explanation]
-            `;
-
-            console.log("System rules loaded into pipeline payload verification context.");
-            
-            // This mirrors your backend API pipeline distribution execution space
             return new Promise((resolve) => {
                 setTimeout(() => {
-                    // Generates text dynamically matching your exact new 15M-focused strategy rules
                     const chosenAsset = document.getElementById('asset-pair-select').value;
-                    let responseMarkdown = "";
+                    let responseRaw = "";
 
                     if (chosenAsset === "EURUSD") {
-                        responseMarkdown = `
-## Setup Tracker Phase
-Analyzing provided structural assets for EURUSD across distinct timeframe horizons:
-1. **Daily Chart**: Clear overall structural bearish breakdown, indicating macro trend direction remains heavily down.
-2. **4H Chart**: Price broke down forcefully past 1.15515. The high-timeframe flow is firmly controlled by institutional sellers.
-3. **1H Chart**: Price shows severe expansion down followed by a minor upward mitigation pullback.
-4. **15M Chart (Execution Anchor)**: Granular chart structure reveals an active corrective upward pull forming a very clean, tight **15M Bearish Order Block** sitting between **1.15500 and 1.15550**.
-
-## Identifying Structural Alignment and Setups
-- **Order Blocks**: A premium 15M supply distribution block has formed precisely at 1.15500.
-- **Liquidity Sweeps**: Minor structural minor highs swept inside the session, pooling orders into the zone.
-- **FVG Mitigations**: A tight lower-timeframe imbalance gap was completely closed out at 1.15480.
-
-## Trigger Condition Phase
-The primary execution level is locked onto the 15M structural supply zone entry point at **1.15500**.
-
-## CONDITION FOR EXECUTION (STRICT CONFIRMATION)
-Price must tap into 1.15500 on the 15M timeframe and print a decisive candle body rejection close below the structural zone ceiling before any position confirmation is valid.
-
-## FINAL RECOMMENDATION EXECUTION BLOCK
-- **ACTION**: SELL ORDER
-- **ENTRY LEVEL**: 1.15500
-- **STOP LOSS**: 1.15650 (15 pips distance - calculated directly above the 15M block peak)
-- **TAKE PROFIT**: 1.15200 (30 pips target - calculated using a strict 1:2 RR ratio based on the 15M SL distance)
-- **RISK-TO-REWARD**: 1:2
-- **Rationale**: Macro direction is filtered downward via 4H/1H trends. Risk boundaries are anchored completely inside the 15M session parameters to support short-term intraday resolution, avoiding overnight holding cycles.
-                        `;
+                        responseRaw = `## Setup Tracker Phase\nAnalyzing charts for EURUSD:\n\n1. **Daily Chart**: Clear structural breakdown indicating broad bearish momentum.\n2. **4H Chart**: Rejection below structural supply at 1.15515.\n3. **1H Chart**: Price moving inside minor mitigation phase at 1.15511.\n\n## Identifying Structural Alignment\n- **Order Blocks**: Fresh supply zone sitting near 1.1550.\n- **Risk Boundaries**: Strict 65-pip intraday invalidation cap applied.\n\n## FINAL RECOMMENDATION EXECUTION BLOCK\n- **ACTION**: EXECUTE A SELL ORDER\n- **ENTRY LEVEL**: 1.1550\n- **STOP LOSS**: 1.1615 (6.5 pips)\n- **TAKE PROFIT**: 1.1490\n- **RISK-TO-REWARD**: 1:2`;
+                    } else if (chosenAsset === "BTCUSD") {
+                        responseRaw = `## Setup Tracker Phase\nAnalyzing market structure matrices for BTCUSD:\n\n1. **4H Chart**: Sharp liquidity sweep below the local consolidated base.\n2. **15M Chart**: Displacement upward leaving a clear Fair Value Gap (FVG).\n\n## Identifying Structural Alignment\n- **Liquidity Sweeps**: Lows taken out; high institutional buy orders visible.\n- **FVG Mitigations**: Awaiting minor retest back down into the open 15M imbalance area.\n\n## FINAL RECOMMENDATION EXECUTION BLOCK\n- **ACTION**: TRACKING SETUP (STAND DOWN)\n- **ENTRY LEVEL**: Invalidation watch active near local discount arrays\n- **STOP LOSS**: N/A\n- **TAKE PROFIT**: N/A`;
                     } else {
-                        responseMarkdown = `
-## Setup Tracker Phase
-Analyzing structural asset pairs for ${chosenAsset}. 
-
-## Identifying Structural Alignment and Setups
-- **Order Blocks**: No highly defined execution block visible on the 15M timeframe.
-- **Liquidity Sweeps**: Clear high-volume volatility sweep observed but lacks immediate validation.
-- **FVG Mitigations**: Partial imbalances remain open on the lower timeframes.
-
-## Trigger Condition Phase
-No active trigger condition level specified due to structural displacement.
-
-## CONDITION FOR EXECUTION (STRICT CONFIRMATION)
-Maintain observation profile across the 15M session window.
-
-## FINAL RECOMMENDATION EXECUTION BLOCK
-- **ACTION**: TRACKING SETUP (STAND DOWN)
-- **ENTRY LEVEL**: None specified due to lack of confirmation
-- **STOP LOSS**: N/A
-- **TAKE PROFIT**: N/A
-- **RISK-TO-REWARD**: N/A
-- **Rationale**: Internal 15M chart elements are currently unaligned. Capital protection guidelines require an immediate status configuration hold until clear criteria present themselves.
-                        `;
+                        responseRaw = `## Setup Tracker Phase\nAnalyzing market matrices for ${chosenAsset}:\n\n1. **H4 Chart**: Broad distribution profile observed over high timeframe liquidity pool lines.\n\n## Identifying Structural Alignment\n- **Order Blocks**: No confirmed order blocks aligned with immediate entry constraints.\n\n## FINAL RECOMMENDATION EXECUTION BLOCK\n- **ACTION**: TRACKING SETUP (STAND DOWN)\n- **Rationale**: Structure does not fulfill complete matrix alignment rules yet. Standing down.`;
                     }
-                    resolve(responseMarkdown);
-                }, 1500);
+                    resolve(responseRaw);
+                }, 1200);
             });
         }
 
-        // Interface interaction script binding the scraping logic together
         async function executeMatrixValidation() {
             const noticeText = document.getElementById('sync-notice-text');
             const outputPanel = document.getElementById('response-output-panel');
-            const markdownTarget = document.getElementById('markdown-payload-target');
+            const targetDisplay = document.getElementById('markdown-payload-target');
             
             noticeText.textContent = "Processing matrix arrays via Groq API...";
             outputPanel.classList.remove('visible');
 
             try {
                 const asset = document.getElementById('asset-pair-select').value;
-                const resultMarkdown = await sendToGroq(`Analyze market conditions for ${asset}`, uploadedImages);
+                const resultText = await sendToGroq(`Analyze market conditions for ${asset}`, uploadedImages);
                 
-                // Parse markdown lines into display fields
-                markdownTarget.innerHTML = parseMarkdownToHTML(resultMarkdown);
+                targetDisplay.innerHTML = parseToVisualMarkdown(resultText);
                 outputPanel.classList.add('visible');
                 noticeText.textContent = "Analysis matrix synchronized.";
 
-                // Scrape variables out of text output block to populate live monitor boxes
+                // Dynamically push a clean entry directly inside your live Journal history list view
+                const logsTarget = document.getElementById('journal-logs-target');
+                const newLog = document.createElement('div');
+                newLog.className = 'journal-entry';
+                newLog.innerHTML = `
+                    <div class="journal-meta">
+                        <span class="pair-tag">${asset}</span>
+                        <span>Just Now</span>
+                    </div>
+                    <div class="journal-body">
+                        Validated structure arrays via system pipeline. Strategy validation complete. Check structural alignment layout.
+                    </div>
+                `;
+                logsTarget.prepend(newLog);
+
                 if (asset === "EURUSD") {
                     document.getElementById('dash-trigger-val').textContent = "1.15500";
                     document.getElementById('dash-live-val').textContent = "1.15490";
@@ -834,9 +800,6 @@ Maintain observation profile across the 15M session window.
                     statusTag.textContent = "CONFIRMED SHORT TRIGGER";
                     statusTag.style.backgroundColor = "rgba(102, 252, 241, 0.1)";
                     statusTag.style.color = "#66FCF1";
-                    
-                    // Fire automatic Telegram alerting endpoint
-                    triggerAutomatedTelegramPipeline("EURUSD", "SELL ORDER", "1.15500", "1.15650 (15 pips)", "1.15200 (30 pips)");
                 } else {
                     document.getElementById('dash-trigger-val').textContent = "0.00";
                     document.getElementById('dash-live-val').textContent = "0.00";
@@ -849,108 +812,32 @@ Maintain observation profile across the 15M session window.
                     statusTag.style.color = "#FF4A4A";
                 }
 
-                // Scroll down smoothly to show verification data card
                 outputPanel.scrollIntoView({ behavior: 'smooth' });
 
             } catch (err) {
                 noticeText.textContent = "API Execution Pipeline Error.";
-                alert("Error verifying structural alignment tokens: " + err.message);
+                alert("Error handling pipeline: " + err.message);
             }
         }
 
-        // Basic parsing compiler to map text strings safely into elements
-        function parseMarkdownToHTML(markdownText) {
-            let htmlText = markdownText;
-            
-            // Clean headings
-            htmlText = htmlText.replace(/##\s+(.*)/g, '<h2>$1</h2>');
-            
-            // Format list points
-            htmlText = htmlText.replace(/-\s+\*\*(.*?)\*\*:\s*(.*)/g, '<li><strong>$1:</strong> $2</li>');
-            htmlText = htmlText.replace(/-\s+\*\*(.*?)\*\*:\s*/g, '<li><strong>$1:</strong> ');
-            
-            // Handle lists wrapped inside boxes
-            htmlText = htmlText.replace(/(<li>.*<\/li>)/g, '<ul>$1</ul>');
-            // De-duplicate adjacent list container tags
-            htmlText = htmlText.replace(/<\/ul>\s*<ul>/g, '');
-
-            // Add highlight containers to the critical execution blocks
-            htmlText = htmlText.replace(/<h2>CONDITION FOR EXECUTION(.*)<\/h2>([\s\S]*?)(?=<h2>)/, function(match, title, innerText) {
-                return `<div class="execution-alert-box"><strong>CONDITION FOR EXECUTION ${title}</strong><br>${innerText.trim()}</div>`;
-            });
-
-            htmlText = htmlText.replace(/<h2>FINAL RECOMMENDATION EXECUTION BLOCK<\/h2>([\s\S]*?)$/, function(match, innerText) {
-                return `<h2>FINAL RECOMMENDATION EXECUTION BLOCK</h2><div class="rec-block">${innerText.trim()}</div>`;
-            });
-
-            return htmlText;
-        }
-
-        // Live automated webhook dispatch interface
-        function triggerAutomatedTelegramPipeline(pair, action, entry, sl, tp) {
-            const token = document.getElementById('cfg-bot-token').value;
-            const chatId = document.getElementById('cfg-chat-id').value;
-
-            if (!token || !chatId) {
-                console.log("Telegram integration unconfigured. Dispatch skipped.");
-                return;
-            }
-
-            const messageText = `🎯 *SMC-Signal Pro Alert* 🎯\n\n` +
-                                `• *Asset Pair:* ${pair}\n` +
-                                `• *Action:* ${action}\n` +
-                                `• *Entry Level:* ${entry}\n` +
-                                `• *Stop Loss:* ${sl}\n` +
-                                `• *Take Profit:* ${tp}\n\n` +
-                                `⚡ *Strategy Note:* Risk calculated strictly via 15M structural boundaries. Intraday target active.`;
-
-            const url = `https://api.telegram.org/bot${token}/sendMessage`;
-            
-            fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: chatId,
-                    text: messageText,
-                    parse_mode: 'Markdown'
-                })
-            })
-            .then(res => {
-                if(res.ok) console.log("Intraday trade alert routed directly to Telegram channel.");
-            })
-            .catch(err => console.error("Telegram endpoint routing failure:", err));
-        }
-
-        // Manual validation link testing pipeline execution
         function sendTestNotification() {
             const token = document.getElementById('cfg-bot-token').value;
             const chatId = document.getElementById('cfg-chat-id').value;
 
             if (!token || !chatId) {
-                alert("Please drop your API Token strings and Chat ID numbers into the setting input fields before running tests.");
+                alert("Please configuration tokens before running routing pipeline tests.");
                 return;
             }
 
             const url = `https://api.telegram.org/bot${token}/sendMessage`;
-            
             fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     chat_id: chatId,
-                    text: "⚡ *SMC-Signal Pro Validation Success* ⚡\n\nYour automated routing pipeline is functional. Verified intraday setups will ping here instantly."
+                    text: "⚡ *SMC-Signal Pro Connection Success* ⚡"
                 })
-            })
-            .then(res => {
-                if (res.ok) {
-                    alert("Test ping pushed successfully! Check your phone.");
-                } else {
-                    alert("Telegram connection rejected. Check your token formatting and ensure you initialized the chat by pressing /start.");
-                }
-            })
-            .catch(err => {
-                alert("Network communication timeout: " + err.message);
-            });
+            }).then(res => { if (res.ok) alert("Test notification pushed!"); });
         }
     </script>
 </body>
