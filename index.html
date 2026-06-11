@@ -62,7 +62,6 @@
     </header>
 
     <main id="signalsTab" class="tab-content active flex-1 px-5 space-y-5">
-        
         <div class="bg-white border border-stone-200/60 rounded-xl p-4 shadow-xs">
             <label class="block text-[10px] font-black text-stone-400 uppercase tracking-wider mb-1">Asset Pair</label>
             <div class="relative">
@@ -159,6 +158,73 @@
         </div>
     </main>
 
+    <main id="positionTab" class="tab-content flex-1 px-5 space-y-5">
+        <div class="bg-white border border-stone-200/60 rounded-xl p-4 shadow-xs space-y-3">
+            <div>
+                <label class="block text-[10px] font-black text-stone-400 uppercase tracking-wider mb-1">Active Asset Management</label>
+                <select id="manageAssetPair" class="w-full bg-stone-50 border border-stone-200 rounded-lg px-2.5 py-2 text-xs font-bold text-slate-800 focus:outline-none appearance-none">
+                    <option value="XAUUSD (Gold)">XAUUSD (Gold)</option>
+                    <option value="BTCUSD (Bitcoin)">BTCUSD (Bitcoin)</option>
+                    <option value="EURUSD">EURUSD</option>
+                    <option value="GBPUSD">GBPUSD</option>
+                    <option value="USDJPY">USDJPY</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-[10px] font-black text-stone-400 uppercase tracking-wider mb-1">Your Entry Price Coordinate</label>
+                <input id="manageEntryInput" type="number" step="any" placeholder="e.g. 2045.50" class="w-full bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 text-xs font-mono text-slate-800 focus:outline-none">
+            </div>
+        </div>
+
+        <div id="holdDecisionBanner" class="hidden rounded-xl p-4 border border-emerald-200 bg-emerald-50 text-emerald-950 shadow-xs flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-white shrink-0 animate-pulse">
+                <i data-lucide="shield-check" class="w-5 h-5"></i>
+            </div>
+            <div class="space-y-0.5">
+                <p class="text-xs font-black uppercase tracking-wider text-emerald-800">🟢 KEEP HOLDING</p>
+                <p class="text-[10px] font-bold text-emerald-600/90 leading-tight">Market structure remains valid. Volatility compression is healthy preservation behavior.</p>
+            </div>
+        </div>
+
+        <div id="exitDecisionBanner" class="hidden rounded-xl p-4 border border-red-200 bg-red-50 text-red-950 shadow-xs flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center text-white shrink-0 animate-bounce">
+                <i data-lucide="octagon-alert" class="w-5 h-5"></i>
+            </div>
+            <div class="space-y-0.5">
+                <p class="text-xs font-black uppercase tracking-wider text-red-800">🔴 EXIT TRADE NOW</p>
+                <p class="text-[10px] font-bold text-red-600/90 leading-tight">Institutional order flow inversion detected. Preserve equity from structure displacement loops.</p>
+            </div>
+        </div>
+
+        <div class="space-y-2">
+            <h2 class="text-[11px] font-black text-stone-400 uppercase tracking-widest px-1">Upload Ranging/Drawdown Screenshot</h2>
+            <label for="upload-manage-chart" class="bg-white border border-dashed border-stone-300 rounded-xl p-6 text-center cursor-pointer hover:bg-stone-50 block transition shadow-xs">
+                <div class="text-stone-400 mb-1 flex justify-center"><i data-lucide="image-up" class="w-6 h-6"></i></div>
+                <h4 class="text-xs font-black text-slate-800">Active Position Chart</h4>
+                <p id="status-manage-chart" class="text-[10px] text-stone-400 font-bold mt-1">Tap to select display capture</p>
+                <input type="file" id="upload-manage-chart" accept="image/png, image/jpeg" class="hidden" onchange="processManagementChart(event)">
+            </label>
+        </div>
+
+        <div class="space-y-3">
+            <button id="manageValidateBtn" onclick="handleManagementValidation()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 px-4 rounded-xl transition duration-200 shadow-md text-center text-xs tracking-wider uppercase">
+                Evaluate Position Holding Integrity
+            </button>
+            <div class="flex items-center justify-center gap-2 text-xs font-bold text-stone-500 py-1 border-b border-stone-200/40">
+                🛡️ <span id="manageStatusText">Awaiting trade matrix snapshot diagnostics...</span>
+            </div>
+        </div>
+
+        <div class="space-y-2">
+            <h2 class="text-[11px] font-black text-stone-400 uppercase tracking-widest px-1">Management breakdown</h2>
+            <div class="bg-white border border-stone-200/60 shadow-xs rounded-xl p-4 min-h-[90px]">
+                <div id="manageEvaluationOutput" class="text-xs font-medium text-stone-600 leading-relaxed space-y-3">
+                    <p>Provide evidence file array to generate position management mitigation advice...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
     <main id="journalTab" class="tab-content flex-1 px-5 space-y-4">
         <div class="flex justify-between items-center select-none pt-2">
             <h2 class="text-[11px] font-black text-stone-400 uppercase tracking-widest">Trading Journal Log</h2>
@@ -189,18 +255,22 @@
         </div>
     </main>
 
-    <nav class="absolute bottom-0 left-0 right-0 bg-white border-t border-stone-200/60 px-8 py-3 flex justify-between items-center select-none z-50">
+    <nav class="absolute bottom-0 left-0 right-0 bg-white border-t border-stone-200/60 px-4 py-3 flex justify-between items-center select-none z-50">
         <button id="nav-signals" onclick="switchTab('signals')" class="nav-btn flex flex-col items-center gap-1 text-slate-900 font-black">
             <i data-lucide="zap" class="w-5 h-5 stroke-[2.5]"></i>
-            <span class="text-[10px] tracking-wider uppercase">Signals</span>
+            <span class="text-[9px] tracking-wider uppercase">Signals</span>
+        </button>
+        <button id="nav-position" onclick="switchTab('position')" class="nav-btn flex flex-col items-center gap-1 text-gray-400 font-bold hover:text-slate-900">
+            <i data-lucide="trending-up" class="w-5 h-5"></i>
+            <span class="text-[9px] tracking-wider uppercase">Live Trade</span>
         </button>
         <button id="nav-journal" onclick="switchTab('journal')" class="nav-btn flex flex-col items-center gap-1 text-gray-400 font-bold hover:text-slate-900">
             <i data-lucide="book-open" class="w-5 h-5"></i>
-            <span class="text-[10px] tracking-wider uppercase">Journal</span>
+            <span class="text-[9px] tracking-wider uppercase">Journal</span>
         </button>
         <button id="nav-settings" onclick="switchTab('settings')" class="nav-btn flex flex-col items-center gap-1 text-gray-400 font-bold hover:text-slate-900">
             <i data-lucide="settings" class="w-5 h-5"></i>
-            <span class="text-[10px] tracking-wider uppercase">Settings</span>
+            <span class="text-[9px] tracking-wider uppercase">Settings</span>
         </button>
     </nav>
 
@@ -211,6 +281,8 @@
             "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVR42mNkYGD4DwYMDAwM4MIEBv6DwA8A7vYCBXas3mAAAAAElFTkSuQmCC",
             "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVR42mNkYGD4DwYMDAwM4MIEBv6DwA8A7vYCBXas3mAAAAAElFTkSuQmCC"
         ];
+        
+        let positionManagementChartRaw = "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVR42mNkYGD4DwYMDAwM4MIEBv6DwA8A7vYCBXas3mAAAAAElFTkSuQmCC";
 
         let insideAlertWindowTriggered = false;
 
@@ -222,15 +294,12 @@
             checkBrowserNotificationStatus();
             updateLiveClockAndMacroCalendar();
             setInterval(updateLiveClockAndMacroCalendar, 1000);
-            
-            // BACKGROUND MONITORING LOOP: Evaluates your target price levels every 3 seconds
             setInterval(calculateLiveSpreadDistance, 3000);
         });
 
         function checkBrowserNotificationStatus() {
             const card = document.getElementById("notificationStatusCard");
             if (!("Notification" in window)) return;
-            
             if (Notification.permission !== "granted" && Notification.permission !== "denied") {
                 card.classList.remove("hidden");
             }
@@ -253,11 +322,24 @@
 
             labelElement.innerText = "Encoding...";
             const reader = new FileReader();
-            
             reader.onload = function(e) {
-                const base64DataRaw = e.target.result.split(',')[1];
-                targetLiveCharts[indexPosition] = base64DataRaw;
+                targetLiveCharts[indexPosition] = e.target.result.split(',')[1];
                 labelElement.innerText = "Loaded ✓";
+                labelElement.className = "text-[10px] text-emerald-600 font-black mt-1";
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function processManagementChart(event) {
+            const file = event.target.files[0];
+            const labelElement = document.getElementById("status-manage-chart");
+            if (!file) return;
+
+            labelElement.innerText = "Processing Image...";
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                positionManagementChartRaw = e.target.result.split(',')[1];
+                labelElement.innerText = "Capture Array Ready ✓";
                 labelElement.className = "text-[10px] text-emerald-600 font-black mt-1";
             };
             reader.readAsDataURL(file);
@@ -295,8 +377,7 @@
             statusLabel.innerText = "MONITORING SETUP LIVE";
             statusLabel.className = "inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-black bg-amber-500 text-slate-950 uppercase tracking-wide animate-pulse";
 
-            // TRIGGER THRESHOLD: Fires if price hits within 5 pips of target level OR completely breaks past it
-            if ((pips <= 5.0 || current >= target && target > current === false) && !insideAlertWindowTriggered) {
+            if ((pips <= 5.0 || (current >= target && target > current === false)) && !insideAlertWindowTriggered) {
                 insideAlertWindowTriggered = true;
                 executeDualChannelAlerts(asset, pips.toFixed(2), target, current);
             } else if (pips > 5.0 && !((current >= target && target > current === false))) {
@@ -325,7 +406,6 @@
         function extractAndInjectTargetLevel(aiText) {
             const entryRegex = /\*\*ENTRY LEVEL:\*\*\s*([\d.]+)/i;
             const match = aiText.match(entryRegex);
-            
             if (match && match[1]) {
                 const scrapedLevel = parseFloat(match[1]);
                 if (!isNaN(scrapedLevel)) {
@@ -358,49 +438,83 @@
                 statusText.innerText = "Analysis matrix synchronized.";
                 
                 let formattedText = responseText.replace(/## CONDITION FOR EXECUTION \(STRICT CONFIRMATION\):/g, '<div class="mt-4 pt-3 border-t border-amber-500/30 font-black text-amber-600 text-xs uppercase tracking-wider">⏳ Condition For Execution (Strict Confirmation):</div>');
-                
                 if (formattedText.includes("### 🚨 FINAL CONSIDERATION BANNER 🚨")) {
                     formattedText = formattedText.replace(/### 🚨 FINAL CONSIDERATION BANNER 🚨/g, '</div><div class="final-banner-card rounded-xl p-4 mt-4 shadow-inner space-y-2"><div class="font-black text-amber-400 text-sm tracking-wider uppercase flex items-center gap-1">🚨 FINAL CONSIDERATION BANNER 🚨</div>');
                 }
                 
                 output.innerHTML = `<div class="space-y-2">${formattedText}</div>`;
-                
-                insideAlertWindowTriggered = false; // Reset lock to allow fresh background triggers
+                insideAlertWindowTriggered = false; 
                 extractAndInjectTargetLevel(responseText);
                 registerJournalEntry(pair, "RADAR MODE", responseText);
 
                 if ("Notification" in window && Notification.permission === "granted") {
                     const inlineHeadline = responseText.includes("STAND DOWN (NO TRADE)") ? "🚫 STAND DOWN (NO TRADE) ALERT" : "🎯 ACTIVE SMC TARGET INBOUND";
-                    new Notification(inlineHeadline, {
-                        body: `${pair} analysis sync complete. View consideration parameters inside your journal matrix dashboard.`
-                    });
+                    new Notification(inlineHeadline, { body: `${pair} analysis sync complete.` });
                 }
 
                 const botToken = localStorage.getItem("smc_tg_bot_token");
                 const chatId = localStorage.getItem("smc_tg_chat_id");
                 if (botToken && chatId) {
-                    const pureCleanString = responseText
-                        .replace(/[#\#]/g, '')
-                        .replace(/\*/g, '')
-                        .replace(/_/g, '')
-                        .trim();
-
-                    const outboundPayload = `🚨 NEW SMC STRATEGY LOG 🚨\n\nAsset Pair: ${pair}\n\n${pureCleanString}`;
-                    
+                    const pureCleanString = responseText.replace(/[#\#]/g, '').replace(/\*/g, '').replace(/_/g, '').trim();
                     fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ chat_id: chatId, text: outboundPayload })
-                    }).catch(e => console.error("Automated transmission payload dropped:", e));
+                        body: JSON.stringify({ chat_id: chatId, text: `🚨 NEW SMC STRATEGY LOG 🚨\n\nAsset: ${pair}\n\n${pureCleanString}` })
+                    }).catch(e => console.error(e));
                 }
-
             } catch (error) {
                 statusText.innerText = "Execution failed.";
                 output.innerText = `Error: ${error.message}`;
             } finally {
                 btn.disabled = false;
-                btn.className = "w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 px-4 rounded-xl transition duration-200 shadow-md active:scale-[0.99] cursor-pointer text-center text-xs tracking-wider uppercase";
+                btn.className = "w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 px-4 rounded-xl transition duration-200 shadow-md text-center text-xs tracking-wider uppercase";
                 btn.innerText = "Run Strategy Validation";
+            }
+        }
+
+        async function handleManagementValidation() {
+            const btn = document.getElementById("manageValidateBtn");
+            const statusText = document.getElementById("manageStatusText");
+            const output = document.getElementById("manageEvaluationOutput");
+            const pair = document.getElementById("manageAssetPair").value;
+            const entryPrice = document.getElementById("manageEntryInput").value || "Unspecified Coordinate";
+            const savedToken = localStorage.getItem("smc_groq_api_token");
+
+            const holdBanner = document.getElementById("holdDecisionBanner");
+            const exitBanner = document.getElementById("exitDecisionBanner");
+            holdBanner.classList.add("hidden");
+            exitBanner.classList.add("hidden");
+
+            if (!savedToken) {
+                statusText.innerText = "Execution failed.";
+                output.innerHTML = `<span class="text-red-500 font-bold">Error: API Key is missing.</span> Add it in Settings.`;
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "Calculating structural holding capacity...";
+            statusText.innerText = "Deconstructing range patterns...";
+
+            try {
+                const responseText = await sendManagementToGroq(positionManagementChartRaw, pair, entryPrice, savedToken);
+                statusText.innerText = "Position parameters synchronized.";
+                output.innerHTML = `<div class="space-y-2 font-medium text-xs text-stone-600 leading-relaxed">${responseText.replace(/\n/g, '<br>')}</div>`;
+
+                // EVALUATE RESPONSE KEYWORDS TO TRIGGER THE HIGH-VISIBILITY BANNERS
+                const cleanedResponseText = responseText.toUpperCase();
+                if (cleanedResponseText.includes("KEEP HOLDING")) {
+                    holdBanner.classList.remove("hidden");
+                } else if (cleanedResponseText.includes("EXIT TRADE NOW") || cleanedResponseText.includes("EXIT TRADE")) {
+                    exitBanner.classList.remove("hidden");
+                }
+                
+                registerJournalEntry(pair, "POSITION INSIGHT", responseText);
+            } catch (error) {
+                statusText.innerText = "Evaluation failed.";
+                output.innerText = `Error: ${error.message}`;
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Evaluate Position Holding Integrity";
             }
         }
 
@@ -409,13 +523,9 @@
                 type: "image_url",
                 image_url: { url: `data:image/png;base64,${b64}` }
             }));
-
             const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${activeKey}`,
-                    "Content-Type": "application/json"
-                },
+                headers: { "Authorization": `Bearer ${activeKey}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
                     model: "meta-llama/llama-4-scout-17b-16e-instruct",
                     messages: [
@@ -460,20 +570,48 @@ Second, a section starting exactly with "### 🚨 FINAL CONSIDERATION BANNER �
 * **TAKE PROFIT (1:2 Minimum RR):** [Numeric Value, or "N/A"] (Target Yield: [Calculated Pips * 2] Pips clear of entry.)
 * **TAKE PROFIT (1:3 Maximum RR):** [Numeric Value, or "N/A"] (Target Yield: [Calculated Pips * 3] Pips clear of entry.)
 **FINAL RATIONALE:** [Brief 1-sentence matrix justification clarifying why this is an active order or a strict "NO TRADE" stand down]`
-                                },
-                                ...imagePayload
+                                }
                             ]
                         }
                     ],
-                    temperature: 0.1,
-                    max_completion_tokens: 650
+                    temperature: 0.1, max_completion_tokens: 650
                 })
             });
+            if (!response.ok) throw new Error("Failed API transaction");
+            const resData = await response.json();
+            return resData.choices[0].message.content;
+        }
 
-            if (!response.ok) {
-                const err = await response.json();
-                throw new Error(err.error?.message || "Failed API transaction");
-            }
+        async function sendManagementToGroq(imageB64, assetPair, entryPrice, activeKey) {
+            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${activeKey}`, "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    model: "meta-llama/llama-4-scout-17b-16e-instruct",
+                    messages: [
+                        {
+                            role: "user",
+                            content: [
+                                {
+                                    type: "text",
+                                    text: `You are an institutional trade management engine tracking an active open position on ${assetPair} entered at price level ${entryPrice}. The trader has provided a screenshot of the active price structure because the market has begun ranging, compressing, or showing signs of drawdown reversal.
+
+Examine the image carefully for order flow structural changes (e.g., sub-structure change of character, mitigation of opposing order blocks, value gaps, or premium/discount internal status).
+
+YOUR OUTPUT MUST START WITH EXACTLY ONE OF THESE TWO PHRASES ON THE FIRST LINE:
+- "DECISION: KEEP HOLDING" if the structure favors the original path and the range is an institutional re-accumulation or distribution structure.
+- "DECISION: EXIT TRADE NOW" if an opposing structural displacement vector or breaker formation invalidates the open position risk metrics.
+
+Provide a clear 3-bullet block analysis below that decision line explaining your structural reasoning, premium/discount status, and immediate mitigation tactics.`
+                                },
+                                { type: "image_url", image_url: { url: `data:image/png;base64,${imageB64}` } }
+                            ]
+                        }
+                    ],
+                    temperature: 0.1, max_completion_tokens: 400
+                })
+            });
+            if (!response.ok) throw new Error("Failed management API transaction");
             const resData = await response.json();
             return resData.choices[0].message.content;
         }
@@ -483,7 +621,6 @@ Second, a section starting exactly with "### 🚨 FINAL CONSIDERATION BANNER �
             const hour = now.getUTCHours();
             const dayOfWeek = now.getUTCDay();
             const dateStr = now.getUTCDate();
-            
             const pad = (num) => String(num).padStart(2, '0');
             document.getElementById("liveClock").innerText = `${pad(hour)}:${pad(now.getUTCMinutes())}:${pad(now.getUTCSeconds())} UTC`;
             
@@ -508,35 +645,23 @@ Second, a section starting exactly with "### 🚨 FINAL CONSIDERATION BANNER �
 
             if (isFriday && isFirstWeek) {
                 macroBanner.className = "p-2.5 rounded-lg border border-red-900 bg-red-950 text-white flex items-center gap-2 macro-alert-active";
-                macroIcon.className = "text-red-400 flex shrink-0";
                 macroIcon.innerHTML = `<i data-lucide="alert-triangle" class="w-4 h-4"></i>`;
-                macroTitle.className = "text-[10px] font-black text-red-300 uppercase tracking-wider";
                 macroTitle.innerText = "⚠️ HIGH RISK ALERT: NFP FRIDAY";
-                macroDesc.className = "text-[10px] font-bold text-red-200 leading-tight";
                 macroDesc.innerText = "Non-Farm Payroll expansion wicks incoming. Avoid limit orders. Wait for the 15M MSS aftermath.";
             } else if (isCPIDayWindow) {
                 macroBanner.className = "p-2.5 rounded-lg border border-amber-900 bg-amber-950 text-white flex items-center gap-2 macro-alert-active";
-                macroIcon.className = "text-amber-400 flex shrink-0";
                 macroIcon.innerHTML = `<i data-lucide="info" class="w-4 h-4"></i>`;
-                macroTitle.className = "text-[10px] font-black text-amber-300 uppercase tracking-wider";
                 macroTitle.innerText = "⚡ MACRO ZONE: CPI INFLATION DATA WEEK";
-                macroDesc.className = "text-[10px] font-bold text-amber-200 leading-tight";
                 macroDesc.innerText = "USD inflation data releasing this week. High structural volatility threat. Protect capital entries.";
             } else if (isFOMCWindow) {
                 macroBanner.className = "p-2.5 rounded-lg border border-slate-900 bg-slate-950 text-white flex items-center gap-2 macro-alert-active";
-                macroIcon.className = "text-blue-400 flex shrink-0";
                 macroIcon.innerHTML = `<i data-lucide="landmark" class="w-4 h-4"></i>`;
-                macroTitle.className = "text-[10px] font-black text-blue-300 uppercase tracking-wider";
                 macroTitle.innerText = "🦅 ALGORITHMIC RISK: FOMC INTEREST RATES";
-                macroDesc.className = "text-[10px] font-bold text-gray-300 leading-tight";
                 macroDesc.innerText = "Federal Reserve rate decision Wednesday. Sudden high-volume liquidity hunts expected.";
             } else {
                 macroBanner.className = "p-2.5 rounded-lg border border-stone-200 bg-stone-50 flex items-center gap-2";
-                macroIcon.className = "text-stone-400 flex shrink-0";
                 macroIcon.innerHTML = `<i data-lucide="calendar-days" class="w-4 h-4"></i>`;
-                macroTitle.className = "text-[10px] font-black text-stone-500 uppercase tracking-wider";
                 macroTitle.innerText = "Macro Calendar Engine";
-                macroDesc.className = "text-[10px] font-bold text-stone-400 leading-tight";
                 macroDesc.innerText = "No immediate recurring redfolder macro events detected. Maintain standard 65-pip limit rules.";
             }
             lucide.createIcons();
@@ -591,13 +716,13 @@ Second, a section starting exactly with "### 🚨 FINAL CONSIDERATION BANNER �
         function registerJournalEntry(asset, bias, summary) {
             const logs = JSON.parse(localStorage.getItem("smc_trade_journal_vault") || "[]");
             const low = summary.toLowerCase();
-            const pass = !low.includes("stand down") && !low.includes("tracking setup");
+            const pass = !low.includes("stand down") && !low.includes("tracking setup") && !low.includes("exit trade");
             logs.unshift({
                 id: Date.now(),
                 timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
                 assetPair: asset,
                 intendedBias: bias,
-                status: pass ? "VALID STRUCTURE" : "RADAR MONITORING",
+                status: pass ? "VALID STRUCTURE" : "MANAGEMENT REVAL",
                 colorCode: pass ? "emerald" : "amber",
                 summaryText: summary.substring(0, 110) + "..."
             });
