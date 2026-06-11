@@ -399,7 +399,6 @@
             }
         }
 
-        // AUTO DETECTION UPDATE IN INJECT ENGINE TO READ PURE PAIR FROM DYNAMIC SELECTOR BOX
         function extractAndInjectTargetLevel(aiText) {
             const entryRegex = /\*\*ENTRY LEVEL:\*\*\s*([\d.]+)/i;
             const match = aiText.match(entryRegex);
@@ -555,8 +554,8 @@ TIME-FRAME HIERARCHY ANALYSIS RULES:
 2. Use the 4H and 1H charts ONLY to find general market bias and high-timeframe liquidity zones.
 3. You are ABSOLUTELY REQUIRED to use the 15M (Entry) chart to determine, compute, and lock-in your precise execution points. Your entry targets, stop loss calculations, and structures must come directly from the price action on this 15M chart, and NOT from the 4H or 1H parameters.
 
-CRITICAL ASSET LOCK-IN RULE:
-You are strictly evaluating the asset ${assetPair}. You are ABSOLUTELY FORBIDDEN from mentioning or outputting price figures or structures belonging to other asset classes. If the asset is XAUUSD (Gold) or an index trading in thousands, you must ONLY use whole numbers and asset index prices (e.g., $4328.50). Do not mix up currency decimals like 1.16140.
+CRITICAL ASSET PRICE MATCHING RULE:
+Look closely at the Y-axis numbers on the right side of the uploaded 15M chart screenshot. You must strictly look up, read, and extract your numeric values directly from those exact labels on the chart. Never hallucinate or shift into completely different price ranges. For example, if the 15M chart shows price coordinates fluctuating strictly within the 4000 to 4400 region, your structural entries, breaks, and stop-loss levels must be placed exactly within that 4000-4400 coordinate region. Do not assume old structural prices like 1900 if the current live chart exhibits a different price spectrum.
 
 TWO-PHASE RADAR ASSIGNMENT MODE WITH CONFIRMATION FILTER:
 Your function is to identify and track setups, preventing premature entries that cause large drawdowns.
