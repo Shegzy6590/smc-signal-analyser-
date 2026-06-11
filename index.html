@@ -21,7 +21,6 @@
             animation: micro-flash 2s infinite ease-in-out;
         }
         
-        /* Added styling structure explicitly for your final consideration banner container */
         .final-banner-card {
             background-color: #1a1d24 !important;
             border: 1px solid #262b35 !important;
@@ -223,6 +222,9 @@
             checkBrowserNotificationStatus();
             updateLiveClockAndMacroCalendar();
             setInterval(updateLiveClockAndMacroCalendar, 1000);
+            
+            // BACKGROUND MONITORING LOOP: Evaluates your target price levels every 3 seconds
+            setInterval(calculateLiveSpreadDistance, 3000);
         });
 
         function checkBrowserNotificationStatus() {
@@ -268,7 +270,7 @@
             const distanceOutput = document.getElementById("distanceOutput");
             const statusLabel = document.getElementById("trackerStatus");
 
-            if (isNaN(target) || isNaN(current)) {
+            if (isNaN(target) || isNaN(current) || target === 0 || current === 0) {
                 distanceOutput.innerText = "0.00 Pips";
                 statusLabel.innerText = "NO ACTIVE TARGET";
                 statusLabel.className = "inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-black bg-stone-800 text-stone-400 uppercase tracking-wide";
@@ -293,16 +295,17 @@
             statusLabel.innerText = "MONITORING SETUP LIVE";
             statusLabel.className = "inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-black bg-amber-500 text-slate-950 uppercase tracking-wide animate-pulse";
 
-            if (pips <= 5.0 && !insideAlertWindowTriggered) {
+            // TRIGGER THRESHOLD: Fires if price hits within 5 pips of target level OR completely breaks past it
+            if ((pips <= 5.0 || current >= target && target > current === false) && !insideAlertWindowTriggered) {
                 insideAlertWindowTriggered = true;
-                executeDualChannelAlerts(asset, pips.toFixed(2), target);
-            } else if (pips > 5.0) {
+                executeDualChannelAlerts(asset, pips.toFixed(2), target, current);
+            } else if (pips > 5.0 && !((current >= target && target > current === false))) {
                 insideAlertWindowTriggered = false;
             }
         }
 
-        function executeDualChannelAlerts(asset, pipDistance, targetLevel) {
-            const txt = `🎯 SNIPER ALERT: ${asset} is only ${pipDistance} pips away from your trigger level (${targetLevel})! Check charts for immediate lower timeframe MSS confirmation setup.`;
+        function executeDualChannelAlerts(asset, pipDistance, targetLevel, currentPrice) {
+            const txt = `🎯 SMC TRIGGER HIT: ${asset} has arrived at your target level! \nTarget Level: ${targetLevel}\nCurrent Price: ${currentPrice}\n\nCheck your 15M execution window immediately for sub-structure structural validation.`;
             
             if ("Notification" in window && Notification.permission === "granted") {
                 new Notification("SMC TARGET LOCKED", { body: txt });
@@ -327,12 +330,6 @@
                 const scrapedLevel = parseFloat(match[1]);
                 if (!isNaN(scrapedLevel)) {
                     document.getElementById("targetLevelInput").value = scrapedLevel;
-                    
-                    const currentPriceInput = document.getElementById("currentPriceInput");
-                    if (!currentPriceInput.value || parseFloat(currentPriceInput.value) === 0) {
-                        currentPriceInput.value = (scrapedLevel * 0.995).toFixed(2); 
-                    }
-                    
                     calculateLiveSpreadDistance();
                 }
             }
@@ -360,7 +357,6 @@
                 const responseText = await sendToGroq(targetLiveCharts, pair, savedToken);
                 statusText.innerText = "Analysis matrix synchronized.";
                 
-                // FIXED THE PARSER LOGIC: Correctly captures our new banner block syntax and turns it into a visually distinct custom UI block
                 let formattedText = responseText.replace(/## CONDITION FOR EXECUTION \(STRICT CONFIRMATION\):/g, '<div class="mt-4 pt-3 border-t border-amber-500/30 font-black text-amber-600 text-xs uppercase tracking-wider">⏳ Condition For Execution (Strict Confirmation):</div>');
                 
                 if (formattedText.includes("### 🚨 FINAL CONSIDERATION BANNER 🚨")) {
@@ -369,11 +365,10 @@
                 
                 output.innerHTML = `<div class="space-y-2">${formattedText}</div>`;
                 
+                insideAlertWindowTriggered = false; // Reset lock to allow fresh background triggers
                 extractAndInjectTargetLevel(responseText);
                 registerJournalEntry(pair, "RADAR MODE", responseText);
 
-                // --- NEW INTEGRATED ROUTING OUTBOUND NOTIFICATIONS ---
-                // 1. Phone Browser Push Dispatcher
                 if ("Notification" in window && Notification.permission === "granted") {
                     const inlineHeadline = responseText.includes("STAND DOWN (NO TRADE)") ? "🚫 STAND DOWN (NO TRADE) ALERT" : "🎯 ACTIVE SMC TARGET INBOUND";
                     new Notification(inlineHeadline, {
@@ -381,18 +376,23 @@
                     });
                 }
 
-                // 2. Automated Telegram Outbound Pipeline Channel Dispatcher
                 const botToken = localStorage.getItem("smc_tg_bot_token");
                 const chatId = localStorage.getItem("smc_tg_chat_id");
                 if (botToken && chatId) {
-                    const escapedText = `🚨 *NEW GENERATED SMC STRATEGY LOG* 🚨\n\nAsset Pair: ${pair}\n\n${responseText}`;
+                    const pureCleanString = responseText
+                        .replace(/[#\#]/g, '')
+                        .replace(/\*/g, '')
+                        .replace(/_/g, '')
+                        .trim();
+
+                    const outboundPayload = `🚨 NEW SMC STRATEGY LOG 🚨\n\nAsset Pair: ${pair}\n\n${pureCleanString}`;
+                    
                     fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ chat_id: chatId, text: escapedText, parse_mode: "Markdown" })
+                        body: JSON.stringify({ chat_id: chatId, text: outboundPayload })
                     }).catch(e => console.error("Automated transmission payload dropped:", e));
                 }
-                // --- END NOTIFICATION SYSTEM ADDITION ---
 
             } catch (error) {
                 statusText.innerText = "Execution failed.";
@@ -442,10 +442,11 @@ Your function is to identify and track setups, preventing premature entries that
 STRICT ENTRY CONFIRMATION RULE:
 You are STRONGLY PROHIBITED from recommending direct, unconfirmed 'single-touch' limit entries inside structural zones. Your execution conditions must explicitly instruct the trader to wait for an explicit lower-timeframe confirmation routine (e.g., waiting for clear lower-timeframe structural change or micro-candle body rejection inside the zone) before placing an entry order.
 
-CRITICAL RISK & PIP MATH RESTRICITONS:
-1. Calculate the absolute structural distance between your ENTRY LEVEL and your STOP LOSS. 
-2. If this absolute price difference exceeds 6.50 points/dollars (which equals 65 pips for Gold/Indices), or if the chart setup is ambiguous, unconfirmed, or risky, you must immediately halt evaluation and force a strict "STAND DOWN (NO TRADE)" directive.
-3. Your Take Profit distance from the Entry Price must mathematically equal EXACTLY either 2x (for a 1:2 RR) or 3x (for a 1:3 RR) the calculated Stop Loss distance.
+CRITICAL RISK & PIP MATH RESTRICTIONS:
+1. When configuring order execution points, you must calculate the absolute structural distance between your ENTRY LEVEL and your STOP LOSS.
+2. Your calculation MUST maintain a MINIMUM Stop Loss distance of 25 to 30 Pips ($2.50 to $3.00 absolute value change on Gold charts). You are strictly forbidden from producing tight, sub-25 pip stop losses.
+3. Your calculation MUST maintain a MAXIMUM ceiling Stop Loss distance of 65 Pips ($6.50 absolute value change on Gold charts). If the necessary structural invalidation distance exceeds 6.50 points/dollars (65 pips), or if the setup is muddy, you must force a strict "STAND DOWN (NO TRADE)" directive.
+4. Your Take Profit parameters must be scaled strictly using mathematical multiplication. Take Profit 1 must be exactly 2x your calculated Stop Loss pip distance (for a 1:2 RR layout). Take Profit 2 must be exactly 3x your calculated Stop Loss pip distance (for a 1:3 RR layout).
 
 OUTPUT BLOCK ORDER SPECIFICATION:
 You must ALWAYS include both closing section headers below in every response, regardless of setup validity.
