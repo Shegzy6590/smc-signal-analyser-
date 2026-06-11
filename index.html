@@ -75,6 +75,11 @@
                     <option value="USDCAD">USDCAD</option>
                     <option value="USDCHF">USDCHF</option>
                     <option value="NZDUSD">NZDUSD</option>
+                    <option value="AUDNZD">AUDNZD</option>
+                    <option value="EURNZD">EURNZD</option>
+                    <option value="GBPJPY">GBPJPY</option>
+                    <option value="GBPNZD">GBPNZD</option>
+                    <option value="NZDCAD">NZDCAD</option>
                 </select>
             </div>
         </div>
@@ -168,6 +173,15 @@
                     <option value="EURUSD">EURUSD</option>
                     <option value="GBPUSD">GBPUSD</option>
                     <option value="USDJPY">USDJPY</option>
+                    <option value="AUDUSD">AUDUSD</option>
+                    <option value="USDCAD">USDCAD</option>
+                    <option value="USDCHF">USDCHF</option>
+                    <option value="NZDUSD">NZDUSD</option>
+                    <option value="AUDNZD">AUDNZD</option>
+                    <option value="EURNZD">EURNZD</option>
+                    <option value="GBPJPY">GBPJPY</option>
+                    <option value="GBPNZD">GBPNZD</option>
+                    <option value="NZDCAD">NZDCAD</option>
                 </select>
             </div>
             <div>
@@ -385,6 +399,19 @@
             }
         }
 
+        // AUTO DETECTION UPDATE IN INJECT ENGINE TO READ PURE PAIR FROM DYNAMIC SELECTOR BOX
+        function extractAndInjectTargetLevel(aiText) {
+            const entryRegex = /\*\*ENTRY LEVEL:\*\*\s*([\d.]+)/i;
+            const match = aiText.match(entryRegex);
+            if (match && match[1]) {
+                const scrapedLevel = parseFloat(match[1]);
+                if (!isNaN(scrapedLevel)) {
+                    document.getElementById("targetLevelInput").value = scrapedLevel;
+                    calculateLiveSpreadDistance();
+                }
+            }
+        }
+
         function executeDualChannelAlerts(asset, pipDistance, targetLevel, currentPrice) {
             const txt = `🎯 SMC TRIGGER HIT: ${asset} has arrived at your target level! \nTarget Level: ${targetLevel}\nCurrent Price: ${currentPrice}\n\nCheck your 15M execution window immediately for sub-structure structural validation.`;
             
@@ -400,18 +427,6 @@
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ chat_id: chatId, text: txt })
                 }).catch(e => console.error("Telegram error:", e));
-            }
-        }
-
-        function extractAndInjectTargetLevel(aiText) {
-            const entryRegex = /\*\*ENTRY LEVEL:\*\*\s*([\d.]+)/i;
-            const match = aiText.match(entryRegex);
-            if (match && match[1]) {
-                const scrapedLevel = parseFloat(match[1]);
-                if (!isNaN(scrapedLevel)) {
-                    document.getElementById("targetLevelInput").value = scrapedLevel;
-                    calculateLiveSpreadDistance();
-                }
             }
         }
 
@@ -500,7 +515,6 @@
                 statusText.innerText = "Position parameters synchronized.";
                 output.innerHTML = `<div class="space-y-2 font-medium text-xs text-stone-600 leading-relaxed">${responseText.replace(/\n/g, '<br>')}</div>`;
 
-                // EVALUATE RESPONSE KEYWORDS TO TRIGGER THE HIGH-VISIBILITY BANNERS
                 const cleanedResponseText = responseText.toUpperCase();
                 if (cleanedResponseText.includes("KEEP HOLDING")) {
                     holdBanner.classList.remove("hidden");
