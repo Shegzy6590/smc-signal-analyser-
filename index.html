@@ -577,6 +577,7 @@ You must ALWAYS include both closing section headers below in every response, re
 First, a section starting exactly with "## CONDITION FOR EXECUTION (STRICT CONFIRMATION):" explaining the numeric price action trigger level along with the exact confirmation behavior required. If the chart structure is unclear or invalid, explicitly describe why no execution can take place here.
 
 Second, a section starting exactly with "### 🚨 FINAL CONSIDERATION BANNER 🚨" which must contain a highly structured, clean, bulleted format containing the direct parameters so the trader doesn't have to look through prose paragraphs. If the setup is unclear, risky, or does not meet criteria, you MUST output "STAND DOWN (NO TRADE)" in the directional choice. It must strictly be structured exactly like this layout format:
+### 🚨 FINAL CONSIDERATION BANNER 🚨
 **DIRECTIONAL DECISION:** [EXECUTE BUY ORDER / EXECUTE SELL ORDER / STAND DOWN (NO TRADE)]
 * **ENTRY LEVEL:** [Numeric Trigger Level Value derived from 15M chart, or "N/A - NO TRADE"]
 * **STOP LOSS:** [Numeric Stop Level Value derived from 15M chart invalidation, or "N/A - NO TRADE"] (Exact Distance: [Calculated Pips] Pips)
