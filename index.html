@@ -186,7 +186,7 @@
             </div>
             <div>
                 <label class="block text-[10px] font-black text-stone-400 uppercase tracking-wider mb-1">Your Entry Price Coordinate</label>
-                <input id="manageEntryInput" type="number" step="any" placeholder="e.g. 2045.50" class="w-full bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 text-xs font-mono text-slate-800 focus:outline-none">
+                <input id="manageEntryInput" type="number" step="any" placeholder="e.g. 4215.50" class="w-full bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 text-xs font-mono text-slate-800 focus:outline-none">
             </div>
         </div>
 
@@ -434,6 +434,7 @@
             const statusText = document.getElementById("statusText");
             const output = document.getElementById("evaluationOutput");
             const pair = document.getElementById("assetPair").value;
+            const liveManualFallbackPrice = parseFloat(document.getElementById("currentPriceInput").value) || 0;
             const savedToken = localStorage.getItem("smc_groq_api_token");
 
             if (!savedToken) {
@@ -448,7 +449,7 @@
             statusText.innerText = "Processing execution tokens...";
 
             try {
-                const responseText = await sendToGroq(targetLiveCharts, pair, savedToken);
+                const responseText = await sendToGroq(targetLiveCharts, pair, liveManualFallbackPrice, savedToken);
                 statusText.innerText = "Analysis matrix synchronized.";
                 
                 let formattedText = responseText.replace(/## CONDITION FOR EXECUTION \(STRICT CONFIRMATION\):/g, '<div class="mt-4 pt-3 border-t border-amber-500/30 font-black text-amber-600 text-xs uppercase tracking-wider">⏳ Condition For Execution (Strict Confirmation):</div>');
@@ -531,7 +532,7 @@
             }
         }
 
-        async function sendToGroq(images, assetPair, activeKey) {
+        async function sendToGroq(images, assetPair, fallbackPrice, activeKey) {
             const imagePayload = images.map(b64 => ({
                 type: "image_url",
                 image_url: { url: `data:image/png;base64,${b64}` }
@@ -549,13 +550,20 @@
                                     type: "text",
                                     text: `You are an autonomous institutional Smart Money Concepts (SMC) risk engine evaluating ${assetPair}. You possess 100% analytical freedom. 
 
+CRITICAL BASELINE PRICE SYNCHRONIZATION RULE:
+The user's app tracker reports the current environment base price is: ${fallbackPrice}.
+1. Look closely at the Y-axis numbers on the right side of the uploaded 15M chart screenshot. You must cross-reference it with the baseline tracking price provided above (${fallbackPrice}).
+2. You are ABSOLUTELY PROHIBITED from using historic, hardcoded, or hallucinated price levels (like 1925, 1947, 2345, etc.). All your calculated values MUST match the absolute price region of the live uploaded chart (e.g., if the price is hovering in the 4100-4300 region, all execution numbers must belong precisely to that 4100-4300 mathematical range). 
+
+PIP MATH CORRESPONDENCE CALCULATIONS:
+- For Gold (XAUUSD), 1 Pip corresponds to an absolute price movement value change of 0.10. Therefore, a distance of 20 Pips equals an absolute value change of exactly 2.00 points (e.g., 4126.89 + 20 Pips = 4128.89).
+- For Forex currency pairs, 1 Pip corresponds to 0.0001 (or 0.01 for JPY pairs).
+- You must perform pure mathematical pip offset transformations starting directly from your identified 15M target setup points to create the stop loss and profit milestones.
+
 TIME-FRAME HIERARCHY ANALYSIS RULES:
 1. Treat the Daily chart strictly as an OPTIONAL directional layout filter.
 2. Use the 4H and 1H charts ONLY to find general market bias and high-timeframe liquidity zones.
 3. You are ABSOLUTELY REQUIRED to use the 15M (Entry) chart to determine, compute, and lock-in your precise execution points. Your entry targets, stop loss calculations, and structures must come directly from the price action on this 15M chart, and NOT from the 4H or 1H parameters.
-
-CRITICAL ASSET PRICE MATCHING RULE:
-Look closely at the Y-axis numbers on the right side of the uploaded 15M chart screenshot. You must strictly look up, read, and extract your numeric values directly from those exact labels on the chart. Never hallucinate or shift into completely different price ranges. For example, if the 15M chart shows price coordinates fluctuating strictly within the 4000 to 4400 region, your structural entries, breaks, and stop-loss levels must be placed exactly within that 4000-4400 coordinate region. Do not assume old structural prices like 1900 if the current live chart exhibits a different price spectrum.
 
 TWO-PHASE RADAR ASSIGNMENT MODE WITH CONFIRMATION FILTER:
 Your function is to identify and track setups, preventing premature entries that cause large drawdowns.
@@ -579,12 +587,13 @@ First, a section starting exactly with "## CONDITION FOR EXECUTION (STRICT CONFI
 Second, a section starting exactly with "### 🚨 FINAL CONSIDERATION BANNER 🚨" which must contain a highly structured, clean, bulleted format containing the direct parameters so the trader doesn't have to look through prose paragraphs. If the setup is unclear, risky, or does not meet criteria, you MUST output "STAND DOWN (NO TRADE)" in the directional choice. It must strictly be structured exactly like this layout format:
 ### 🚨 FINAL CONSIDERATION BANNER 🚨
 **DIRECTIONAL DECISION:** [EXECUTE BUY ORDER / EXECUTE SELL ORDER / STAND DOWN (NO TRADE)]
-* **ENTRY LEVEL:** [Numeric Trigger Level Value derived from 15M chart, or "N/A - NO TRADE"]
-* **STOP LOSS:** [Numeric Stop Level Value derived from 15M chart invalidation, or "N/A - NO TRADE"] (Exact Distance: [Calculated Pips] Pips)
-* **TAKE PROFIT (1:2 Minimum RR):** [Numeric Value, or "N/A"] (Target Yield: [Calculated Pips * 2] Pips clear of entry.)
-* **TAKE PROFIT (1:3 Maximum RR):** [Numeric Value, or "N/A"] (Target Yield: [Calculated Pips * 3] Pips clear of entry.)
+* **ENTRY LEVEL:** [Numeric Trigger Level Value derived from 15M chart matching current price coordinates, or "N/A - NO TRADE"]
+* **STOP LOSS:** [Numeric Stop Level Value derived from 15M chart invalidation matching current price coordinates, or "N/A - NO TRADE"] (Exact Distance: [Calculated Pips] Pips)
+* **TAKE PROFIT (1:2 Minimum RR):** [Numeric Value calculated precisely using exact entries and pip offsets, or "N/A"] (Target Yield: [Calculated Pips * 2] Pips clear of entry.)
+* **TAKE PROFIT (1:3 Maximum RR):** [Numeric Value calculated precisely using exact entries and pip offsets, or "N/A"] (Target Yield: [Calculated Pips * 3] Pips clear of entry.)
 **FINAL RATIONALE:** [Brief 1-sentence matrix justification clarifying why this is an active order or a strict "NO TRADE" stand down]`
-                                }
+                                },
+                                ...imagePayload
                             ]
                         }
                     ],
@@ -610,7 +619,7 @@ Second, a section starting exactly with "### 🚨 FINAL CONSIDERATION BANNER �
                                     type: "text",
                                     text: `You are an institutional trade management engine tracking an active open position on ${assetPair} entered at price level ${entryPrice}. The trader has provided a screenshot of the active price structure because the market has begun ranging, compressing, or showing signs of drawdown reversal.
 
-Examine the image carefully for order flow structural changes (e.g., sub-structure change of character, mitigation of opposing order blocks, value gaps, or premium/discount internal status).
+Examine the image carefully for order flow structural changes (e.g., sub-structure change of character, mitigation of opposing order blocks, value gaps, or premium/discount internal status). Make sure all pricing references correspond cleanly to the current price range of the active trade context.
 
 YOUR OUTPUT MUST START WITH EXACTLY ONE OF THESE TWO PHRASES ON THE FIRST LINE:
 - "DECISION: KEEP HOLDING" if the structure favors the original path and the range is an institutional re-accumulation or distribution structure.
