@@ -550,6 +550,9 @@
                                     type: "text",
                                     text: `You are an autonomous institutional Smart Money Concepts (SMC) risk engine evaluating ${assetPair}. You possess 100% analytical freedom. 
 
+STRICT CONSENSUS & UNIFIED BIAS MANDATE:
+You are prohibited from flipping biases or offering ambiguous setups. You must evaluate the chart files and arrive at exactly ONE major overarching operational signal, or output no signal at all. If structural signs are conflicting, uneven, overlapping, or do not fulfill every instruction criteria with absolute clarity, you MUST issue a strict "STAND DOWN (NO TRADE)" directive. Do not try to find a setup where one is missing.
+
 CRITICAL BASELINE PRICE SYNCHRONIZATION RULE:
 The user's app tracker reports the current environment base price is: ${fallbackPrice}.
 1. Look closely at the Y-axis numbers on the right side of the uploaded 15M chart screenshot. You must cross-reference it with the baseline tracking price provided above (${fallbackPrice}).
@@ -564,11 +567,6 @@ TIME-FRAME HIERARCHY ANALYSIS RULES:
 1. Treat the Daily chart strictly as an OPTIONAL directional layout filter.
 2. Use the 4H and 1H charts ONLY to find general market bias and high-timeframe liquidity zones.
 3. You are ABSOLUTELY REQUIRED to use the 15M (Entry) chart to determine, compute, and lock-in your precise execution points. Your entry targets, stop loss calculations, and structures must come directly from the price action on this 15M chart, and NOT from the 4H or 1H parameters.
-
-TWO-PHASE RADAR ASSIGNMENT MODE WITH CONFIRMATION FILTER:
-Your function is to identify and track setups, preventing premature entries that cause large drawdowns.
-1. The Setup Tracker Phase: Scan the images to find chart patterns, liquidity sweeps, or mitigation gaps. Map out where they are sitting. If the structure is muddy, unclear, unformed, or highly ambiguous, you must flag it immediately as an invalid setup.
-2. The Trigger Condition Phase: Formulate a precise, conditional rule outlining exactly what needs to happen next for the setup to become valid. 
 
 STRICT ENTRY CONFIRMATION RULE:
 You are STRONGLY PROHIBITED from recommending direct, unconfirmed 'single-touch' limit entries inside structural zones. Your execution conditions must explicitly instruct the trader to wait for an explicit lower-timeframe confirmation routine (e.g., waiting for clear lower-timeframe structural change or micro-candle body rejection inside the zone) before placing an entry order.
@@ -597,7 +595,7 @@ Second, a section starting exactly with "### ðŸš¨ FINAL CONSIDERATION BANNER ðŸš
                             ]
                         }
                     ],
-                    temperature: 0.1, max_completion_tokens: 650
+                    temperature: 0.0, max_completion_tokens: 650
                 })
             });
             if (!response.ok) throw new Error("Failed API transaction");
@@ -631,7 +629,7 @@ Provide a clear 3-bullet block analysis below that decision line explaining your
                             ]
                         }
                     ],
-                    temperature: 0.1, max_completion_tokens: 400
+                    temperature: 0.0, max_completion_tokens: 400
                 })
             });
             if (!response.ok) throw new Error("Failed management API transaction");
