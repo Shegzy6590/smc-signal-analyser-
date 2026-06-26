@@ -541,8 +541,12 @@
                 statusText.innerText = "Analysis matrix synchronized.";
                 
                 let formattedText = responseText.replace(/## CONDITION FOR EXECUTION \(STRICT CONFIRMATION\):/g, '<div class="mt-4 pt-3 border-t border-amber-500/30 font-black text-amber-600 text-xs uppercase tracking-wider">⏳ Condition For Execution (Strict Confirmation):</div>');
+                
                 if (formattedText.includes("### 🚨 FINAL CONSIDERATION BANNER 🚨")) {
-                    formattedText = formattedText.replace(/### 🚨 FINAL CONSIDERATION BANNER 🚨/g, '</div><div class="final-banner-card rounded-xl p-4 mt-4 shadow-inner space-y-2"><div class="font-black text-amber-400 text-sm tracking-wider uppercase flex items-center gap-1">🚨 FINAL CONSIDERATION BANNER 🚨</div>');
+                    const sections = formattedText.split("### 🚨 FINAL CONSIDERATION BANNER 🚨");
+                    const bodyContent = sections[0];
+                    const bannerContent = sections[1] ? sections[1].replace(/\n/g, '<br>') : "";
+                    formattedText = `${bodyContent}<div class="final-banner-card rounded-xl p-4 mt-4 shadow-inner space-y-2"><div class="font-black text-amber-400 text-sm tracking-wider uppercase flex items-center gap-1">🚨 FINAL CONSIDERATION BANNER 🚨</div><div class="text-[11px] leading-relaxed">${bannerContent}</div></div>`;
                 }
                 
                 output.innerHTML = `<div class="space-y-2">${formattedText}</div>`;
