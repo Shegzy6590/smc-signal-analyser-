@@ -420,7 +420,6 @@
             msgBox.innerHTML += `<div id="${loadingId}" class="bg-stone-100 border border-stone-200/60 text-stone-400 p-2.5 rounded-xl rounded-tl-none max-w-[85%] animate-pulse shadow-xs">Thinking...</div>`;
             msgBox.scrollTop = msgBox.scrollHeight;
 
-            // Structure contents array dynamically based on image attachment state
             let contentPayload = [{ type: "text", text: userText || "Analyze this chart image structure and let me know if I should keep holding my open trade position or if I need to exit immediately." }];
             if (currentImageContext) {
                 contentPayload.push({
@@ -519,16 +518,18 @@
             let difference = Math.abs(target - current);
             let pips = 0;
 
+            // Mathematical decimal scaling for standard Forex, JPY, Gold, and Crypto/Indices
             if (asset.includes("XAUUSD") || asset.includes("Gold")) {
-                pips = difference * 10;
+                pips = difference * 10; // Gold 10 cents = 1 pip
             } else if (asset.includes("JPY")) {
-                pips = difference * 100;
-            } else if (asset.includes("BTCUSD")) {
-                pips = difference;
+                pips = difference * 100; // JPY second decimal place
+            } else if (asset.includes("BTCUSD") || asset.includes("Bitcoin")) {
+                pips = difference; // Crypto absolute point value dollar changes
             } else {
-                pips = difference * 10000;
+                pips = difference * 10000; // Standard 4-decimal currency pairs (EURUSD, GBPUSD, etc.)
             }
 
+            // Preserves accurate points/fractions down to 2 decimal points without dropping numbers
             distanceOutput.innerText = `${pips.toFixed(2)} Pips`;
             statusLabel.innerText = "MONITORING SETUP LIVE";
             statusLabel.className = "inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-black bg-amber-500 text-slate-950 uppercase tracking-wide animate-pulse";
@@ -708,11 +709,11 @@
                                     type: "text",
                                     text: `You are an autonomous institutional Smart Money Concepts (SMC) risk engine evaluating ${assetPair}. You possess 100% analytical freedom.
 
-CRITICAL VISUAL SCALE MANDATE:
+CRITICAL VISUAL SCALE MANDATE (PRESERVE EXACT DECIMALS):
 - Read the uploaded screenshot meticulously to detect the EXACT mathematical scale of the asset on the chart right now.
-- YOU ARE STRICTLY FORBIDDEN from guessing, hardcoding, or reusing any fixed baseline or prefix digit (such as always generating prices in the 4000s or 2000s). 
-- Your numeric logic must entirely match the exact asset pair scale presented in the image. If it is a currency pair like EURUSD, prices must stay within the 1.0xxx range. If it is Bitcoin, they must match the current multi-thousand range. If it is Gold, use exactly what is drawn on the right-hand Y-axis. 
-- Ensure that the Entry Level, Stop Loss, and Take Profit levels match the visible pricing layout of the screenshot to the exact digit. Do not hallucinate numbers from past configurations.
+- YOU ARE STRICTLY FORBIDDEN from guessing, hardcoding, or rounding baseline digits (e.g., if checking EURUSD or other currencies, do not assume 65,000 or 2,000. Use the true 4-to-5 decimal place coordinates like 1.15225 as seen on the chart).
+- Your numeric logic must entirely match the exact asset pair scale presented in the image. If it is a currency pair like EURUSD, prices must stay within the true 1.xxxxx decimal structure. If it is Bitcoin, use its corresponding multi-thousand layout. If it is Gold, use exactly what is drawn on the right-hand Y-axis.
+- Ensure that the Entry Level, Stop Loss, and Take Profit levels match the visible pricing layout of the screenshot to the exact digit including points. Do not hallucinate numbers from past calculations.
 
 STRICT MARKET RANGING GUARDRAIL:
 - First, check if the 15M chart is compressing sideways inside a tight band without producing distinct higher highs/lower lows or clear displacement sweeps. If the price action is choppy or ranging, you must immediately halt and output a "STAND DOWN (NO TRADE)" order. Do not try to generate signals inside a sideways range.
@@ -725,7 +726,7 @@ TIMEFRAME ALIGNMENT & COUNTER-TREND SCALPING RULES:
 STRICT 15M RISK CONTROL (NO LARGE HOLD TIMES):
 - Your Stop Loss level MUST be mapped out exclusively using the actual 15M entry chart structural swing coordinates found near the current visible market price to keep risk parameters tightly compressed.
 - For XAUUSD (Gold): Maintain a tight Stop Loss distance of 20 to 30 Pips max.
-- For Foreign Exchange Currency Pairs (EURUSD, GBPUSD, etc.): Your structural Stop Loss for these scalp setups MUST stay strictly compressed between a MINIMUM of 12 Pips to a MAXIMUM ceiling of 20 Pips max! No exceptions.
+- For Foreign Exchange Currency Pairs (EURUSD, GBPUSD, etc.): Your structural Stop Loss for these scalp setups MUST stay strictly compressed between a MINIMUM of 12 Pips to a MAXIMUM ceiling of 20 Pips max! No exceptions. Ensure decimals are typed out precisely.
 - Take Profit 1 must be exactly 2x your Stop Loss pip distance (1:2 RR). Take Profit 2 must be exactly 3x your Stop Loss pip distance (1:3 RR). If the chart configuration demands wide targets or holding for days, force a strict "STAND DOWN (NO TRADE)" directive.
 
 OUTPUT BLOCK ORDER SPECIFICATION:
@@ -735,10 +736,10 @@ First, a section starting exactly with "## CONDITION FOR EXECUTION (STRICT CONFI
 
 Second, a section starting exactly with "### 🚨 FINAL CONSIDERATION BANNER 🚨" which must contain a highly structured, clean, bulleted format containing the direct parameters. It must strictly be structured exactly like this layout format:
 **DIRECTIONAL DECISION:** [EXECUTE BUY ORDER / EXECUTE SELL ORDER / STAND DOWN (NO TRADE)]
-* **ENTRY LEVEL:** [Numeric Trigger Level Value derived from 15M chart, or "N/A - NO TRADE"]
-* **STOP LOSS:** [Numeric Stop Level Value derived from 15M chart invalidation, or "N/A - NO TRADE"] (Exact Distance: [Calculated Pips] Pips)
-* **TAKE PROFIT (1:2 Minimum RR):** [Numeric Value, or "N/A"] (Target Yield: [Calculated Pips * 2] Pips clear of entry.)
-* **TAKE PROFIT (1:3 Maximum RR):** [Numeric Value, or "N/A"] (Target Yield: [Calculated Pips * 3] Pips clear of entry.)
+* **ENTRY LEVEL:** [Numeric Trigger Level Value with exact decimals derived from 15M chart, or "N/A - NO TRADE"]
+* **STOP LOSS:** [Numeric Stop Level Value with exact decimals derived from 15M chart invalidation, or "N/A - NO TRADE"] (Exact Distance: [Calculated Pips] Pips)
+* **TAKE PROFIT (1:2 Minimum RR):** [Numeric Value with exact decimals, or "N/A"] (Target Yield: [Calculated Pips * 2] Pips clear of entry.)
+* **TAKE PROFIT (1:3 Maximum RR):** [Numeric Value with exact decimals, or "N/A"] (Target Yield: [Calculated Pips * 3] Pips clear of entry.)
 **FINAL RATIONALE:** [Brief 1-sentence matrix justification clarifying why this is an active order or a strict "NO TRADE" stand down]`
                                 }
                             ]
@@ -764,9 +765,9 @@ Second, a section starting exactly with "### 🚨 FINAL CONSIDERATION BANNER �
                             content: [
                                 {
                                     type: "text",
-                                    text: `You are an institutional trade management engine tracking an active open position on ${assetPair} entered at price level ${entryPrice}. The trader has provided a screenshot of the active price structure because the market has begun ranging, compressing, or showing signs of drawdown reversal.
+                                    text: `You are an autonomous institutional trade management engine tracking an active open position on ${assetPair} entered at price level ${entryPrice}. The trader has provided a screenshot of the active price structure because the market has begun ranging, compressing, or showing signs of drawdown reversal.
 
-Examine the image carefully for order flow structural changes (e.g., sub-structure change of character, mitigation of opposing order blocks, value gaps, or premium/discount internal status).
+Examine the image carefully for order flow structural changes (e.g., sub-structure change of character, mitigation of opposing order blocks, value gaps, or premium/discount internal status). Look carefully at the exact numbers and decimal positions on the Y-axis.
 
 YOUR OUTPUT MUST START WITH EXACTLY ONE OF THESE TWO PHRASES ON THE FIRST LINE:
 - "DECISION: KEEP HOLDING" if the structure favors the original path and the range is an institutional re-accumulation or distribution structure.
