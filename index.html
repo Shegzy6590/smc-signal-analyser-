@@ -295,12 +295,28 @@
                 </span>
                 <button onclick="toggleAiChat()" class="text-stone-400 hover:text-white text-xs font-bold px-1 cursor-pointer">✕</button>
             </div>
+            
             <div id="chatMessages" class="flex-1 p-3 overflow-y-auto space-y-2.5 text-[11px] bg-[#fdfcf7] font-medium leading-relaxed text-stone-600">
                 <div class="bg-stone-100 border border-stone-200/60 text-stone-700 p-2.5 rounded-xl rounded-tl-none max-w-[85%] shadow-xs">
-                    Hello! Ask me any questions about market trends, order blocks, or system setups right here.
+                    Hello! Ask me any questions about market trends, order blocks, or upload an active chart screenshot to see whether you should hold or exit your position.
                 </div>
             </div>
+
+            <div id="chatImagePreviewBox" class="hidden p-2 bg-stone-50 border-t border-stone-200/60 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <img id="chatImagePreviewThumb" src="" class="w-10 h-10 object-cover rounded border border-stone-300 shadow-xs">
+                    <span class="text-[9px] font-bold text-stone-500 uppercase">Screenshot Attached</span>
+                </div>
+                <button onclick="clearChatUploadedFile()" class="text-xs font-bold text-red-500 px-2 py-1 hover:bg-red-50 rounded">✕</button>
+            </div>
+            
             <div class="p-2 border-t border-stone-200/60 bg-white flex gap-1.5 items-center">
+                <input type="file" id="chatFileInput" accept="image/png, image/jpeg" class="hidden" onchange="handleChatImageSelection(event)">
+                
+                <button onclick="document.getElementById('chatFileInput').click()" class="text-stone-400 hover:text-slate-900 transition p-1 shrink-0 cursor-pointer flex items-center justify-center" title="Upload chart image">
+                    <i data-lucide="image" class="w-4 h-4"></i>
+                </button>
+                
                 <input id="chatInput" type="text" placeholder="Ask structural insights..." class="flex-1 bg-stone-50 border border-stone-200 rounded-lg px-2.5 py-1.5 text-[11px] focus:outline-none text-slate-800 font-medium" onkeydown="if(event.key === 'Enter') sendDirectChatMessage()">
                 <button onclick="sendDirectChatMessage()" class="bg-slate-900 text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-slate-800 transition cursor-pointer">Send</button>
             </div>
@@ -335,6 +351,7 @@
         ];
         
         let positionManagementChartRaw = "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVR42mNkYGD4DwYMDAwM4MIEBv6DwA8A7vYCBXas3mAAAAAElFTkSuQmCC";
+        let chatBoxAttachedImageRaw = null;
 
         let insideAlertWindowTriggered = false;
 
@@ -355,25 +372,62 @@
             lucide.createIcons();
         }
 
+        function handleChatImageSelection(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                chatBoxAttachedImageRaw = e.target.result.split(',')[1];
+                document.getElementById("chatImagePreviewThumb").src = e.target.result;
+                document.getElementById("chatImagePreviewBox").classList.remove("hidden");
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearChatUploadedFile() {
+            chatBoxAttachedImageRaw = null;
+            document.getElementById("chatFileInput").value = "";
+            document.getElementById("chatImagePreviewBox").classList.add("hidden");
+        }
+
         async function sendDirectChatMessage() {
             const inputEl = document.getElementById("chatInput");
             const msgBox = document.getElementById("chatMessages");
             const savedToken = localStorage.getItem("smc_groq_api_token");
             const userText = inputEl.value.trim();
 
-            if (!userText) return;
+            if (!userText && !chatBoxAttachedImageRaw) return;
             if (!savedToken) {
                 alert("Please configure your Groq API Token Key in Settings first.");
                 return;
             }
 
-            msgBox.innerHTML += `<div class="bg-slate-900 border border-slate-800 text-white p-2.5 rounded-xl rounded-tr-none max-w-[85%] ml-auto shadow-xs text-left">${userText}</div>`;
+            let messageHtml = `<div class="bg-slate-900 border border-slate-800 text-white p-2.5 rounded-xl rounded-tr-none max-w-[85%] ml-auto shadow-xs text-left">`;
+            if (chatBoxAttachedImageRaw) {
+                messageHtml += `<img src="data:image/png;base64,${chatBoxAttachedImageRaw}" class="w-full h-auto rounded mb-1.5 border border-slate-700">`;
+            }
+            messageHtml += `${userText || "Analyzing attached trade chart..."}</div>`;
+            
+            msgBox.innerHTML += messageHtml;
+            const currentImageContext = chatBoxAttachedImageRaw;
+            
             inputEl.value = "";
+            clearChatUploadedFile();
             msgBox.scrollTop = msgBox.scrollHeight;
 
             const loadingId = "loading-" + Date.now();
             msgBox.innerHTML += `<div id="${loadingId}" class="bg-stone-100 border border-stone-200/60 text-stone-400 p-2.5 rounded-xl rounded-tl-none max-w-[85%] animate-pulse shadow-xs">Thinking...</div>`;
             msgBox.scrollTop = msgBox.scrollHeight;
+
+            // Structure contents array dynamically based on image attachment state
+            let contentPayload = [{ type: "text", text: userText || "Analyze this chart image structure and let me know if I should keep holding my open trade position or if I need to exit immediately." }];
+            if (currentImageContext) {
+                contentPayload.push({
+                    type: "image_url",
+                    image_url: { url: `data:image/png;base64,${currentImageContext}` }
+                });
+            }
 
             try {
                 const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -381,8 +435,8 @@
                     headers: { "Authorization": `Bearer ${savedToken}`, "Content-Type": "application/json" },
                     body: JSON.stringify({
                         model: "meta-llama/llama-4-scout-17b-16e-instruct",
-                        messages: [{ role: "user", content: userText }],
-                        temperature: 0.4, max_completion_tokens: 350
+                        messages: [{ role: "user", content: contentPayload }],
+                        temperature: 0.3, max_completion_tokens: 450
                     })
                 });
 
