@@ -654,10 +654,11 @@
                                     type: "text",
                                     text: `You are an autonomous institutional Smart Money Concepts (SMC) risk engine evaluating ${assetPair}. You possess 100% analytical freedom.
 
-CRITICAL VISUAL ANCHOR MANDATE:
-- Look directly at the screenshots provided. Identify the actual, exact current price numbers rendering on the chart axis labels.
-- YOU ARE STRICTLY FORBIDDEN FROM REPLACING THE LEADING DIGITS OR CHANGING THE BASE PRICE SCALE. If the visible market price on the screenshot is currently floating in the 4000+ range (e.g., 4065.45), your output parameters MUST stay completely locked inside that exact 4000+ matrix. 
-- DO NOT pattern-match or hallucinate classic, outdated price baselines (such as writing 2065.44 when the image displays 4065.45). You must copy and use the matching leading digits (the '4', not a '2') exactly as they are graphically displayed. Every calculated Entry Level, Stop Loss, and Take Profit step must align meticulously to this precise observed axis.
+CRITICAL VISUAL SCALE MANDATE:
+- Read the uploaded screenshot meticulously to detect the EXACT mathematical scale of the asset on the chart right now.
+- YOU ARE STRICTLY FORBIDDEN from guessing, hardcoding, or reusing any fixed baseline or prefix digit (such as always generating prices in the 4000s or 2000s). 
+- Your numeric logic must entirely match the exact asset pair scale presented in the image. If it is a currency pair like EURUSD, prices must stay within the 1.0xxx range. If it is Bitcoin, they must match the current multi-thousand range. If it is Gold, use exactly what is drawn on the right-hand Y-axis. 
+- Ensure that the Entry Level, Stop Loss, and Take Profit levels match the visible pricing layout of the screenshot to the exact digit. Do not hallucinate numbers from past configurations.
 
 STRICT MARKET RANGING GUARDRAIL:
 - First, check if the 15M chart is compressing sideways inside a tight band without producing distinct higher highs/lower lows or clear displacement sweeps. If the price action is choppy or ranging, you must immediately halt and output a "STAND DOWN (NO TRADE)" order. Do not try to generate signals inside a sideways range.
