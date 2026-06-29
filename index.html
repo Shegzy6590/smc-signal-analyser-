@@ -417,7 +417,18 @@
             msgBox.innerHTML += `<div id="${loadingId}" class="bg-stone-100 border border-stone-200/60 text-stone-400 p-2.5 rounded-xl rounded-tl-none max-w-[85%] animate-pulse shadow-xs">Thinking...</div>`;
             msgBox.scrollTop = msgBox.scrollHeight;
 
-            let contentPayload = [{ type: "text", text: userText || "Analyze this chart image structure and let me know if I should keep holding my open trade position or if I need to exit immediately." }];
+            let contentPayload = [{ 
+                type: "text", 
+                text: `You are an automated assistant designed to evaluate market charts with strict numerical alignment. 
+
+CRITICAL VISION MANDATE:
+- Look directly at the right-hand side Y-axis of the uploaded image to capture explicit forex or crypto asset pricing decimals. 
+- You are forbidden from inventing or assuming rough values. For example, if the asset is Gold (XAUUSD) and the price axis displays values around 4050.00 to 4060.00, do not mistake floating profit metrics or balance indicators (e.g., -525.00 USD) for the actual market asset price level.
+- Read only the direct asset labels printed along the right margin or highlighted level boxes (e.g. 4055.60, 4060.62).
+
+User Question: ${userText || "Analyze this chart image structure and provide immediate feedback based on the exact price metrics seen on screen."}`
+            }];
+            
             if (currentImageContext) {
                 contentPayload.push({
                     type: "image_url",
@@ -432,7 +443,7 @@
                     body: JSON.stringify({
                         model: "meta-llama/llama-4-scout-17b-16e-instruct",
                         messages: [{ role: "user", content: contentPayload }],
-                        temperature: 0.3, max_completion_tokens: 450
+                        temperature: 0.2, max_completion_tokens: 450
                     })
                 });
 
@@ -531,7 +542,7 @@
 
             if ((pips <= 5.0 || (current >= target && target > current === false)) && !insideAlertWindowTriggered) {
                 insideAlertWindowTriggered = true;
-                executeDualChannelAlerts(asset, pips.toFixed(2), target, current);
+                executeDualChannelAlerts(asset, pips.toFixed(2), targetLevel, currentPrice);
             } else if (pips > 5.0 && !((current >= target && target > current === false))) {
                 insideAlertWindowTriggered = false;
             }
@@ -691,7 +702,6 @@
                 strategyInstruction = "STRATEGY MODE CONSTRAINT: Run full matrix analysis checking horizontal liquidity pools, structural shifts, and candlestick rejections simultaneously.";
             }
 
-            // High Priority Hard-coded Text Payload Injection to guarantee prompt enforcement
             const baseTextContext = {
                 type: "text",
                 text: `You are an automated, rigid institutional risk management machine assessing ${assetPair}. You are strictly forbidden from loose assumptions. You must adhere 100% to the following analytical parameters.
@@ -713,7 +723,7 @@
 - For Forex Currency Pairs (EURUSD, GBPUSD, USDJPY, etc.): Stop Loss must strictly remain compressed between a absolute MINIMUM of 12 pips and a absolute MAXIMUM of 20 pips! No exceptions.
 - Take Profit 1 must be exactly a 1:2 Risk-to-Reward ratio (calculated to the exact decimal point based on your structural entry and stop loss). Take Profit 2 must be exactly a 1:3 Risk-to-Reward ratio.
 
-${strategyInstruction}
+\${strategyInstruction}
 
 OUTPUT TEMPLATE:
 Your output must always contain these closing blocks.
@@ -907,13 +917,13 @@ Provide a clear 3-bullet block analysis below that decision line explaining your
                 return;
             }
             list.innerHTML = logs.map(log => `
-                <div class="border-l-4 border-${log.colorCode}-500 pl-3 py-2 bg-white rounded-r-lg border border-stone-200/60 shadow-xs">
+                <div class="border-l-4 border-\${log.colorCode}-500 pl-3 py-2 bg-white rounded-r-lg border border-stone-200/60 shadow-xs">
                     <div class="flex justify-between items-center">
-                        <p class="text-[11px] font-black text-slate-800">${log.assetPair} — <span class="text-stone-500">${log.intendedBias}</span></p>
-                        <span class="text-[9px] font-bold text-stone-400">${log.timestamp}</span>
+                        <p class="text-[11px] font-black text-slate-800">\${log.assetPair} — <span class="text-stone-500">\${log.intendedBias}</span></p>
+                        <span class="text-[9px] font-bold text-stone-400">\${log.timestamp}</span>
                     </div>
-                    <p class="text-[9px] font-black text-${log.colorCode}-600 tracking-wide mt-0.5 uppercase">${log.status}</p>
-                    <p class="text-[10px] text-stone-500 mt-1 leading-normal">${log.summaryText}</p>
+                    <p class="text-[9px] font-black text-\${log.colorCode}-600 tracking-wide mt-0.5 uppercase">\${log.status}</p>
+                    <p class="text-[10px] text-stone-500 mt-1 leading-normal">\${log.summaryText}</p>
                 </div>
             `).join('');
         }
