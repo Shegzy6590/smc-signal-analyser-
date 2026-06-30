@@ -264,8 +264,8 @@
         <h2 class="text-[11px] font-black text-stone-400 uppercase tracking-widest pt-2">Configuration Engine</h2>
         <div class="bg-white border border-stone-200/60 rounded-xl p-4 shadow-xs space-y-4">
             <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Groq API Token Key</label>
-                <input id="apiKeyInput" type="text" oninput="saveApiKey(this.value)" placeholder="gsk_xxxxxxxxxxxxxxxx" class="w-full bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 text-xs font-mono text-slate-800 focus:outline-none">
+                <label class="block text-xs font-bold text-slate-700 mb-1">Gemini API Token Key</label>
+                <input id="apiKeyInput" type="text" oninput="saveApiKey(this.value)" placeholder="AIzaSy..." class="w-full bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 text-xs font-mono text-slate-800 focus:outline-none">
             </div>
             <hr class="border-stone-100">
             <div>
@@ -391,12 +391,12 @@
         async function sendDirectChatMessage() {
             const inputEl = document.getElementById("chatInput");
             const msgBox = document.getElementById("chatMessages");
-            const savedToken = localStorage.getItem("smc_groq_api_token");
+            const savedToken = localStorage.getItem("smc_gemini_api_token");
             const userText = inputEl.value.trim();
 
             if (!userText && !chatBoxAttachedImageRaw) return;
             if (!savedToken) {
-                alert("Please configure your Groq API Token Key in Settings first.");
+                alert("Please configure your Gemini API Token Key in Settings first.");
                 return;
             }
 
@@ -417,8 +417,7 @@
             msgBox.innerHTML += `<div id="${loadingId}" class="bg-stone-100 border border-stone-200/60 text-stone-400 p-2.5 rounded-xl rounded-tl-none max-w-[85%] animate-pulse shadow-xs">Thinking...</div>`;
             msgBox.scrollTop = msgBox.scrollHeight;
 
-            let contentPayload = [{ 
-                type: "text", 
+            let inlineParts = [{ 
                 text: `You are an automated assistant designed to evaluate market charts with strict numerical alignment. 
 
 CRITICAL VISION MANDATE:
@@ -430,26 +429,27 @@ User Question: ${userText || "Analyze this chart image structure and provide imm
             }];
             
             if (currentImageContext) {
-                contentPayload.push({
-                    type: "image_url",
-                    image_url: { url: `data:image/png;base64,${currentImageContext}` }
+                inlineParts.push({
+                    inlineData: {
+                        mimeType: "image/png",
+                        data: currentImageContext
+                    }
                 });
             }
 
             try {
-                const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${savedToken}`, {
                     method: "POST",
-                    headers: { "Authorization": `Bearer ${savedToken}`, "Content-Type": "application/json" },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        model: "meta-llama/llama-4-scout-17b-16e-instruct",
-                        messages: [{ role: "user", content: contentPayload }],
-                        temperature: 0.2, max_completion_tokens: 450
+                        contents: [{ parts: inlineParts }],
+                        generationConfig: { temperature: 0.2, maxOutputTokens: 450 }
                     })
                 });
 
                 if (!response.ok) throw new Error();
                 const resData = await response.json();
-                const aiResponse = resData.choices[0].message.content;
+                const aiResponse = resData.candidates[0].content.parts[0].text;
 
                 document.getElementById(loadingId).remove();
                 msgBox.innerHTML += `<div class="bg-stone-100 border border-stone-200/60 text-stone-700 p-2.5 rounded-xl rounded-tl-none max-w-[85%] shadow-xs">${aiResponse.replace(/\n/g, '<br>')}</div>`;
@@ -584,7 +584,7 @@ User Question: ${userText || "Analyze this chart image structure and provide imm
             const output = document.getElementById("evaluationOutput");
             const pair = document.getElementById("assetPair").value;
             const strategyMode = document.getElementById("strategyFocus").value;
-            const savedToken = localStorage.getItem("smc_groq_api_token");
+            const savedToken = localStorage.getItem("smc_gemini_api_token");
 
             if (!savedToken) {
                 statusText.innerText = "Execution failed.";
@@ -598,7 +598,7 @@ User Question: ${userText || "Analyze this chart image structure and provide imm
             statusText.innerText = "Processing execution tokens...";
 
             try {
-                const responseText = await sendToGroq(targetLiveCharts, pair, strategyMode, savedToken);
+                const responseText = await sendToGemini(targetLiveCharts, pair, strategyMode, savedToken);
                 statusText.innerText = "Analysis matrix synchronized.";
                 
                 let formattedText = responseText.replace(/## CONDITION FOR EXECUTION \(STRICT CONFIRMATION\):/g, '<div class="mt-4 pt-3 border-t border-amber-500/30 font-black text-amber-600 text-xs uppercase tracking-wider">⏳ Condition For Execution (Strict Confirmation):</div>');
@@ -646,7 +646,7 @@ User Question: ${userText || "Analyze this chart image structure and provide imm
             const output = document.getElementById("manageEvaluationOutput");
             const pair = document.getElementById("manageAssetPair").value;
             const entryPrice = document.getElementById("manageEntryInput").value || "Unspecified Coordinate";
-            const savedToken = localStorage.getItem("smc_groq_api_token");
+            const savedToken = localStorage.getItem("smc_gemini_api_token");
 
             const holdBanner = document.getElementById("holdDecisionBanner");
             const exitBanner = document.getElementById("exitDecisionBanner");
@@ -664,7 +664,7 @@ User Question: ${userText || "Analyze this chart image structure and provide imm
             statusText.innerText = "Deconstructing range patterns...";
 
             try {
-                const responseText = await sendManagementToGroq(positionManagementChartRaw, pair, entryPrice, savedToken);
+                const responseText = await sendManagementToGemini(positionManagementChartRaw, pair, entryPrice, savedToken);
                 statusText.innerText = "Position parameters synchronized.";
                 output.innerHTML = `<div class="space-y-2 font-medium text-xs text-stone-600 leading-relaxed">${responseText.replace(/\n/g, '<br>')}</div>`;
 
@@ -685,12 +685,7 @@ User Question: ${userText || "Analyze this chart image structure and provide imm
             }
         }
 
-        async function sendToGroq(images, assetPair, strategyMode, activeKey) {
-            const imagePayload = images.map(b64 => ({
-                type: "image_url",
-                image_url: { url: `data:image/png;base64,${b64}` }
-            }));
-
+        async function sendToGemini(images, assetPair, strategyMode, activeKey) {
             let strategyInstruction = "";
             if (strategyMode === "sr") {
                 strategyInstruction = "STRATEGY MODE CONSTRAINT: Evaluate ONLY Support & Resistance levels and horizontal Institutional Liquidity Pools/Sweeps. Ignore trendlines unless aligning directly with a major horizontal sweep zone.";
@@ -702,8 +697,7 @@ User Question: ${userText || "Analyze this chart image structure and provide imm
                 strategyInstruction = "STRATEGY MODE CONSTRAINT: Run full matrix analysis checking horizontal liquidity pools, structural shifts, and candlestick rejections simultaneously.";
             }
 
-            const baseTextContext = {
-                type: "text",
+            let partsPayload = [{
                 text: `You are an automated, rigid institutional risk management machine assessing ${assetPair}. You are strictly forbidden from loose assumptions. You must adhere 100% to the following analytical parameters.
 
 1. CRITICAL VISUAL PRICE MANDATE:
@@ -739,42 +733,31 @@ Your output must always contain these closing blocks.
 * **TAKE PROFIT (1:2 Minimum RR):** [Exact decimal target or "N/A"] (Target Yield: [Calculated Pips * 2] Pips clear of entry.)
 * **TAKE PROFIT (1:3 Maximum RR):** [Exact decimal target or "N/A"] (Target Yield: [Calculated Pips * 3] Pips clear of entry.)
 **FINAL RATIONALE:** [Provide a precise 1-sentence matrix structural confirmation justification or a clear "NO TRADE" stand down rationale.]`
-            };
+            }];
 
-            const payloadContents = [baseTextContext, ...imagePayload];
+            images.forEach(b64 => {
+                partsPayload.push({
+                    inlineData: { mimeType: "image/png", data: b64 }
+                });
+            });
 
-            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${activeKey}`, {
                 method: "POST",
-                headers: { "Authorization": `Bearer ${activeKey}`, "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    model: "meta-llama/llama-4-scout-17b-16e-instruct",
-                    messages: [
-                        {
-                            role: "user",
-                            content: payloadContents
-                        }
-                    ],
-                    temperature: 0.1, max_completion_tokens: 650
+                    contents: [{ parts: partsPayload }],
+                    generationConfig: { temperature: 0.1, maxOutputTokens: 650 }
                 })
             });
             if (!response.ok) throw new Error("Failed API transaction");
             const resData = await response.json();
-            return resData.choices[0].message.content;
+            return resData.candidates[0].content.parts[0].text;
         }
 
-        async function sendManagementToGroq(imageB64, assetPair, entryPrice, activeKey) {
-            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                method: "POST",
-                headers: { "Authorization": `Bearer ${activeKey}`, "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    model: "meta-llama/llama-4-scout-17b-16e-instruct",
-                    messages: [
-                        {
-                            role: "user",
-                            content: [
-                                {
-                                    type: "text",
-                                    text: `You are an autonomous institutional trade management engine tracking an active open position on ${assetPair} entered at price level ${entryPrice}. The trader has provided a screenshot of the active price structure because the market has begun ranging, compressing, or showing signs of drawdown reversal.
+        async function sendManagementToGemini(imageB64, assetPair, entryPrice, activeKey) {
+            const partsPayload = [
+                {
+                    text: `You are an autonomous institutional trade management engine tracking an active open position on ${assetPair} entered at price level ${entryPrice}. The trader has provided a screenshot of the active price structure because the market has begun ranging, compressing, or showing signs of drawdown reversal.
 
 Examine the image carefully for order flow structural changes (e.g., sub-structure change of character, mitigation of opposing order blocks, value gaps, or premium/discount internal status). Look carefully at the exact numbers and decimal positions on the Y-axis.
 
@@ -783,17 +766,23 @@ YOUR OUTPUT MUST START WITH EXACTLY ONE OF THESE TWO PHRASES ON THE FIRST LINE:
 - "DECISION: EXIT TRADE NOW" if an opposing structural displacement vector or breaker formation invalidates the open position risk metrics.
 
 Provide a clear 3-bullet block analysis below that decision line explaining your structural reasoning, premium/discount status, and immediate mitigation tactics.`
-                                },
-                                { type: "image_url", image_url: { url: `data:image/png;base64,${imageB64}` } }
-                            ]
-                        }
-                    ],
-                    temperature: 0.1, max_completion_tokens: 400
+                },
+                {
+                    inlineData: { mimeType: "image/png", data: imageB64 }
+                }
+            ];
+
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${activeKey}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{ parts: partsPayload }],
+                    generationConfig: { temperature: 0.1, maxOutputTokens: 400 }
                 })
             });
             if (!response.ok) throw new Error("Failed management API transaction");
             const resData = await response.json();
-            return resData.choices[0].message.content;
+            return resData.candidates[0].content.parts[0].text;
         }
 
         function updateLiveClockAndMacroCalendar() {
@@ -860,9 +849,9 @@ Provide a clear 3-bullet block analysis below that decision line explaining your
             lucide.createIcons();
         }
 
-        function saveApiKey(v) { localStorage.setItem("smc_groq_api_token", v.trim()); }
+        function saveApiKey(v) { localStorage.setItem("smc_gemini_api_token", v.trim()); }
         function loadSavedApiKey() {
-            const tk = localStorage.getItem("smc_groq_api_token");
+            const tk = localStorage.getItem("smc_gemini_api_token");
             if (tk) document.getElementById("apiKeyInput").value = tk;
         }
 
