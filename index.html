@@ -353,6 +353,7 @@
             setInterval(calculateLiveSpreadDistance, 3000);
         });
 
+        // Rest of scripts unaltered as requested...
         function toggleAiChat() {
             const chatWin = document.getElementById("aiChatWindow");
             chatWin.classList.toggle("hidden");
@@ -756,6 +757,7 @@
             }
         }
 
+        // Updated sendToGemini function mapping image_8.png pending/alert layer instructions
         async function sendToGemini(images, assetPair, strategyMode, activeKey) {
             let strategyInstruction = "";
             if (strategyMode === "sr") {
@@ -773,7 +775,7 @@
 
 ${strategyInstruction}
 
-You must process the chart structural data strictly according to this sequential DUAL-PRIORITY decision flow matrix:
+You must process the chart structural data strictly according to this sequential decision flow matrix:
 
 ======================================================================
 BRANCH 1: TREND ALIGNMENT MATCH (PRIMARY FILTER)
@@ -800,21 +802,31 @@ If Branch 1 constraints are missed because the macro timeframe trend directly op
   -> ACTION: Generate a "SELL (MINOR SCALP)" configuration setup.
 
 ======================================================================
+BRANCH 3: PENDING ALERT CONDITION LAYER (ZONES PROXIMITY CHECK)
+======================================================================
+If no immediate structural setups match Branch 1 or Branch 2 rules, invoke this pending calculation tier using rules from image_8.png:
+1. Define Zones: Explicitly isolate key technical structural support/resistance zones and nearest premium or discount Liquidity Sweep pools from the input charts.
+2. Proximity Evaluation Logic: Instead of failing out with an immediate stand down response, check for price closeness to those zones.
+3. Pullback Setup Actions: If the asset is hovering near a key zone without a verified structural shift signal yet, switch the output format state to a pending condition:
+   * DIRECTIONAL DECISION must say exactly: "PENDING - WAIT FOR PULLBACK"
+   * FINAL RATIONALE message must outline clear, adaptive execution instructions following this explicit syntax model: "Wait for price to pull back to [Zone Price] for confirmation." Match this [Zone Price] map to generate target alert actions on the tracking monitor panel.
+
+======================================================================
 FAILSAFE ENGINE SHUTDOWN
 ======================================================================
-If neither Branch 1 nor Branch 2 structural configurations are met, you must refuse to trigger entry targets to preserve capital.
+If neither active multi-timeframe directional validation configurations nor close pending liquidity sweep zone proximity guidelines are detected, execute system preservation mode.
 -> ACTION: Generate a "STAND DOWN" configuration setup.
 
 OUTPUT STRUCTURING RULE:
 Provide your structural commentary in clear paragraph format first, detailing precise chart clues, wicks, and behavior. Then append the exact block below to your output. Do not include markdown asterisks, hashes, or bullet symbols inside the METADATA BLOCK.
 
 ==== METADATA BLOCK ====
-DIRECTIONAL DECISION: [BUY (MAJOR) / SELL (MAJOR) / BUY (MINOR SCALP) / SELL (MINOR SCALP) / STAND DOWN]
+DIRECTIONAL DECISION: [BUY (MAJOR) / SELL (MAJOR) / BUY (MINOR SCALP) / SELL (MINOR SCALP) / PENDING - WAIT FOR PULLBACK / STAND DOWN]
 ENTRY LEVEL: [Insert coordinate price or N/A]
 STOP LOSS: [Insert coordinate price or N/A]
 TAKE PROFIT (1:2): [Insert coordinate price or N/A]
 TAKE PROFIT (1:3): [Insert coordinate price or N/A]
-FINAL RATIONALE: [One clear structural summary sentence detailing compliance status]`
+FINAL RATIONALE: [Provide clear structural alignment check summaries or explicit zone pullback confirmation advice mapped directly to your setup level trackers]`
             }];
 
             images.forEach(b64 => {
