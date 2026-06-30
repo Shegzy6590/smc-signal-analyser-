@@ -557,10 +557,9 @@
             }
         }
 
-        // Regex-powered regex text extraction to completely stop split markers looping or leaking
+        // Custom clean parser tailored to make image_5.png syntax look flawless
         function parseSMCResponseToHTML(rawText) {
             try {
-                // Regex finders that grab the blocks cleanly regardless of line changes or split markers
                 const conditionRegex = /⏳\s*CONDITION\s*FOR\s*EXECUTION\s*\(STRICT\s*CONFIRMATION\):([\s\S]*?)(?=🚨|$)/i;
                 const bannerRegex = /🚨\s*FINAL\s*CONSIDERATION\s*BANNER\s*🚨([\s\S]*)$/i;
 
@@ -570,41 +569,44 @@
                 let conditionText = conditionMatch ? conditionMatch[1].replace(/##/g, '').trim() : "Multi-timeframe evaluation matrix compiled.";
                 let bannerBody = bannerMatch ? bannerMatch[1].trim() : rawText;
 
-                // Clean the inner parameters text from any copied remnants of the condition header
-                if (bannerBody.toLowerCase().includes("condition for execution")) {
-                     bannerBody = bannerBody.replace(/⏳\s*CONDITION\s*FOR\s*EXECUTION\s*\(STRICT\s*CONFIRMATION\):[\s\S]*?(?=DIRECTIONAL|$)/i, "");
-                }
-
-                let htmlLines = bannerBody.split("\n").map(line => {
+                // Process the body content inside the black card beautifully
+                let bodyHtml = bannerBody.split("\n").map(line => {
                     let trimmed = line.trim();
                     if (!trimmed) return "";
                     
-                    let processed = trimmed.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                    // Strip list structural loops cleanly
+                    let cleanLine = trimmed.replace(/^[\*\-\s•]+/, "").trim();
                     
-                    if (trimmed.startsWith("*") || trimmed.startsWith("-")) {
-                        processed = processed.replace(/^[\*\-\s]+/, "");
-                        return `<div class="flex items-start gap-1.5 pl-1"><span>•</span><span>${processed}</span></div>`;
+                    // Highlight labels nicely
+                    cleanLine = cleanLine.replace(/\*\*(.*?)\*\*/g, '<strong class="text-amber-400 font-bold">$1</strong>');
+                    
+                    if (trimmed.startsWith("*") || trimmed.startsWith("-") || trimmed.startsWith("•")) {
+                        return `<div class="flex items-start gap-2 pl-2 my-1 text-stone-200">
+                                    <span class="text-amber-500">•</span>
+                                    <span class="text-[11px] font-medium leading-relaxed">${cleanLine}</span>
+                                </div>`;
                     }
-                    return `<p class="leading-relaxed mt-1">${processed}</p>`;
+                    
+                    return `<p class="leading-relaxed text-[11px] font-medium text-stone-300 mt-1.5 text-justify">${cleanLine}</p>`;
                 }).filter(l => l !== "").join("\n");
 
                 return `
                     <div class="space-y-4 font-sans">
                         <div class="space-y-2">
-                            <h3 class="text-amber-600 font-extrabold text-sm tracking-wide uppercase flex items-center gap-1">
+                            <h3 class="text-amber-600 font-extrabold text-xs tracking-wide uppercase flex items-center gap-1">
                                 ⏳ CONDITION FOR EXECUTION (STRICT CONFIRMATION):
                             </h3>
-                            <p class="text-stone-600 font-medium text-xs leading-relaxed text-justify">
+                            <p class="text-stone-600 font-semibold text-xs leading-relaxed text-justify">
                                 ${conditionText}
                             </p>
                         </div>
                         
                         <div class="bg-[#181a20] text-stone-200 border border-stone-800 rounded-2xl p-4 shadow-xl space-y-3">
-                            <h4 class="text-amber-400 font-extrabold text-sm tracking-wider uppercase text-center border-b border-stone-800/60 pb-2 mb-2">
+                            <h4 class="text-amber-400 font-extrabold text-xs tracking-wider uppercase text-center border-b border-stone-800/40 pb-2 mb-2">
                                 🚨 FINAL CONSIDERATION BANNER 🚨
                             </h4>
-                            <div class="text-[11px] font-semibold tracking-wide leading-relaxed space-y-2 text-stone-300">
-                                ${htmlLines}
+                            <div class="space-y-2">
+                                ${bodyHtml}
                             </div>
                         </div>
                     </div>
@@ -749,7 +751,6 @@ You MUST output your complete technical calculation answers following this exact
 [Insert summary analysis text here. Ensure you conclude your observation fully into a complete paragraph block.]
 
 🚨 FINAL CONSIDERATION BANNER 🚨
-
 **DIRECTIONAL DECISION:** [EXECUTE BUY ORDER / EXECUTE SELL ORDER / STAND DOWN]
 * **ENTRY LEVEL:** [Insert Numerical Coordinate or N/A]
 * **STOP LOSS:** [Insert Numerical Value or N/A] (Exact Distance: [Value] Pips)
@@ -769,7 +770,7 @@ You MUST output your complete technical calculation answers following this exact
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     contents: [{ parts: partsPayload }],
-                    generationConfig: { temperature: 0.15, maxOutputTokens: 750 }
+                    generationConfig: { temperature: 0.1, maxOutputTokens: 1500 }
                 })
             });
             if (!response.ok) throw new Error("Failed API transaction");
