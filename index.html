@@ -557,37 +557,25 @@
             }
         }
 
-        // Overhauled parser designed to robustly render bullet metrics or clear STAND DOWN formats
+        // Regex-powered regex text extraction to completely stop split markers looping or leaking
         function parseSMCResponseToHTML(rawText) {
             try {
-                const conditionMarker = "⏳ CONDITION FOR EXECUTION (STRICT CONFIRMATION):";
-                const bannerMarker = "🚨 FINAL CONSIDERATION BANNER 🚨";
-                
-                let conditionText = "";
-                let bannerText = "";
-                
-                if (rawText.includes(conditionMarker)) {
-                    let upperSplit = rawText.split(conditionMarker)[1] || "";
-                    if (upperSplit.includes("##")) {
-                        conditionText = upperSplit.split("##")[0].trim();
-                    } else if (upperSplit.includes(bannerMarker)) {
-                        conditionText = upperSplit.split(bannerMarker)[0].trim();
-                    } else {
-                        conditionText = upperSplit.trim();
-                    }
-                } else {
-                    conditionText = rawText.split(bannerMarker)[0] || "";
-                }
-                
-                if (rawText.includes(bannerMarker)) {
-                    bannerText = rawText.split(bannerMarker)[1] || "";
-                } else {
-                    bannerText = rawText;
+                // Regex finders that grab the blocks cleanly regardless of line changes or split markers
+                const conditionRegex = /⏳\s*CONDITION\s*FOR\s*EXECUTION\s*\(STRICT\s*CONFIRMATION\):([\s\S]*?)(?=🚨|$)/i;
+                const bannerRegex = /🚨\s*FINAL\s*CONSIDERATION\s*BANNER\s*🚨([\s\S]*)$/i;
+
+                let conditionMatch = rawText.match(conditionRegex);
+                let bannerMatch = rawText.match(bannerRegex);
+
+                let conditionText = conditionMatch ? conditionMatch[1].replace(/##/g, '').trim() : "Multi-timeframe evaluation matrix compiled.";
+                let bannerBody = bannerMatch ? bannerMatch[1].trim() : rawText;
+
+                // Clean the inner parameters text from any copied remnants of the condition header
+                if (bannerBody.toLowerCase().includes("condition for execution")) {
+                     bannerBody = bannerBody.replace(/⏳\s*CONDITION\s*FOR\s*EXECUTION\s*\(STRICT\s*CONFIRMATION\):[\s\S]*?(?=DIRECTIONAL|$)/i, "");
                 }
 
-                conditionText = conditionText.replace(/^[:\s\n]+/, "").replace(/##$/, "").trim();
-
-                let htmlLines = bannerText.split("\n").map(line => {
+                let htmlLines = bannerBody.split("\n").map(line => {
                     let trimmed = line.trim();
                     if (!trimmed) return "";
                     
@@ -595,9 +583,9 @@
                     
                     if (trimmed.startsWith("*") || trimmed.startsWith("-")) {
                         processed = processed.replace(/^[\*\-\s]+/, "");
-                        return `<div class="flex items-start gap-1.5 pl-2"><span>•</span><span>${processed}</span></div>`;
+                        return `<div class="flex items-start gap-1.5 pl-1"><span>•</span><span>${processed}</span></div>`;
                     }
-                    return `<p class="leading-relaxed">${processed}</p>`;
+                    return `<p class="leading-relaxed mt-1">${processed}</p>`;
                 }).filter(l => l !== "").join("\n");
 
                 return `
@@ -612,7 +600,7 @@
                         </div>
                         
                         <div class="bg-[#181a20] text-stone-200 border border-stone-800 rounded-2xl p-4 shadow-xl space-y-3">
-                            <h4 class="text-amber-400 font-extrabold text-sm tracking-wider uppercase text-center flex items-center justify-center gap-1 border-b border-stone-800/60 pb-2 mb-2">
+                            <h4 class="text-amber-400 font-extrabold text-sm tracking-wider uppercase text-center border-b border-stone-800/60 pb-2 mb-2">
                                 🚨 FINAL CONSIDERATION BANNER 🚨
                             </h4>
                             <div class="text-[11px] font-semibold tracking-wide leading-relaxed space-y-2 text-stone-300">
@@ -750,27 +738,24 @@
             }
 
             let partsPayload = [{
-                text: `You are an automated risk management machine evaluating charts for ${assetPair}. Scan the coordinates along the right vertical Y-axis values. Use exactly those scales.
+                text: `You are an automated risk management machine evaluating charts for ${assetPair}. Scan the coordinates along the right vertical Y-axis values. Use exactly those scales. Complete your analytical thought sentences entirely. Do not terminate thoughts mid-sentence.
 
 ${strategyInstruction}
 
 OUTPUT TEMPLATE MANDATE:
-You MUST output your complete technical calculation answers following this exact template structural syntax matching image.png verbatim. Do not insert extra characters, markdown formatting outside the list, text, or wrappers outside of this design.
-
-CRITICAL DISCIPLINE INFRASTRUCTURE:
-If there is no clear risk-to-reward setup or market criteria matching your rules, you MUST still output the full block template below but write 'STAND DOWN' for DIRECTIONAL DECISION and set Entry/SL/TP points to 'N/A' or specify the neutral structural price levels. Never leave the banner content blank.
+You MUST output your complete technical calculation answers following this exact template structural syntax matching image.png and image_3.png verbatim. Do not cut off early.
 
 ⏳ CONDITION FOR EXECUTION (STRICT CONFIRMATION):
-[Insert summary analysis text here overviewing multi-timeframe direction, trends, or scaling metrics] ##
+[Insert summary analysis text here. Ensure you conclude your observation fully into a complete paragraph block.]
 
 🚨 FINAL CONSIDERATION BANNER 🚨
 
 **DIRECTIONAL DECISION:** [EXECUTE BUY ORDER / EXECUTE SELL ORDER / STAND DOWN]
 * **ENTRY LEVEL:** [Insert Numerical Coordinate or N/A]
-* **STOP LOSS:** [Insert Numerical Value or N/A] (Exact Distance: [Value] Pips or [Decimal])
-* **TAKE PROFIT (1:2 Minimum RR):** [Insert Numerical Value or N/A] (Target Yield: [Value] Pips clear of entry.)
-* **TAKE PROFIT (1:3 Maximum RR):** [Insert Numerical Value or N/A] (Target Yield: [Value] Pips clear of entry.)
-**FINAL RATIONALE:** [Insert explicit sentence detailing market structural confirmation or stand-down logic rules.]`
+* **STOP LOSS:** [Insert Numerical Value or N/A] (Exact Distance: [Value] Pips)
+* **TAKE PROFIT (1:2 Minimum RR):** [Insert Numerical Value or N/A] (Target Yield: [Value] Pips)
+* **TAKE PROFIT (1:3 Maximum RR):** [Insert Numerical Value or N/A] (Target Yield: [Value] Pips)
+**FINAL RATIONALE:** [Insert explicit sentence detailing structural confirmation or stand-down logic rules.]`
             }];
 
             images.forEach(b64 => {
@@ -784,7 +769,7 @@ If there is no clear risk-to-reward setup or market criteria matching your rules
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     contents: [{ parts: partsPayload }],
-                    generationConfig: { temperature: 0.1, maxOutputTokens: 650 }
+                    generationConfig: { temperature: 0.15, maxOutputTokens: 750 }
                 })
             });
             if (!response.ok) throw new Error("Failed API transaction");
