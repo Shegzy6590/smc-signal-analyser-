@@ -542,7 +542,7 @@ User Question: ${userText || "Analyze this chart image structure and provide imm
 
             if ((pips <= 5.0 || (current >= target && target > current === false)) && !insideAlertWindowTriggered) {
                 insideAlertWindowTriggered = true;
-                executeDualChannelAlerts(asset, pips.toFixed(2), targetLevel, currentPrice);
+                executeDualChannelAlerts(asset, pips.toFixed(2), target, current);
             } else if (pips > 5.0 && !((current >= target && target > current === false))) {
                 insideAlertWindowTriggered = false;
             }
@@ -712,18 +712,19 @@ User Question: ${userText || "Analyze this chart image structure and provide imm
 
 2. MANDATORY 15M STRUCTURAL FILTERS (ANTI-LOSING STREAK SAFEGUARD):
 - SIDEWAYS/CHOPPING RANGES: Carefully examine the 15M (Entry) chart. If the asset is moving completely sideways within an established consolidation corridor without producing distinct higher-highs/lower-lows or explicit liquidity sweep expansions, you MUST output a "STAND DOWN (NO TRADE)" instruction immediately. Do not hunt for setups in low-momentum range balances.
-- MULTI-TIMEFRAME DISCONNECT RULE: You must cross-reference the Daily/4H/1H guides with the 15M chart. If the higher timeframes are in a clear, aggressive trend, but the 15M entry chart has NOT generated a valid structural shift (CHoCH or Market Structure Shift) supporting your entry point, you MUST issue a "STAND DOWN (NO TRADE)" order. 
 
-3. STRICT COUNTER-TREND SCALPING CRITERIA:
-- You are strictly permitted to signal a counter-trend scalp ONLY if the higher timeframes (Daily/4H/1H) have reached a massive, historical structural exhaustion block (e.g., a major daily resistance pool in an uptrend) AND the 15M entry chart shows an explicit, high-displacement local Change of Character (CHoCH) or Market Structure Shift (MSS) targeting the reverse direction. If this clear local shift is absent, do not call a signal.
+3. ADVANCED TIME-FRAME OVERRIDE LOGIC (LIQUIDITY HUNT REVERSALS):
+- DEFAULT RULES: If the higher timeframes (Daily/4H/1H) are in a clear aggressive trend but the 15M chart has not formed an alignment structure, you generally stand down.
+- BULLISH OVERRIDE (BUY SCALP EXCEPTION): If the higher timeframes (Daily/4H/1H) show price has dropped into a massive historical structural exhaustion block or swept major Sell-Side Liquidity (SSL), AND the 15M entry chart completes an explicit high-displacement bullish Change of Character (CHoCH) or Market Structure Shift (MSS) leaving a Fair Value Gap (FVG) or Order Block behind, you MUST override the macro bearish trend filter and output an "EXECUTE BUY ORDER" signal.
+- BEARISH OVERRIDE (SELL SCALP EXCEPTION): If the higher timeframes (Daily/4H/1H) show price has expanded upward into a massive historical resistance block or swept major Buy-Side Liquidity (BSL), AND the 15M entry chart completes an explicit high-displacement bearish Change of Character (CHoCH) or Market Structure Shift (MSS) leaving a bearish Fair Value Gap (FVG) or Order Block behind, you MUST override the macro bullish trend filter and output an "EXECUTE SELL ORDER" signal.
 
 4. ACCURATE SCALP RISK PARAMETERS:
 - Stop Loss levels must be placed strictly behind the most immediate local 15M swing high/low structural invalidation point.
 - For XAUUSD (Gold): Stop Loss must be precisely 20 to 30 pips.
-- For Forex Currency Pairs (EURUSD, GBPUSD, USDJPY, etc.): Stop Loss must strictly remain compressed between a absolute MINIMUM of 12 pips and a absolute MAXIMUM of 20 pips! No exceptions.
+- For Forex Currency Pairs (EURUSD, GBPUSD, USDJPY, etc.): Stop Loss must strictly remain compressed between an absolute MINIMUM of 12 pips and an absolute MAXIMUM of 20 pips! No exceptions.
 - Take Profit 1 must be exactly a 1:2 Risk-to-Reward ratio (calculated to the exact decimal point based on your structural entry and stop loss). Take Profit 2 must be exactly a 1:3 Risk-to-Reward ratio.
 
-\${strategyInstruction}
+${strategyInstruction}
 
 OUTPUT TEMPLATE:
 Your output must always contain these closing blocks.
@@ -917,13 +918,13 @@ Provide a clear 3-bullet block analysis below that decision line explaining your
                 return;
             }
             list.innerHTML = logs.map(log => `
-                <div class="border-l-4 border-\${log.colorCode}-500 pl-3 py-2 bg-white rounded-r-lg border border-stone-200/60 shadow-xs">
+                <div class="border-l-4 border-${log.colorCode}-500 pl-3 py-2 bg-white rounded-r-lg border border-stone-200/60 shadow-xs">
                     <div class="flex justify-between items-center">
-                        <p class="text-[11px] font-black text-slate-800">\${log.assetPair} — <span class="text-stone-500">\${log.intendedBias}</span></p>
-                        <span class="text-[9px] font-bold text-stone-400">\${log.timestamp}</span>
+                        <p class="text-[11px] font-black text-slate-800">${log.assetPair} — <span class="text-stone-500">${log.intendedBias}</span></p>
+                        <span class="text-[9px] font-bold text-stone-400">${log.timestamp}</span>
                     </div>
-                    <p class="text-[9px] font-black text-\${log.colorCode}-600 tracking-wide mt-0.5 uppercase">\${log.status}</p>
-                    <p class="text-[10px] text-stone-500 mt-1 leading-normal">\${log.summaryText}</p>
+                    <p class="text-[9px] font-black text-${log.colorCode}-600 tracking-wide mt-0.5 uppercase">${log.status}</p>
+                    <p class="text-[10px] text-stone-500 mt-1 leading-normal">${log.summaryText}</p>
                 </div>
             `).join('');
         }
