@@ -83,7 +83,7 @@
                 <label class="block text-[10px] font-black text-stone-400 uppercase tracking-wider mb-1">Strategy Matrix Focus</label>
                 <div class="relative">
                     <select id="strategyFocus" class="w-full bg-stone-50 border border-stone-200 rounded-lg px-2 py-1.5 text-xs font-bold text-slate-800 focus:outline-none appearance-none">
-                        <option value="all">Complete Matrix (All Mixed)</option>
+                        <option value="all" selected>Complete Matrix (All Mixed)</option>
                         <option value="sr">Support & Resistance / Liquidity Pools Only</option>
                         <option value="trend">Trendline Breakdown & Structural Market Shifts Only</option>
                         <option value="candles">Candlestick Formations & Price Action Rejections Only</option>
@@ -560,7 +560,6 @@
 
         function parseSMCResponseToHTML(rawText) {
             try {
-                // Pinpoint the raw metadata start segment
                 const blockMarker = "==== METADATA BLOCK ====";
                 const markerIndex = rawText.indexOf(blockMarker);
                 
@@ -574,7 +573,6 @@
                     marketDescription = rawText;
                 }
 
-                // Clean out formatting wrappers from the market analysis narrative
                 marketDescription = marketDescription.replace(/[#\*\_]+/g, '').trim();
 
                 let decision = "STAND DOWN";
@@ -701,8 +699,7 @@
             } catch (error) {
                 statusText.innerText = "Execution failed.";
                 output.innerText = `Error: ${error.message}`;
-            } finally {
-                btn.disabled = false;
+            } disabled = false;
                 btn.className = "w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 px-4 rounded-xl transition duration-200 shadow-md text-center text-xs tracking-wider uppercase";
                 btn.innerText = "Run Strategy Validation";
             }
@@ -771,21 +768,52 @@
             }
 
             let partsPayload = [{
-                text: `You are an automated risk management machine evaluating charts for ${assetPair}. Do not output markdown headers or bold indicators in the text. Look closely at the right-hand side Y-axis of the uploaded images to determine precise entry levels, stop loss thresholds, and take profit coordinates based on market structure.
+                text: `You are an automated multi-timeframe risk management system evaluating charts for ${assetPair}. Look closely at the right-hand side Y-axis scale of the uploaded images to determine precise structural execution parameters.
 
 ${strategyInstruction}
 
-STEP 1: Provide a detailed, paragraph-form narrative description of how the market behaves right now. Talk about order blocks, liquidity sweeps, overall directionality, and chart clues.
+You must process the chart structural data strictly according to this sequential DUAL-PRIORITY decision flow matrix:
 
-STEP 2: Append the exact block below to your output. Fill in the parameters cleanly.
+======================================================================
+BRANCH 1: TREND ALIGNMENT MATCH (PRIMARY FILTER)
+======================================================================
+Check if High Timeframe structure (Daily/4H) directly aligns with your Low Timeframe execution structure (15M):
+- BULLISH CONFIGURATION: High timeframe trend is clearly upward (printing higher highs and higher lows), AND the 15M structure logs a successful liquidity sweep of internal discount arrays followed by a clear, energetic upward displacement breach (Market Structure Shift / Change of Character) past the last lower high.
+  -> ACTION: Generate a "BUY (MAJOR)" configuration setup.
+- BEARISH CONFIGURATION: High timeframe trend is clearly downward (printing lower highs and lower lows), AND the 15M structure logs a successful liquidity sweep of internal premium pools followed by a clear, energetic downward displacement breach (Market Structure Shift / Change of Character) below the last higher low.
+  -> ACTION: Generate a "SELL (MAJOR)" configuration setup.
+
+======================================================================
+BRANCH 2: COUNTER-TREND RETRACEMENT SETUP (SECONDARY SCALP FILTER)
+======================================================================
+If Branch 1 constraints are missed because the macro timeframe trend directly opposes the short-term direction, instantly execute this alternative processing evaluation before defaulting to a stand-down layout:
+- SCALP BUY PATTERN: 
+  * High Timeframe (Daily/4H) is structurally Bearish overall, BUT price action has arrived directly at a critical historical HTF Support zone, major double-bottom floor, or high-level HTF Liquidity Pool.
+  * Low Timeframe Validation: The 15M timeframe prints an explicit, aggressive, green upward Market Structure Shift (MSS/ChoCh) closing clearly above its local internal lower high.
+  * Target Constraint: Take Profit parameters must be highly compressed, capped at the nearest 15M/1H premium internal Supply Zone or resistance block.
+  -> ACTION: Generate a "BUY (MINOR SCALP)" configuration setup.
+- SCALP SELL PATTERN: 
+  * High Timeframe (Daily/4H) is structurally Bullish overall, BUT price action has expanded directly into an old historical HTF Resistance ceiling, major double-top, or high-level HTF Buy-Side Liquidity Pool.
+  * Low Timeframe Validation: The 15M timeframe prints an explicit, aggressive, red downward Market Structure Shift (MSS/ChoCh) breaking and closing clearly below its local internal higher low.
+  * Target Constraint: Take Profit parameters must be highly compressed, capped at the nearest 15M/1H discount internal Demand Zone or support block.
+  -> ACTION: Generate a "SELL (MINOR SCALP)" configuration setup.
+
+======================================================================
+FAILSAFE ENGINE SHUTDOWN
+======================================================================
+If neither Branch 1 nor Branch 2 structural configurations are met, you must refuse to trigger entry targets to preserve capital.
+-> ACTION: Generate a "STAND DOWN" configuration setup.
+
+OUTPUT STRUCTURING RULE:
+Provide your structural commentary in clear paragraph format first, detailing precise chart clues, wicks, and behavior. Then append the exact block below to your output. Do not include markdown asterisks, hashes, or bullet symbols inside the METADATA BLOCK.
 
 ==== METADATA BLOCK ====
-DIRECTIONAL DECISION: [EXECUTE BUY ORDER / EXECUTE SELL ORDER / STAND DOWN]
+DIRECTIONAL DECISION: [BUY (MAJOR) / SELL (MAJOR) / BUY (MINOR SCALP) / SELL (MINOR SCALP) / STAND DOWN]
 ENTRY LEVEL: [Insert coordinate price or N/A]
 STOP LOSS: [Insert coordinate price or N/A]
 TAKE PROFIT (1:2): [Insert coordinate price or N/A]
 TAKE PROFIT (1:3): [Insert coordinate price or N/A]
-FINAL RATIONALE: [One clear sentence summarizing structural compliance or lack thereof]`
+FINAL RATIONALE: [One clear structural summary sentence detailing compliance status]`
             }];
 
             images.forEach(b64 => {
