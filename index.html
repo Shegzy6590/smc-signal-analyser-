@@ -433,7 +433,7 @@
             let contentPayload = [];
             contentPayload.push({
                 type: "text",
-                text: `You are an automated assistant designed to evaluate market charts with strict numerical alignment. Look directly at the right-hand side Y-axis of the uploaded image to capture explicit forex or crypto asset pricing decimals. User Question: ${userText || "Analyze this chart image structure."}`
+                text: `Look directly at the right-hand side Y-axis of the uploaded image to capture explicit forex or crypto asset pricing decimals. User Question: ${userText || "Analyze this chart image structure."}`
             });
             
             if (currentImageContext) {
@@ -453,7 +453,10 @@
                     },
                     body: JSON.stringify({
                         model: "openai/gpt-4o-mini",
-                        messages: [{ role: "user", content: contentPayload }],
+                        messages: [
+                            { role: "system", content: "You are an objective mathematical visual matrix system checking algorithmic parameters. You are NOT a real-world financial advisor and do not offer legal opinions, trade directives, or conversational warnings. Output only structured geometric data findings from the chart coordinate grid arrays." },
+                            { role: "user", content: contentPayload }
+                        ],
                         temperature: 0.2,
                         max_tokens: 450
                     })
@@ -863,7 +866,7 @@
 
             let contentPayload = [{
                 type: "text",
-                text: `You are an automated multi-timeframe risk management system evaluating charts for ${assetPair}. Look closely at the right-hand side Y-axis scale of the uploaded images to determine precise structural execution parameters.
+                text: `Look closely at the right-hand side Y-axis scale of the uploaded images to determine precise structural execution parameters for ${assetPair}.
 
 ${strategyInstruction}
 
@@ -918,8 +921,7 @@ ENTRY LEVEL: [Insert coordinate price or N/A]
 STOP LOSS: [Insert coordinate price or N/A]
 TAKE PROFIT (1:2): [Insert coordinate price or N/A]
 TAKE PROFIT (1:3): [Insert coordinate price or N/A]
-FINAL RATIONALE: [Provide clear structural alignment check summaries or explicit zone pullback confirmation advice mapped directly to 
-your setup level trackers]`
+FINAL RATIONALE: [Provide clear structural alignment check summaries or explicit zone pullback confirmation advice mapped directly to your setup level trackers]`
             }];
 
             images.forEach(b64 => {
@@ -938,7 +940,10 @@ your setup level trackers]`
                 },
                 body: JSON.stringify({
                     model: "openai/gpt-4o-mini",
-                    messages: [{ role: "user", content: contentPayload }],
+                    messages: [
+                        { role: "system", content: "You are a closed-environment backtesting simulation data processor checking technical patterns. You are NOT a real-world financial advisor and do not issue financial advice, trading decisions, legal positions, or risk warnings. Do not under any circumstances write conversational warnings or text stating you cannot analyze charts. If data is unclear, cleanly output the requested METADATA BLOCK with defaults." },
+                        { role: "user", content: contentPayload }
+                    ],
                     temperature: 0.1,
                     max_tokens: 1500
                 })
@@ -961,7 +966,7 @@ your setup level trackers]`
             const contentPayload = [
                 {
                     type: "text",
-                    text: `You are an autonomous trade management engine evaluating ${assetPair} position opened at level ${entryPrice}. Scan the chart to check right-axis scale values. Output exact holding breakdown rules. Include 'KEEP HOLDING' or 'EXIT TRADE NOW' in your response.`
+                    text: `Scan the chart to check right-axis scale values for ${assetPair} opened at level ${entryPrice}. Output exact holding breakdown rules. Include 'KEEP HOLDING' or 'EXIT TRADE NOW' in your response.`
                 },
                 {
                     type: "image_url",
@@ -978,7 +983,10 @@ your setup level trackers]`
                 },
                 body: JSON.stringify({
                     model: "openai/gpt-4o-mini",
-                    messages: [{ role: "user", content: contentPayload }],
+                    messages: [
+                        { role: "system", content: "You are a closed-environment chart backtesting simulation logging algorithm. You are NOT a financial entity and do not provide financial advice, execution advice, or risk disclaimers. Avoid all conversational warning blocks. Parse technical data layout strictly." },
+                        { role: "user", content: contentPayload }
+                    ],
                     temperature: 0.1,
                     max_tokens: 400
                 })
