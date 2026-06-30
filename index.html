@@ -559,49 +559,63 @@
 
         function parseSMCResponseToHTML(rawText) {
             try {
+                // Find execution conditions
+                let conditionText = "Multi-timeframe evaluation matrix compiled.";
                 const conditionRegex = /⏳\s*CONDITION\s*FOR\s*EXECUTION\s*\(STRICT\s*CONFIRMATION\):([\s\S]*?)(?=🚨|$)/i;
-                const bannerRegex = /🚨\s*FINAL\s*CONSIDERATION\s*BANNER\s*🚨([\s\S]*)$/i;
-
                 let conditionMatch = rawText.match(conditionRegex);
-                let bannerMatch = rawText.match(bannerRegex);
+                if (conditionMatch && conditionMatch[1]) {
+                    conditionText = conditionMatch[1].replace(/##/g, '').trim();
+                }
 
-                let conditionText = conditionMatch ? conditionMatch[1].replace(/##/g, '').trim() : "Multi-timeframe evaluation matrix compiled.";
-                let bannerBody = bannerMatch ? bannerMatch[1].trim() : rawText;
+                // Extract all template lines split by newlines
+                let lines = rawText.split("\n");
+                let bodyHtml = "";
 
-                let bodyHtml = bannerBody.split("\n").map(line => {
+                lines.forEach(line => {
                     let trimmed = line.trim();
-                    if (!trimmed) return "";
-                    
+                    if (!trimmed) return;
+
+                    // Clean out markdown list characters
                     let cleanLine = trimmed.replace(/^[\*\-\s•]+/, "").trim();
-                    
-                    // Style specific labels cleanly inside the container
-                    if (cleanLine.toUpperCase().startsWith("DIRECTIONAL DECISION:")) {
-                        return `<p class="leading-relaxed text-[11px] font-black text-white mt-1"><span class="text-amber-400">DIRECTIONAL DECISION:</span> ${cleanLine.split(/:(.+)/)[1] || ""}</p>`;
+                    let upperLine = cleanLine.toUpperCase();
+
+                    if (upperLine.startsWith("DIRECTIONAL DECISION:")) {
+                        let value = cleanLine.split(/:(.+)/)[1] || "STAND DOWN";
+                        bodyHtml += `<p class="leading-relaxed text-[11px] font-black text-white mt-1"><span class="text-amber-400">DIRECTIONAL DECISION:</span> ${value.trim()}</p>`;
+                    } 
+                    else if (upperLine.startsWith("ENTRY LEVEL:")) {
+                        let value = cleanLine.split(/:(.+)/)[1] || "Calculating...";
+                        bodyHtml += `<div class="flex items-start gap-2 pl-2 my-1 text-stone-200">
+                                        <span class="text-amber-500">•</span>
+                                        <span class="text-[11px] font-medium leading-relaxed"><strong class="text-amber-400 font-bold">ENTRY LEVEL:</strong> ${value.trim()}</span>
+                                    </div>`;
+                    } 
+                    else if (upperLine.startsWith("STOP LOSS:")) {
+                        let value = cleanLine.split(/:(.+)/)[1] || "Calculating...";
+                        bodyHtml += `<div class="flex items-start gap-2 pl-2 my-1 text-stone-200">
+                                        <span class="text-amber-500">•</span>
+                                        <span class="text-[11px] font-medium leading-relaxed"><strong class="text-amber-400 font-bold">STOP LOSS:</strong> ${value.trim()}</span>
+                                    </div>`;
+                    } 
+                    else if (upperLine.startsWith("TAKE PROFIT")) {
+                        let splitArr = cleanLine.split(/:(.+)/);
+                        let title = splitArr[0] || "TAKE PROFIT";
+                        let value = splitArr[1] || "Calculating...";
+                        bodyHtml += `<div class="flex items-start gap-2 pl-2 my-1 text-stone-200">
+                                        <span class="text-amber-500">•</span>
+                                        <span class="text-[11px] font-medium leading-relaxed"><strong class="text-amber-400 font-bold">${title.trim()}:</strong> ${value.trim()}</span>
+                                    </div>`;
+                    } 
+                    else if (upperLine.startsWith("FINAL RATIONALE:")) {
+                        let value = cleanLine.split(/:(.+)/)[1] || "Structure validation criteria achieved.";
+                        bodyHtml += `<p class="leading-relaxed text-[11px] font-medium text-stone-300 mt-2 border-t border-stone-800/60 pt-2 text-justify"><strong class="text-amber-400 font-bold">FINAL RATIONALE:</strong> ${value.trim()}</p>`;
                     }
-                    if (cleanLine.toUpperCase().startsWith("ENTRY LEVEL:")) {
-                        return `<div class="flex items-start gap-2 pl-2 my-1 text-stone-200">
-                                    <span class="text-amber-500">•</span>
-                                    <span class="text-[11px] font-medium leading-relaxed"><strong class="text-amber-400 font-bold">ENTRY LEVEL:</strong> ${cleanLine.split(/:(.+)/)[1] || ""}</span>
-                                </div>`;
-                    }
-                    if (cleanLine.toUpperCase().startsWith("STOP LOSS:")) {
-                        return `<div class="flex items-start gap-2 pl-2 my-1 text-stone-200">
-                                    <span class="text-amber-500">•</span>
-                                    <span class="text-[11px] font-medium leading-relaxed"><strong class="text-amber-400 font-bold">STOP LOSS:</strong> ${cleanLine.split(/:(.+)/)[1] || ""}</span>
-                                </div>`;
-                    }
-                    if (cleanLine.toUpperCase().startsWith("TAKE PROFIT")) {
-                        return `<div class="flex items-start gap-2 pl-2 my-1 text-stone-200">
-                                    <span class="text-amber-500">•</span>
-                                    <span class="text-[11px] font-medium leading-relaxed"><strong class="text-amber-400 font-bold">${cleanLine.split(/:(.+)/)[0]}:</strong> ${cleanLine.split(/:(.+)/)[1] || ""}</span>
-                                </div>`;
-                    }
-                    if (cleanLine.toUpperCase().startsWith("FINAL RATIONALE:")) {
-                        return `<p class="leading-relaxed text-[11px] font-medium text-stone-300 mt-2 border-t border-stone-800/60 pt-2 text-justify"><strong class="text-amber-400 font-bold">FINAL RATIONALE:</strong> ${cleanLine.split(/:(.+)/)[1] || ""}</p>`;
-                    }
-                    
-                    return `<p class="leading-relaxed text-[11px] font-medium text-stone-300 mt-1.5 text-justify">${cleanLine}</p>`;
-                }).filter(l => l !== "").join("\n");
+                });
+
+                // If fallback mapping failed to extract clean fields, use basic layout
+                if (!bodyHtml) {
+                    bodyHtml = `<p class="leading-relaxed text-[11px] font-medium text-stone-300 text-justify">${rawText.replace(/\n/g, '<br>')}</p>`;
+                }
 
                 return `
                     <div class="space-y-4 font-sans">
@@ -765,10 +779,10 @@ OUTPUT TEMPLATE:
 
 🚨 FINAL CONSIDERATION BANNER 🚨
 DIRECTIONAL DECISION: [Choose exactly one: EXECUTE BUY ORDER / EXECUTE SELL ORDER / STAND DOWN]
-* ENTRY LEVEL: [Insert calculated market entry price coordinate from chart]
-* STOP LOSS: [Insert calculated stop loss price coordinate] (Exact Distance: [Value] Pips)
-* TAKE PROFIT (1:2 Minimum RR): [Insert target price coordinate] (Target Yield: [Value] Pips)
-* TAKE PROFIT (1:3 Maximum RR): [Insert target price coordinate] (Target Yield: [Value] Pips)
+ENTRY LEVEL: [Insert calculated market entry price coordinate from chart]
+STOP LOSS: [Insert calculated stop loss price coordinate] (Exact Distance: [Value] Pips)
+TAKE PROFIT (1:2 Minimum RR): [Insert target price coordinate] (Target Yield: [Value] Pips)
+TAKE PROFIT (1:3 Maximum RR): [Insert target price coordinate] (Target Yield: [Value] Pips)
 FINAL RATIONALE: [Provide the core SMC reason or structural rule confirming this execution target.]`
             }];
 
@@ -898,7 +912,6 @@ FINAL RATIONALE: [Provide the core SMC reason or structural rule confirming this
             if(cid) document.getElementById("tgChatIdInput").value = cid;
         }
 
-        // ... remaining logging functions preserved from build ...
         function triggerTestTelegramAlert() {
             const botToken = localStorage.getItem("smc_tg_bot_token");
             const chatId = localStorage.getItem("smc_tg_chat_id");
