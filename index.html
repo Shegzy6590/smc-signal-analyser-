@@ -20,10 +20,15 @@
         .macro-alert-active {
             animation: micro-flash 2s infinite ease-in-out;
         }
+        .condition-banner-card {
+            background-color: #fef3c7 !important;
+            border: 1px solid #f59e0b !important;
+            color: #78350f !important;
+        }
         .final-banner-card {
-            background-color: #1a1d24 !important;
-            border: 1px solid #262b35 !important;
-            color: #e3e6eb !important;
+            background-color: #1e3a8a !important; /* Fixed to clean high-contrast deep navy blue */
+            border: 1px solid #1d4ed8 !important;
+            color: #f8fafc !important;
         }
     </style>
 </head>
@@ -342,14 +347,8 @@
     </nav>
 
     <script>
-        let targetLiveCharts = [
-            "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVR42mNkYGD4DwYMDAwM4MIEBv6DwA8A7vYCBXas3mAAAAAElFTkSuQmCC",
-            "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVR42mNkYGD4DwYMDAwM4MIEBv6DwA8A7vYCBXas3mAAAAAElFTkSuQmCC",
-            "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVR42mNkYGD4DwYMDAwM4MIEBv6DwA8A7vYCBXas3mAAAAAElFTkSuQmCC",
-            "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVR42mNkYGD4DwYMDAwM4MIEBv6DwA8A7vYCBXas3mAAAAAElFTkSuQmCC"
-        ];
-        
-        let positionManagementChartRaw = "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAG0lEQVR42mNkYGD4DwYMDAwM4MIEBv6DwA8A7vYCBXas3mAAAAAElFTkSuQmCC";
+        let targetLiveCharts = [null, null, null, null];
+        let positionManagementChartRaw = null;
         let chatBoxAttachedImageRaw = null;
         let insideAlertWindowTriggered = false;
 
@@ -422,18 +421,14 @@
 
 CRITICAL VISION MANDATE:
 - Look directly at the right-hand side Y-axis of the uploaded image to capture explicit forex or crypto asset pricing decimals. 
-- You are forbidden from inventing or assuming rough values. For example, if the asset is Gold (XAUUSD) and the price axis displays values around 4050.00 to 4060.00, do not mistake floating profit metrics or balance indicators (e.g., -525.00 USD) for the actual market asset price level.
-- Read only the direct asset labels printed along the right margin or highlighted level boxes (e.g. 4055.60, 4060.62).
+- Look only at the direct asset labels printed along the right margin or highlighted level boxes (e.g. 2332.10, 1.0825). DO NOT mistake balance figures or indicator overlay numbers for price.
 
 User Question: ${userText || "Analyze this chart image structure and provide immediate feedback based on the exact price metrics seen on screen."}`
             }];
             
             if (currentImageContext) {
                 inlineParts.push({
-                    inlineData: {
-                        mimeType: "image/png",
-                        data: currentImageContext
-                    }
+                    inlineData: { mimeType: "image/png", data: currentImageContext }
                 });
             }
 
@@ -549,7 +544,7 @@ User Question: ${userText || "Analyze this chart image structure and provide imm
         }
 
         function extractAndInjectTargetLevel(aiText) {
-            const entryRegex = /\*\*ENTRY LEVEL:\*\*\s*([\d.]+)/i;
+            const entryRegex = /ENTRY LEVEL:\s*([\d.]+)/i;
             const match = aiText.match(entryRegex);
             if (match && match[1]) {
                 const scrapedLevel = parseFloat(match[1]);
@@ -561,7 +556,7 @@ User Question: ${userText || "Analyze this chart image structure and provide imm
         }
 
         function executeDualChannelAlerts(asset, pipDistance, targetLevel, currentPrice) {
-            const txt = `🎯 SMC TRIGGER HIT: ${asset} has arrived at your target level! \nTarget Level: ${targetLevel}\nCurrent Price: ${currentPrice}\n\nCheck your 15M execution window immediately for sub-structure structural validation.`;
+            const txt = `🎯 SMC TRIGGER HIT: ${asset} has arrived at your target level! \nTarget Level: ${targetLevel}\nCurrent Price: ${currentPrice}\n\nCheck your 15M execution window immediately.`;
             
             if ("Notification" in window && Notification.permission === "granted") {
                 new Notification("SMC TARGET LOCKED", { body: txt });
@@ -578,98 +573,80 @@ User Question: ${userText || "Analyze this chart image structure and provide imm
             }
         }
 
-        /**
-         * Processes uploaded multi-timeframe chart screenshots to generate strict,
-         * structured Smart Money Concepts (SMC) actionable trade signals.
-         * @param {Array} images - The uploaded chart screenshots (Daily, 4H, 1H, 15M).
-         * @param {Object} marketContext - Current live price feed data and active session.
-         */
-        function generateSMCActionableSignal(images, marketContext) {
-          // 1. STRICT IMAGE QUANTIFICATION & COORDINATE PROCESSING
-          const imageMetadata = images.map(img => ({
-            timeframe: detectTimeframe(img), // Daily, 4H, 1H, or 15M
-            priceScale: extractPriceYAxisScale(img), // Extracts exact numerical bounds from right-hand axis
-            lastCandleStructure: analyzeCandleStructure(img) // Identifies CHoCH, MSS, OB, or Liquidity Sweeps
-          }));
+        // Clean custom parser to reliably process structural markdown responses without crashing strings
+        function parseSMCResponseToHTML(rawText) {
+            let lines = rawText.split('\n');
+            let insideCondition = false;
+            let insideBanner = false;
+            let htmlOutput = "";
 
-          const m15Data = imageMetadata.find(d => d.timeframe === '15M') || imageMetadata[images.length - 1];
-          const livePrice = marketContext.livePrice || m15Data.lastCandleStructure.closePrice;
-          
-          // Ensure absolute decimal integrity for assets like Gold (2 decimals) or Crypto/Forex pairs
-          const decimalPlaces = (livePrice.toString().split('.')[1] || []).length || 2;
-          const formattedLivePrice = parseFloat(livePrice).toFixed(decimalPlaces);
+            let conditionBuffer = [];
+            let bannerBuffer = [];
 
-          // 2. SMART MONEY CONCEPTS LOGIC ENGINE
-          let orderType = null;
-          let triggerConditionText = "";
-          let entryLevel = 0;
-          let stopLoss = 0;
-          let takeProfit1 = 0;
-          let takeProfit2 = 0;
-          let riskRewardRatio1 = "1:2";
-          let riskRewardRatio2 = "1:3";
-          let rationale = "";
+            for (let line of lines) {
+                let cleanLine = line.trim();
+                
+                if (cleanLine.match(/##\s*CONDITION\s+FOR\s+EXECUTION/i)) {
+                    insideCondition = true;
+                    insideBanner = false;
+                    continue;
+                }
+                
+                if (cleanLine.match(/###\s*🚨\s*FINAL\s+CONSIDERATION\s+BANNER/i)) {
+                    insideCondition = false;
+                    insideBanner = true;
+                    continue;
+                }
 
-          // Structural evaluation across the timeframes
-          const isH4Bearish = evaluateTrend(imageMetadata.find(d => d.timeframe === '4H'));
-          const isM15ChochDown = m15Data.lastCandleStructure.hasCHoCHDown;
-          const nearestOrderBlock = m15Data.lastCandleStructure.nearestOrderBlockPrice;
+                if (insideCondition) {
+                    if (cleanLine !== "" && !cleanLine.startsWith("---")) {
+                        conditionBuffer.push(line);
+                    }
+                } else if (insideBanner) {
+                    if (cleanLine !== "" && !cleanLine.startsWith("---")) {
+                        bannerBuffer.push(line);
+                    }
+                } else {
+                    if (cleanLine !== "" && !cleanLine.startsWith("---")) {
+                        htmlOutput += `<p class="mb-1">${line.replace(/\*\*/g, '')}</p>`;
+                    }
+                }
+            }
 
-          if (isH4Bearish && isM15ChochDown) {
-            orderType = "SELL ORDER";
-            triggerConditionText = `A confirmed 15M candlestick close below ${Math.floor(livePrice)}`;
-            entryLevel = parseFloat(formattedLivePrice);
+            let renderedCondition = conditionBuffer.join('<br>').replace(/\*\*/g, '').replace(/\*/g, '');
+            let renderedBanner = bannerBuffer.map(l => {
+                let formatted = l.replace(/\*\*/g, '').replace(/\*/g, '');
+                if (formatted.includes(':')) {
+                    let parts = formatted.split(':');
+                    return `<div><strong>${parts[0]}:</strong>${parts.slice(1).join(':')}</div>`;
+                }
+                return `<div>${formatted}</div>`;
+            }).join('');
+
+            let finalHtml = "";
             
-            // Exact mathematical risk metrics matching screen scales
-            const pointOffset = m15Data.priceScale.pipMultiplier || 1.00; 
-            stopLoss = entryLevel + (15 * pointOffset); 
-            takeProfit1 = entryLevel - (30 * pointOffset);
-            takeProfit2 = entryLevel - (45 * pointOffset);
-            
-            rationale = `Executing a Counter-Trend/Structural Scalp Sell due to the 15M chart forming a CHoCH/MSS downwards at a major HTF resistance zone, validating short-term order flow mitigation.`;
-          } else {
-            // Default Buy Setup structural layout fallback if market sweeps liquidity low
-            orderType = "BUY ORDER";
-            triggerConditionText = `A confirmed 15M candlestick close above ${Math.floor(livePrice)}`;
-            entryLevel = parseFloat(formattedLivePrice);
-            
-            const pointOffset = m15Data.priceScale.pipMultiplier || 1.00;
-            stopLoss = entryLevel - (15 * pointOffset);
-            takeProfit1 = entryLevel + (30 * pointOffset);
-            takeProfit2 = entryLevel + (45 * pointOffset);
-            
-            rationale = `Executing an Order Flow Alignment Buy following a clear liquidity sweep of previous session lows on the 15M entry chart.`;
-          }
+            if (renderedCondition.length > 0) {
+                finalHtml += `
+                    <div class="condition-banner-card rounded-xl p-3.5 shadow-sm space-y-1 mb-3">
+                        <div class="font-black text-xs uppercase tracking-wider">⏳ CONDITION FOR EXECUTION (STRICT CONFIRMATION):</div>
+                        <div class="text-[11px] leading-relaxed font-bold">${renderedCondition}</div>
+                    </div>`;
+            }
 
-          // 3. STRICT INTERFACE COMPLIANCE INSTRUCTIONS (DO NOT ALTER OUTPUT FORMAT)
-          const systemOutputPayload = `
-### ⏳ CONDITION FOR EXECUTION (STRICT CONFIRMATION):
-${triggerConditionText}
+            if (htmlOutput.length > 0) {
+                finalHtml += `<div class="bg-stone-50 border border-stone-200/50 rounded-lg p-3 my-2 text-stone-500">${htmlOutput}</div>`;
+            }
 
----
+            if (renderedBanner.length > 0) {
+                finalHtml += `
+                    <div class="final-banner-card rounded-xl p-4 shadow-md space-y-1.5">
+                        <div class="font-black text-amber-400 text-xs tracking-widest uppercase flex items-center gap-1">🚨 FINAL EXECUTION DATA MONITOR</div>
+                        <div class="text-[11px] leading-relaxed space-y-1">${renderedBanner}</div>
+                    </div>`;
+            }
 
-### 🚨 FINAL CONSIDERATION BANNER 🚨
-
-For the purpose of this execution, the system has analyzed the uploaded multi-timeframe structural matrices to cross-verify liquidity sweeps and market structural shifts.
-
-* **DIRECTIONAL DECISION:** EXECUTE ${orderType}
-* **ENTRY LEVEL:** ${entryLevel.toFixed(decimalPlaces)}
-* **STOP LOSS:** ${stopLoss.toFixed(decimalPlaces)} (Exact Distance: ${Math.abs((entryLevel - stopLoss) * 10).toFixed(1)} Pips)
-* **TAKE PROFIT (1:2 Minimum RR):** ${takeProfit1.toFixed(decimalPlaces)}
-* **TAKE PROFIT (1:3 Maximum RR):** ${takeProfit2.toFixed(decimalPlaces)}
-
-**FINAL RATIONALE:** ${rationale}
-`;
-
-          return renderToUI(systemOutputPayload);
+            return finalHtml || `<p class="text-stone-400">Processing structural error or clear Stand Down layout pattern.</p>`;
         }
-
-        // Mock auxiliary handlers for data visual safety
-        function detectTimeframe(img) { return "15M"; }
-        function extractPriceYAxisScale(img) { return { max: 4100.00, min: 3950.00, pipMultiplier: 1.00 }; }
-        function analyzeCandleStructure(img) { return { closePrice: 3988.26, hasCHoCHDown: true, nearestOrderBlockPrice: 4010.00 }; }
-        function evaluateTrend(imgObj) { return true; }
-        function renderToUI(payload) { return payload; }
 
         async function handleValidation() {
             const btn = document.getElementById("validateBtn");
@@ -678,6 +655,15 @@ For the purpose of this execution, the system has analyzed the uploaded multi-ti
             const pair = document.getElementById("assetPair").value;
             const strategyMode = document.getElementById("strategyFocus").value;
             const savedToken = localStorage.getItem("smc_gemini_api_token");
+
+            // Filter out empty arrays before processing
+            let imagePayloadArray = targetLiveCharts.filter(x => x !== null);
+
+            if (imagePayloadArray.length === 0) {
+                statusText.innerText = "No charts ready.";
+                output.innerHTML = `<span class="text-red-500 font-bold">Error: Missing chart screenshots.</span> Please upload at least one chart timeframe (e.g. 15M Entry chart).`;
+                return;
+            }
 
             if (!savedToken) {
                 statusText.innerText = "Execution failed.";
@@ -691,25 +677,18 @@ For the purpose of this execution, the system has analyzed the uploaded multi-ti
             statusText.innerText = "Processing execution tokens...";
 
             try {
-                const responseText = await sendToGemini(targetLiveCharts, pair, strategyMode, savedToken);
+                const responseText = await sendToGemini(imagePayloadArray, pair, strategyMode, savedToken);
                 statusText.innerText = "Analysis matrix synchronized.";
                 
-                let formattedText = responseText.replace(/(?:##|\*\*##)\s*CONDITION\s+FOR\s+EXECUTION\s*\(STRICT\s+CONFIRMATION\)\s*:?\s*\*\*?/i, '<div class="mt-4 pt-3 border-t border-amber-500/30 font-black text-amber-600 text-xs uppercase tracking-wider">⏳ Condition For Execution (Strict Confirmation):</div>');
+                // Route text through optimized custom layout parsing engine
+                output.innerHTML = parseSMCResponseToHTML(responseText);
                 
-                if (formattedText.includes("### 🚨 FINAL CONSIDERATION BANNER 🚨")) {
-                    const sections = formattedText.split("### 🚨 FINAL CONSIDERATION BANNER 🚨");
-                    const bodyContent = sections[0];
-                    const bannerContent = sections[1] ? sections[1].replace(/\n/g, '<br>') : "";
-                    formattedText = `${bodyContent}<div class="final-banner-card rounded-xl p-4 mt-4 shadow-inner space-y-2"><div class="font-black text-amber-400 text-sm tracking-wider uppercase flex items-center gap-1">🚨 FINAL CONSIDERATION BANNER 🚨</div><div class="text-[11px] leading-relaxed">${bannerContent}</div></div>`;
-                }
-                
-                output.innerHTML = `<div class="space-y-2">${formattedText}</div>`;
                 insideAlertWindowTriggered = false; 
                 extractAndInjectTargetLevel(responseText);
                 registerJournalEntry(pair, "RADAR MODE", responseText);
 
                 if ("Notification" in window && Notification.permission === "granted") {
-                    const inlineHeadline = responseText.includes("STAND DOWN (NO TRADE)") ? "🚫 STAND DOWN (NO TRADE) ALERT" : "🎯 ACTIVE SMC TARGET INBOUND";
+                    const inlineHeadline = responseText.includes("STAND DOWN") ? "🚫 STAND DOWN (NO TRADE) ALERT" : "🎯 ACTIVE SMC TARGET INBOUND";
                     new Notification(inlineHeadline, { body: `${pair} analysis sync complete.` });
                 }
 
@@ -741,6 +720,11 @@ For the purpose of this execution, the system has analyzed the uploaded multi-ti
             const entryPrice = document.getElementById("manageEntryInput").value || "Unspecified Coordinate";
             const savedToken = localStorage.getItem("smc_gemini_api_token");
 
+            if (!positionManagementChartRaw) {
+                alert("Please select and upload an active open trade drawing screenshot first.");
+                return;
+            }
+
             const holdBanner = document.getElementById("holdDecisionBanner");
             const exitBanner = document.getElementById("exitDecisionBanner");
             holdBanner.classList.add("hidden");
@@ -762,9 +746,9 @@ For the purpose of this execution, the system has analyzed the uploaded multi-ti
                 output.innerHTML = `<div class="space-y-2 font-medium text-xs text-stone-600 leading-relaxed">${responseText.replace(/\n/g, '<br>')}</div>`;
 
                 const cleanedResponseText = responseText.toUpperCase();
-                if (cleanedResponseText.includes("KEEP HOLDING")) {
+                if (cleanedResponseText.includes("KEEP HOLDING") || cleanedResponseText.includes("DECISION: KEEP HOLDING")) {
                     holdBanner.classList.remove("hidden");
-                } else if (cleanedResponseText.includes("EXIT TRADE NOW") || cleanedResponseText.includes("EXIT TRADE")) {
+                } else if (cleanedResponseText.includes("EXIT TRADE") || cleanedResponseText.includes("DECISION: EXIT TRADE NOW")) {
                     exitBanner.classList.remove("hidden");
                 }
                 
@@ -781,51 +765,42 @@ For the purpose of this execution, the system has analyzed the uploaded multi-ti
         async function sendToGemini(images, assetPair, strategyMode, activeKey) {
             let strategyInstruction = "";
             if (strategyMode === "sr") {
-                strategyInstruction = "STRATEGY MODE CONSTRAINT: Evaluate ONLY Support & Resistance levels and horizontal Institutional Liquidity Pools/Sweeps. Ignore trendlines unless aligning directly with a major horizontal sweep zone.";
+                strategyInstruction = "STRATEGY MODE CONSTRAINT: Evaluate ONLY Support & Resistance levels and horizontal Institutional Liquidity Pools/Sweeps.";
             } else if (strategyMode === "trend") {
-                strategyInstruction = "STRATEGY MODE CONSTRAINT: Evaluate ONLY Trendline structural breakdowns, trend channels, and major Structural Market Shifts (SMS/BOS). Ignore simple horizontal zones.";
+                strategyInstruction = "STRATEGY MODE CONSTRAINT: Evaluate ONLY Trendline structural breakdowns, trend channels, and major Structural Market Shifts (SMS/BOS).";
             } else if (strategyMode === "candles") {
-                strategyInstruction = "STRATEGY MODE CONSTRAINT: Evaluate ONLY specific Candlestick Formations and Price Action rejection signatures (Order Blocks, Fair Value Gaps) right at local zones on the 15M entry chart.";
+                strategyInstruction = "STRATEGY MODE CONSTRAINT: Evaluate ONLY specific Candlestick Formations and Price Action rejection signatures (Order Blocks, Fair Value Gaps).";
             } else {
                 strategyInstruction = "STRATEGY MODE CONSTRAINT: Run full matrix analysis checking horizontal liquidity pools, structural shifts, and candlestick rejections simultaneously.";
             }
 
             let partsPayload = [{
-                text: `You are an automated, rigid institutional risk management machine assessing ${assetPair}. You are strictly forbidden from loose assumptions. You must adhere 100% to the following analytical parameters.
+                text: `You are an automated, rigid institutional risk management machine assessing ${assetPair}. You must closely scan the right-hand side vertical Y-axis values of the uploaded images to find explicit, live forex market numbers.
 
-1. CRITICAL VISUAL PRICE MANDATE:
-- Look directly at the right-hand side Y-axis of the uploaded screenshots to find the exact price decimals.
-- DO NOT invent, hallucinate, or assume round pricing figures (e.g., never default to 65,000 for bitcoin or 2,000 for gold if the image displays a specific decimal location like 64,821.50 or 2,342.10). Use the precise numbers seen on the screen down to the last decimal place.
+CRITICAL PRICE DISCOVERY MANDATE:
+- Read the precise highlighted coordinate tag or numerical scale numbers along the far right side of the uploaded chart.
+- DO NOT invent, guess, round up, or default to general numbers. If the axis displays 2315.40, use exactly 2315.40. If it displays 1.08421, read all decimals.
 
-2. MANDATORY 15M STRUCTURAL FILTERS (ANTI-LOSING STREAK SAFEGUARD):
-- SIDEWAYS/CHOPPING RANGES: Carefully examine the 15M (Entry) chart. If the asset is moving completely sideways within an established consolidation corridor without producing distinct higher-highs/lower-lows or explicit liquidity sweep expansions, you MUST output a "STAND DOWN (NO TRADE)" instruction immediately. Do not hunt for setups in low-momentum range balances.
-
-3. ADVANCED TIME-FRAME OVERRIDE LOGIC (LIQUIDITY HUNT REVERSALS):
-- DEFAULT RULES: If the higher timeframes (Daily/4H/1H) are in a clear aggressive trend but the 15M chart has not formed an alignment structure, you generally stand down.
-- BULLISH OVERRIDE (BUY SCALP EXCEPTION): If the higher timeframes (Daily/4H/1H) show price has dropped into a massive historical structural exhaustion block or swept major Sell-Side Liquidity (SSL), AND the 15M entry chart completes an explicit high-displacement bullish Change of Character (CHoCH) or Market Structure Shift (MSS) leaving a Fair Value Gap (FVG) or Order Block behind, you MUST override the macro bearish trend filter and output an "EXECUTE BUY ORDER" signal.
-- BEARISH OVERRIDE (SELL SCALP EXCEPTION): If the higher timeframes (Daily/4H/1H) show price has expanded upward into a massive historical resistance block or swept major Buy-Side Liquidity (BSL), AND the 15M entry chart completes an explicit high-displacement bearish Change of Character (CHoCH) or Market Structure Shift (MSS) leaving a bearish Fair Value Gap (FVG) or Order Block behind, you MUST override the macro bullish trend filter and output an "EXECUTE SELL ORDER" signal.
-
-4. ACCURATE SCALP RISK PARAMETERS:
-- Stop Loss levels must be placed strictly behind the most immediate local 15M swing high/low structural invalidation point.
-- For XAUUSD (Gold): Stop Loss must be precisely 20 to 30 pips.
-- For Forex Currency Pairs (EURUSD, GBPUSD, USDJPY, etc.): Stop Loss must strictly remain compressed between an absolute MINIMUM of 12 pips and an absolute MAXIMUM of 20 pips! No exceptions.
-- Take Profit 1 must be exactly a 1:2 Risk-to-Reward ratio (calculated to the exact decimal point based on your structural entry and stop loss). Take Profit 2 must be exactly a 1:3 Risk-to-Reward ratio.
+SMART MONEY CONCEPTS RULES:
+- SIDEWAYS CONSOLIDATION CORRIDORS: If the price action is moving strictly sideways inside an unresolved internal trading range without clear structural displacement sweeps, you MUST instantly issue a "STAND DOWN (NO TRADE)" directive.
+- MARKET BIAS ALIGNMENT: Identify multi-timeframe liquidity sweeps (BSL/SSL) and structural shifts (CHoCH/MSS). Place Stop Loss points strictly behind the immediate 15M swing validation point.
+- SCALP RISK ALLOCATION: For Gold (XAUUSD), set SL precisely between 20 to 30 pips. For currency pairs, compress SL strictly between 12 to 20 pips. Calculate TP1 at exactly 1:2 Risk-to-Reward ratio, and TP2 at exactly 1:3 Risk-to-Reward.
 
 ${strategyInstruction}
 
-OUTPUT TEMPLATE:
-Your output must always contain these closing blocks.
+OUTPUT TEMPLATE RULES:
+You are ordered to output your complete technical calculation answers following this exact markdown structural breakdown layout. Do not alter text casing or add extra wrapping characters to the headers:
 
 ## CONDITION FOR EXECUTION (STRICT CONFIRMATION):
-[Define the exact numeric decimal level trigger and confirmation candlestick close required on the 15M chart].
+[State clear price levels and required 15M candlestick closing triggers or explicitly state STAND DOWN instructions]
 
 ### 🚨 FINAL CONSIDERATION BANNER 🚨
-**DIRECTIONAL DECISION:** [EXECUTE BUY ORDER / EXECUTE SELL ORDER / STAND DOWN (NO TRADE)]
-* **ENTRY LEVEL:** [Exact decimal trigger price or "N/A - NO TRADE"]
-* **STOP LOSS:** [Exact decimal invalidation point or "N/A - NO TRADE"] (Exact Distance: [Calculated Pips] Pips)
-* **TAKE PROFIT (1:2 Minimum RR):** [Exact decimal target or "N/A"] (Target Yield: [Calculated Pips * 2] Pips clear of entry.)
-* **TAKE PROFIT (1:3 Maximum RR):** [Exact decimal target or "N/A"] (Target Yield: [Calculated Pips * 3] Pips clear of entry.)
-**FINAL RATIONALE:** [Provide a precise 1-sentence matrix structural confirmation justification or a clear "NO TRADE" stand down rationale.]`
+DIRECTIONAL DECISION: [EXECUTE BUY ORDER / EXECUTE SELL ORDER / STAND DOWN (NO TRADE)]
+ENTRY LEVEL: [Numerical value or N/A]
+STOP LOSS: [Numerical value or N/A]
+TAKE PROFIT (1:2 Minimum RR): [Numerical value or N/A]
+TAKE PROFIT (1:3 Maximum RR): [Numerical value or N/A]
+FINAL RATIONALE: [Clear structural logic evaluation sentence]`
             }];
 
             images.forEach(b64 => {
@@ -850,15 +825,12 @@ Your output must always contain these closing blocks.
         async function sendManagementToGemini(imageB64, assetPair, entryPrice, activeKey) {
             const partsPayload = [
                 {
-                    text: `You are an autonomous institutional trade management engine tracking an active open position on ${assetPair} entered at price level ${entryPrice}. The trader has provided a screenshot of the active price structure because the market has begun ranging, compressing, or showing signs of drawdown reversal.
+                    text: `You are an autonomous trade management engine evaluating ${assetPair} position opened at level ${entryPrice}. Scan the chart to check right-axis scale values and read current price trend metrics.
+YOUR OUTPUT MUST START WITH EXACTLY ONE OF THESE PHRASES:
+DECISION: KEEP HOLDING
+DECISION: EXIT TRADE NOW
 
-Examine the image carefully for order flow structural changes (e.g., sub-structure change of character, mitigation of opposing order blocks, value gaps, or premium/discount internal status). Look carefully at the exact numbers and decimal positions on the Y-axis.
-
-YOUR OUTPUT MUST START WITH EXACTLY ONE OF THESE TWO PHRASES ON THE FIRST LINE:
-- "DECISION: KEEP HOLDING" if the structure favors the original path and the range is an institutional re-accumulation or distribution structure.
-- "DECISION: EXIT TRADE NOW" if an opposing structural displacement vector or breaker formation invalidates the open position risk metrics.
-
-Provide a clear 3-bullet block analysis below that decision line explaining your structural reasoning, premium/discount status, and immediate mitigation tactics.`
+Provide a clear 3-bullet block analysis below that line explaining structural reasoning.`
                 },
                 {
                     inlineData: { mimeType: "image/png", data: imageB64 }
@@ -924,7 +896,7 @@ Provide a clear 3-bullet block analysis below that decision line explaining your
                 macroBanner.className = "p-2.5 rounded-lg border border-stone-200 bg-stone-50 flex items-center gap-2";
                 macroIcon.innerHTML = `<i data-lucide="calendar-days" class="w-4 h-4"></i>`;
                 macroTitle.innerText = "Macro Calendar Engine";
-                macroDesc.innerText = "No immediate recurring redfolder macro events detected. Maintain standard 65-pip limit rules.";
+                macroDesc.innerText = "No immediate recurring redfolder macro events detected. Maintain standard rules.";
             }
             lucide.createIcons();
         }
