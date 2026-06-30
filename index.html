@@ -557,7 +557,7 @@
             }
         }
 
-        // Custom parser explicitly built to structure output EXACTLY as displayed in image.png
+        // Overhauled parser designed to robustly render bullet metrics or clear STAND DOWN formats
         function parseSMCResponseToHTML(rawText) {
             try {
                 const conditionMarker = "⏳ CONDITION FOR EXECUTION (STRICT CONFIRMATION):";
@@ -575,25 +575,29 @@
                     } else {
                         conditionText = upperSplit.trim();
                     }
+                } else {
+                    conditionText = rawText.split(bannerMarker)[0] || "";
                 }
                 
                 if (rawText.includes(bannerMarker)) {
                     bannerText = rawText.split(bannerMarker)[1] || "";
+                } else {
+                    bannerText = rawText;
                 }
-                
-                if (!conditionText && !bannerText) {
-                    return `<div class="p-3 text-stone-500 bg-stone-50 rounded-xl border border-stone-200">${rawText.replace(/\n/g, "<br>")}</div>`;
-                }
+
+                conditionText = conditionText.replace(/^[:\s\n]+/, "").replace(/##$/, "").trim();
 
                 let htmlLines = bannerText.split("\n").map(line => {
                     let trimmed = line.trim();
                     if (!trimmed) return "";
                     
-                    // Format line items matching image.png criteria exactly
+                    let processed = trimmed.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                    
                     if (trimmed.startsWith("*") || trimmed.startsWith("-")) {
-                        return `<p class="pl-2">${trimmed}</p>`;
+                        processed = processed.replace(/^[\*\-\s]+/, "");
+                        return `<div class="flex items-start gap-1.5 pl-2"><span>•</span><span>${processed}</span></div>`;
                     }
-                    return `<p>${trimmed}</p>`;
+                    return `<p class="leading-relaxed">${processed}</p>`;
                 }).filter(l => l !== "").join("\n");
 
                 return `
@@ -607,11 +611,11 @@
                             </p>
                         </div>
                         
-                        <div class="bg-[#181a20] text-stone-200 border border-stone-800 rounded-2xl p-4 shadow-xl space-y-4">
-                            <h4 class="text-amber-400 font-extrabold text-sm tracking-wider uppercase text-center flex items-center justify-center gap-1 border-b border-stone-800/60 pb-2">
+                        <div class="bg-[#181a20] text-stone-200 border border-stone-800 rounded-2xl p-4 shadow-xl space-y-3">
+                            <h4 class="text-amber-400 font-extrabold text-sm tracking-wider uppercase text-center flex items-center justify-center gap-1 border-b border-stone-800/60 pb-2 mb-2">
                                 🚨 FINAL CONSIDERATION BANNER 🚨
                             </h4>
-                            <div class="text-[11px] font-semibold tracking-wide leading-relaxed space-y-2.5 text-stone-300">
+                            <div class="text-[11px] font-semibold tracking-wide leading-relaxed space-y-2 text-stone-300">
                                 ${htmlLines}
                             </div>
                         </div>
@@ -751,21 +755,22 @@
 ${strategyInstruction}
 
 OUTPUT TEMPLATE MANDATE:
-You MUST output your complete technical calculation answers following this exact template structural syntax matching image.png verbatim. Do not insert extra characters, text, or wrappers outside of this design:
+You MUST output your complete technical calculation answers following this exact template structural syntax matching image.png verbatim. Do not insert extra characters, markdown formatting outside the list, text, or wrappers outside of this design.
+
+CRITICAL DISCIPLINE INFRASTRUCTURE:
+If there is no clear risk-to-reward setup or market criteria matching your rules, you MUST still output the full block template below but write 'STAND DOWN' for DIRECTIONAL DECISION and set Entry/SL/TP points to 'N/A' or specify the neutral structural price levels. Never leave the banner content blank.
 
 ⏳ CONDITION FOR EXECUTION (STRICT CONFIRMATION):
 [Insert summary analysis text here overviewing multi-timeframe direction, trends, or scaling metrics] ##
 
 🚨 FINAL CONSIDERATION BANNER 🚨
 
-For the purpose of this exercise, let's assume the 15M chart for ${assetPair} shows a clear uptrend on the higher timeframes (Daily, 4H, 1H) but has reached a major resistance level. The current price is [Insert current price value], and there's a visible Change of Character (CHoCH) or Market Structure Shift (MSS) pointing downwards on the 15M chart.
-
-**DIRECTIONAL DECISION:** EXECUTE SELL ORDER
-* **ENTRY LEVEL:** [Insert Entry Numerical Coordinate]
-* **STOP LOSS:** [Insert Stop Loss Value] (Exact Distance: [Value] Pips or [Decimal Value])
-* **TAKE PROFIT (1:2 Minimum RR):** [Insert TP1 Value] (Target Yield: [Value] Pips clear of entry.)
-* **TAKE PROFIT (1:3 Maximum RR):** [Insert TP2 Value] (Target Yield: [Value] Pips clear of entry.)
-**FINAL RATIONALE:** [Insert short text explanation detailing market structure confluence signatures.]`
+**DIRECTIONAL DECISION:** [EXECUTE BUY ORDER / EXECUTE SELL ORDER / STAND DOWN]
+* **ENTRY LEVEL:** [Insert Numerical Coordinate or N/A]
+* **STOP LOSS:** [Insert Numerical Value or N/A] (Exact Distance: [Value] Pips or [Decimal])
+* **TAKE PROFIT (1:2 Minimum RR):** [Insert Numerical Value or N/A] (Target Yield: [Value] Pips clear of entry.)
+* **TAKE PROFIT (1:3 Maximum RR):** [Insert Numerical Value or N/A] (Target Yield: [Value] Pips clear of entry.)
+**FINAL RATIONALE:** [Insert explicit sentence detailing market structural confirmation or stand-down logic rules.]`
             }];
 
             images.forEach(b64 => {
