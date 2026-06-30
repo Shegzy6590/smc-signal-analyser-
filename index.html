@@ -529,7 +529,8 @@
 
         function extractAndInjectTargetLevel(aiText) {
             const entryRegex = /ENTRY LEVEL:\s*([\d,.]+)/i;
-            const match = aiText.match(entryRegex);
+            const cleanText = aiText.replace(/[\*\-\s_•]+/g, ' ');
+            const match = cleanText.match(entryRegex);
             if (match && match[1]) {
                 const scrapedLevel = parseFloat(match[1].replace(/,/g, ''));
                 if (!isNaN(scrapedLevel)) {
@@ -559,31 +560,33 @@
 
         function parseSMCResponseToHTML(rawText) {
             try {
-                // Find execution conditions
+                // Find execution condition segment
                 let conditionText = "Multi-timeframe evaluation matrix compiled.";
                 const conditionRegex = /⏳\s*CONDITION\s*FOR\s*EXECUTION\s*\(STRICT\s*CONFIRMATION\):([\s\S]*?)(?=🚨|$)/i;
                 let conditionMatch = rawText.match(conditionRegex);
                 if (conditionMatch && conditionMatch[1]) {
-                    conditionText = conditionMatch[1].replace(/##/g, '').trim();
+                    conditionText = conditionMatch[1].replace(/[#\*\_]+/g, '').trim();
                 }
 
-                // Extract all template lines split by newlines
                 let lines = rawText.split("\n");
                 let bodyHtml = "";
+                let fallbackUsed = true;
 
                 lines.forEach(line => {
                     let trimmed = line.trim();
                     if (!trimmed) return;
 
-                    // Clean out markdown list characters
-                    let cleanLine = trimmed.replace(/^[\*\-\s•]+/, "").trim();
+                    // Strips markdown list characters, bullets, and bold markers for calculation alignment
+                    let cleanLine = trimmed.replace(/^[\*\-\s•\_]+/, "").replace(/[\*\_]+/g, "").trim();
                     let upperLine = cleanLine.toUpperCase();
 
                     if (upperLine.startsWith("DIRECTIONAL DECISION:")) {
+                        fallbackUsed = false;
                         let value = cleanLine.split(/:(.+)/)[1] || "STAND DOWN";
                         bodyHtml += `<p class="leading-relaxed text-[11px] font-black text-white mt-1"><span class="text-amber-400">DIRECTIONAL DECISION:</span> ${value.trim()}</p>`;
                     } 
                     else if (upperLine.startsWith("ENTRY LEVEL:")) {
+                        fallbackUsed = false;
                         let value = cleanLine.split(/:(.+)/)[1] || "Calculating...";
                         bodyHtml += `<div class="flex items-start gap-2 pl-2 my-1 text-stone-200">
                                         <span class="text-amber-500">•</span>
@@ -591,6 +594,7 @@
                                     </div>`;
                     } 
                     else if (upperLine.startsWith("STOP LOSS:")) {
+                        fallbackUsed = false;
                         let value = cleanLine.split(/:(.+)/)[1] || "Calculating...";
                         bodyHtml += `<div class="flex items-start gap-2 pl-2 my-1 text-stone-200">
                                         <span class="text-amber-500">•</span>
@@ -598,6 +602,7 @@
                                     </div>`;
                     } 
                     else if (upperLine.startsWith("TAKE PROFIT")) {
+                        fallbackUsed = false;
                         let splitArr = cleanLine.split(/:(.+)/);
                         let title = splitArr[0] || "TAKE PROFIT";
                         let value = splitArr[1] || "Calculating...";
@@ -607,13 +612,14 @@
                                     </div>`;
                     } 
                     else if (upperLine.startsWith("FINAL RATIONALE:")) {
+                        fallbackUsed = false;
                         let value = cleanLine.split(/:(.+)/)[1] || "Structure validation criteria achieved.";
                         bodyHtml += `<p class="leading-relaxed text-[11px] font-medium text-stone-300 mt-2 border-t border-stone-800/60 pt-2 text-justify"><strong class="text-amber-400 font-bold">FINAL RATIONALE:</strong> ${value.trim()}</p>`;
                     }
                 });
 
-                // If fallback mapping failed to extract clean fields, use basic layout
-                if (!bodyHtml) {
+                // Fallback parser if headings don't align cleanly on absolute splits
+                if (fallbackUsed) {
                     bodyHtml = `<p class="leading-relaxed text-[11px] font-medium text-stone-300 text-justify">${rawText.replace(/\n/g, '<br>')}</p>`;
                 }
 
@@ -771,18 +777,18 @@
 
 ${strategyInstruction}
 
-CRITICAL MANDATE: You MUST provide a clear directional choice (BUY, SELL, or STAND DOWN). You MUST explicitly output every single field in the template below with calculated numeric prices derived directly from the chart structures. Do not mirror the headers or drop lines mid-sentence.
+CRITICAL MANDATE: You MUST provide an explicit, clear directional choice (EXECUTE BUY ORDER, EXECUTE SELL ORDER, or STAND DOWN). You MUST explicitly include and spell out every single header line shown in the template below exactly as written—even if the decision is to stand down.
 
-OUTPUT TEMPLATE:
+OUTPUT TEMPLATE EXACT FORMAT:
 ⏳ CONDITION FOR EXECUTION (STRICT CONFIRMATION):
-[Provide a clear, brief, one-paragraph technical summary of what you see on the charts here.]
+[Provide a clear technical summary of what you see on the charts here.]
 
 🚨 FINAL CONSIDERATION BANNER 🚨
-DIRECTIONAL DECISION: [Choose exactly one: EXECUTE BUY ORDER / EXECUTE SELL ORDER / STAND DOWN]
-ENTRY LEVEL: [Insert calculated market entry price coordinate from chart]
-STOP LOSS: [Insert calculated stop loss price coordinate] (Exact Distance: [Value] Pips)
-TAKE PROFIT (1:2 Minimum RR): [Insert target price coordinate] (Target Yield: [Value] Pips)
-TAKE PROFIT (1:3 Maximum RR): [Insert target price coordinate] (Target Yield: [Value] Pips)
+DIRECTIONAL DECISION: [Must print exactly: EXECUTE BUY ORDER / EXECUTE SELL ORDER / STAND DOWN]
+ENTRY LEVEL: [Insert calculated entry price coordinate or write N/A if stand down]
+STOP LOSS: [Insert calculated stop loss price coordinate or write N/A]
+TAKE PROFIT (1:2 Minimum RR): [Insert target price coordinate or write N/A]
+TAKE PROFIT (1:3 Maximum RR): [Insert target price coordinate or write N/A]
 FINAL RATIONALE: [Provide the core SMC reason or structural rule confirming this execution target.]`
             }];
 
