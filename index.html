@@ -430,23 +430,32 @@
             msgBox.innerHTML += `<div id="${loadingId}" class="bg-stone-100 border border-stone-200/60 text-stone-400 p-2.5 rounded-xl rounded-tl-none max-w-[85%] animate-pulse shadow-xs">Thinking...</div>`;
             msgBox.scrollTop = msgBox.scrollHeight;
 
-            let inlineParts = [{ 
+            let contentPayload = [];
+            contentPayload.push({
+                type: "text",
                 text: `You are an automated assistant designed to evaluate market charts with strict numerical alignment. Look directly at the right-hand side Y-axis of the uploaded image to capture explicit forex or crypto asset pricing decimals. User Question: ${userText || "Analyze this chart image structure."}`
-            }];
+            });
             
             if (currentImageContext) {
-                inlineParts.push({
-                    inlineData: { mimeType: "image/jpeg", data: currentImageContext }
+                contentPayload.push({
+                    type: "image_url",
+                    image_url: { url: `data:image/jpeg;base64,${currentImageContext}` }
                 });
             }
 
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${savedToken}`, {
+                const response = await fetch("https://models.github.ai/inference/chat/completions", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: { 
+                        "Accept": "application/vnd.github+json",
+                        "Authorization": `Bearer ${savedToken}`,
+                        "Content-Type": "application/json" 
+                    },
                     body: JSON.stringify({
-                        contents: [{ parts: inlineParts }],
-                        generationConfig: { temperature: 0.2, maxOutputTokens: 450 }
+                        model: "openai/gpt-4o-mini",
+                        messages: [{ role: "user", content: contentPayload }],
+                        temperature: 0.2,
+                        max_tokens: 450
                     })
                 });
 
@@ -460,7 +469,7 @@
                 }
 
                 const resData = await response.json();
-                const aiResponse = resData.candidates[0].content.parts[0].text;
+                const aiResponse = resData.choices[0].message.content;
 
                 document.getElementById(loadingId).remove();
                 msgBox.innerHTML += `<div class="bg-stone-100 border border-stone-200/60 text-stone-700 p-2.5 rounded-xl rounded-tl-none max-w-[85%] shadow-xs">${aiResponse.replace(/\n/g, '<br>')}</div>`;
@@ -852,7 +861,8 @@
                 strategyInstruction = "STRATEGY MODE CONSTRAINT: Run full matrix analysis checking horizontal liquidity pools, structural shifts, and candlestick rejections simultaneously.";
             }
 
-            let partsPayload = [{
+            let contentPayload = [{
+                type: "text",
                 text: `You are an automated multi-timeframe risk management system evaluating charts for ${assetPair}. Look closely at the right-hand side Y-axis scale of the uploaded images to determine precise structural execution parameters.
 
 ${strategyInstruction}
@@ -913,20 +923,24 @@ your setup level trackers]`
             }];
 
             images.forEach(b64 => {
-                partsPayload.push({
-                    inlineData: { mimeType: "image/jpeg", data: b64 }
+                contentPayload.push({
+                    type: "image_url",
+                    image_url: { url: `data:image/jpeg;base64,${b64}` }
                 });
             });
 
-            const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + activeKey, {
+            const response = await fetch("https://models.github.ai/inference/chat/completions", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { 
+                    "Accept": "application/vnd.github+json",
+                    "Authorization": "Bearer " + activeKey,
+                    "Content-Type": "application/json" 
+                },
                 body: JSON.stringify({
-                    contents: [{ parts: partsPayload }],
-                    generationConfig: { 
-                        temperature: 0.1, 
-                        maxOutputTokens: 1500 
-                    }
+                    model: "openai/gpt-4o-mini",
+                    messages: [{ role: "user", content: contentPayload }],
+                    temperature: 0.1,
+                    max_tokens: 1500
                 })
             });
 
@@ -940,25 +954,33 @@ your setup level trackers]`
             }
 
             const resData = await response.json();
-            return resData.candidates[0].content.parts[0].text;
+            return resData.choices[0].message.content;
         }
 
         async function sendManagementToGemini(imageB64, assetPair, entryPrice, activeKey) {
-            const partsPayload = [
+            const contentPayload = [
                 {
+                    type: "text",
                     text: `You are an autonomous trade management engine evaluating ${assetPair} position opened at level ${entryPrice}. Scan the chart to check right-axis scale values. Output exact holding breakdown rules. Include 'KEEP HOLDING' or 'EXIT TRADE NOW' in your response.`
                 },
                 {
-                    inlineData: { mimeType: "image/jpeg", data: imageB64 }
+                    type: "image_url",
+                    image_url: { url: `data:image/jpeg;base64,${imageB64}` }
                 }
             ];
 
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${activeKey}`, {
+            const response = await fetch("https://models.github.ai/inference/chat/completions", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { 
+                    "Accept": "application/vnd.github+json",
+                    "Authorization": `Bearer ${activeKey}`,
+                    "Content-Type": "application/json" 
+                },
                 body: JSON.stringify({
-                    contents: [{ parts: partsPayload }],
-                    generationConfig: { temperature: 0.1, maxOutputTokens: 400 }
+                    model: "openai/gpt-4o-mini",
+                    messages: [{ role: "user", content: contentPayload }],
+                    temperature: 0.1,
+                    max_tokens: 400
                 })
             });
 
@@ -972,7 +994,7 @@ your setup level trackers]`
             }
 
             const resData = await response.json();
-            return resData.candidates[0].content.parts[0].text;
+            return resData.choices[0].message.content;
         }
 
         function updateLiveClockAndMacroCalendar() {
@@ -1109,7 +1131,7 @@ your setup level trackers]`
         }
 
         function clearJournalLogs() {
-            localStorage.setItem("smc_trade_journal_vault", "[]");
+            localStorage.setItem("smc_journal_vault", "[]");
             renderJournalLogs();
         }
     </script>
