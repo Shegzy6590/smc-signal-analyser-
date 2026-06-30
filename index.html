@@ -601,7 +601,8 @@ User Question: ${userText || "Analyze this chart image structure and provide imm
                 const responseText = await sendToGemini(targetLiveCharts, pair, strategyMode, savedToken);
                 statusText.innerText = "Analysis matrix synchronized.";
                 
-                let formattedText = responseText.replace(/## CONDITION FOR EXECUTION \(STRICT CONFIRMATION\):/g, '<div class="mt-4 pt-3 border-t border-amber-500/30 font-black text-amber-600 text-xs uppercase tracking-wider">⏳ Condition For Execution (Strict Confirmation):</div>');
+                // FIXED regex logic to match header string formatting safely regardless of markdown bold markers
+                let formattedText = responseText.replace(/(?:##|\*\*##)\s*CONDITION\s+FOR\s+EXECUTION\s*\(STRICT\s+CONFIRMATION\)\s*:?\s*\*\*?/i, '<div class="mt-4 pt-3 border-t border-amber-500/30 font-black text-amber-600 text-xs uppercase tracking-wider">⏳ Condition For Execution (Strict Confirmation):</div>');
                 
                 if (formattedText.includes("### 🚨 FINAL CONSIDERATION BANNER 🚨")) {
                     const sections = formattedText.split("### 🚨 FINAL CONSIDERATION BANNER 🚨");
