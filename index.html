@@ -560,68 +560,49 @@
 
         function parseSMCResponseToHTML(rawText) {
             try {
-                // Find execution condition segment
-                let conditionText = "Multi-timeframe evaluation matrix compiled.";
-                const conditionRegex = /⏳\s*CONDITION\s*FOR\s*EXECUTION\s*\(STRICT\s*CONFIRMATION\):([\s\S]*?)(?=🚨|$)/i;
-                let conditionMatch = rawText.match(conditionRegex);
-                if (conditionMatch && conditionMatch[1]) {
-                    conditionText = conditionMatch[1].replace(/[#\*\_]+/g, '').trim();
+                // Pinpoint the raw metadata start segment
+                const blockMarker = "==== METADATA BLOCK ====";
+                const markerIndex = rawText.indexOf(blockMarker);
+                
+                let marketDescription = "Multi-timeframe structure successfully loaded into current engine context.";
+                let metadataText = "";
+
+                if (markerIndex !== -1) {
+                    marketDescription = rawText.substring(0, markerIndex).trim();
+                    metadataText = rawText.substring(markerIndex + blockMarker.length).trim();
+                } else {
+                    marketDescription = rawText;
                 }
 
-                let lines = rawText.split("\n");
-                let bodyHtml = "";
-                let fallbackUsed = true;
+                // Clean out formatting wrappers from the market analysis narrative
+                marketDescription = marketDescription.replace(/[#\*\_]+/g, '').trim();
 
+                let decision = "STAND DOWN";
+                let entry = "N/A";
+                let sl = "N/A";
+                let tp2 = "N/A";
+                let tp3 = "N/A";
+                let rationale = "No active alignment configuration matched macro validation filters.";
+
+                const lines = metadataText.split("\n");
                 lines.forEach(line => {
-                    let trimmed = line.trim();
-                    if (!trimmed) return;
+                    let cleanLine = line.replace(/^[\*\-\s•\_]+/, "").replace(/[\*\_]+/g, "").trim();
+                    let upper = cleanLine.toUpperCase();
 
-                    // Strips markdown list characters, bullets, and bold markers for calculation alignment
-                    let cleanLine = trimmed.replace(/^[\*\-\s•\_]+/, "").replace(/[\*\_]+/g, "").trim();
-                    let upperLine = cleanLine.toUpperCase();
-
-                    if (upperLine.startsWith("DIRECTIONAL DECISION:")) {
-                        fallbackUsed = false;
-                        let value = cleanLine.split(/:(.+)/)[1] || "STAND DOWN";
-                        bodyHtml += `<p class="leading-relaxed text-[11px] font-black text-white mt-1"><span class="text-amber-400">DIRECTIONAL DECISION:</span> ${value.trim()}</p>`;
-                    } 
-                    else if (upperLine.startsWith("ENTRY LEVEL:")) {
-                        fallbackUsed = false;
-                        let value = cleanLine.split(/:(.+)/)[1] || "Calculating...";
-                        bodyHtml += `<div class="flex items-start gap-2 pl-2 my-1 text-stone-200">
-                                        <span class="text-amber-500">•</span>
-                                        <span class="text-[11px] font-medium leading-relaxed"><strong class="text-amber-400 font-bold">ENTRY LEVEL:</strong> ${value.trim()}</span>
-                                    </div>`;
-                    } 
-                    else if (upperLine.startsWith("STOP LOSS:")) {
-                        fallbackUsed = false;
-                        let value = cleanLine.split(/:(.+)/)[1] || "Calculating...";
-                        bodyHtml += `<div class="flex items-start gap-2 pl-2 my-1 text-stone-200">
-                                        <span class="text-amber-500">•</span>
-                                        <span class="text-[11px] font-medium leading-relaxed"><strong class="text-amber-400 font-bold">STOP LOSS:</strong> ${value.trim()}</span>
-                                    </div>`;
-                    } 
-                    else if (upperLine.startsWith("TAKE PROFIT")) {
-                        fallbackUsed = false;
-                        let splitArr = cleanLine.split(/:(.+)/);
-                        let title = splitArr[0] || "TAKE PROFIT";
-                        let value = splitArr[1] || "Calculating...";
-                        bodyHtml += `<div class="flex items-start gap-2 pl-2 my-1 text-stone-200">
-                                        <span class="text-amber-500">•</span>
-                                        <span class="text-[11px] font-medium leading-relaxed"><strong class="text-amber-400 font-bold">${title.trim()}:</strong> ${value.trim()}</span>
-                                    </div>`;
-                    } 
-                    else if (upperLine.startsWith("FINAL RATIONALE:")) {
-                        fallbackUsed = false;
-                        let value = cleanLine.split(/:(.+)/)[1] || "Structure validation criteria achieved.";
-                        bodyHtml += `<p class="leading-relaxed text-[11px] font-medium text-stone-300 mt-2 border-t border-stone-800/60 pt-2 text-justify"><strong class="text-amber-400 font-bold">FINAL RATIONALE:</strong> ${value.trim()}</p>`;
+                    if (upper.startsWith("DIRECTIONAL DECISION:")) {
+                        decision = cleanLine.split(/:(.+)/)[1]?.trim() || "STAND DOWN";
+                    } else if (upper.startsWith("ENTRY LEVEL:")) {
+                        entry = cleanLine.split(/:(.+)/)[1]?.trim() || "N/A";
+                    } else if (upper.startsWith("STOP LOSS:")) {
+                        sl = cleanLine.split(/:(.+)/)[1]?.trim() || "N/A";
+                    } else if (upper.startsWith("TAKE PROFIT (1:2):")) {
+                        tp2 = cleanLine.split(/:(.+)/)[1]?.trim() || "N/A";
+                    } else if (upper.startsWith("TAKE PROFIT (1:3):")) {
+                        tp3 = cleanLine.split(/:(.+)/)[1]?.trim() || "N/A";
+                    } else if (upper.startsWith("FINAL RATIONALE:")) {
+                        rationale = cleanLine.split(/:(.+)/)[1]?.trim() || rationale;
                     }
                 });
-
-                // Fallback parser if headings don't align cleanly on absolute splits
-                if (fallbackUsed) {
-                    bodyHtml = `<p class="leading-relaxed text-[11px] font-medium text-stone-300 text-justify">${rawText.replace(/\n/g, '<br>')}</p>`;
-                }
 
                 return `
                     <div class="space-y-4 font-sans">
@@ -630,7 +611,7 @@
                                 ⏳ CONDITION FOR EXECUTION (STRICT CONFIRMATION):
                             </h3>
                             <p class="text-stone-600 font-semibold text-xs leading-relaxed text-justify">
-                                ${conditionText}
+                                ${marketDescription.replace(/\n/g, '<br>')}
                             </p>
                         </div>
                         
@@ -639,7 +620,24 @@
                                 🚨 FINAL CONSIDERATION BANNER 🚨
                             </h4>
                             <div class="space-y-1">
-                                ${bodyHtml}
+                                <p class="leading-relaxed text-[11px] font-black text-white mt-1"><span class="text-amber-400">DIRECTIONAL DECISION:</span> ${decision}</p>
+                                <div class="flex items-start gap-2 pl-2 my-1 text-stone-200">
+                                    <span class="text-amber-500">•</span>
+                                    <span class="text-[11px] font-medium leading-relaxed"><strong class="text-amber-400 font-bold">ENTRY LEVEL:</strong> ${entry}</span>
+                                </div>
+                                <div class="flex items-start gap-2 pl-2 my-1 text-stone-200">
+                                    <span class="text-amber-500">•</span>
+                                    <span class="text-[11px] font-medium leading-relaxed"><strong class="text-amber-400 font-bold">STOP LOSS:</strong> ${sl}</span>
+                                </div>
+                                <div class="flex items-start gap-2 pl-2 my-1 text-stone-200">
+                                    <span class="text-amber-500">•</span>
+                                    <span class="text-[11px] font-medium leading-relaxed"><strong class="text-amber-400 font-bold">TAKE PROFIT (1:2):</strong> ${tp2}</span>
+                                </div>
+                                <div class="flex items-start gap-2 pl-2 my-1 text-stone-200">
+                                    <span class="text-amber-500">•</span>
+                                    <span class="text-[11px] font-medium leading-relaxed"><strong class="text-amber-400 font-bold">TAKE PROFIT (1:3):</strong> ${tp3}</span>
+                                </div>
+                                <p class="leading-relaxed text-[11px] font-medium text-stone-300 mt-2 border-t border-stone-800/60 pt-2 text-justify"><strong class="text-amber-400 font-bold">FINAL RATIONALE:</strong> ${rationale}</p>
                             </div>
                         </div>
                     </div>
@@ -773,23 +771,21 @@
             }
 
             let partsPayload = [{
-                text: `You are an automated risk management machine evaluating charts for ${assetPair}. Do not output generic commentary. Look closely at the right-hand side Y-axis of the uploaded images to determine precise entry levels, stop loss thresholds, and take profit coordinates based on market structure.
+                text: `You are an automated risk management machine evaluating charts for ${assetPair}. Do not output markdown headers or bold indicators in the text. Look closely at the right-hand side Y-axis of the uploaded images to determine precise entry levels, stop loss thresholds, and take profit coordinates based on market structure.
 
 ${strategyInstruction}
 
-CRITICAL MANDATE: You MUST provide an explicit, clear directional choice (EXECUTE BUY ORDER, EXECUTE SELL ORDER, or STAND DOWN). You MUST explicitly include and spell out every single header line shown in the template below exactly as written—even if the decision is to stand down.
+STEP 1: Provide a detailed, paragraph-form narrative description of how the market behaves right now. Talk about order blocks, liquidity sweeps, overall directionality, and chart clues.
 
-OUTPUT TEMPLATE EXACT FORMAT:
-⏳ CONDITION FOR EXECUTION (STRICT CONFIRMATION):
-[Provide a clear technical summary of what you see on the charts here.]
+STEP 2: Append the exact block below to your output. Fill in the parameters cleanly.
 
-🚨 FINAL CONSIDERATION BANNER 🚨
-DIRECTIONAL DECISION: [Must print exactly: EXECUTE BUY ORDER / EXECUTE SELL ORDER / STAND DOWN]
-ENTRY LEVEL: [Insert calculated entry price coordinate or write N/A if stand down]
-STOP LOSS: [Insert calculated stop loss price coordinate or write N/A]
-TAKE PROFIT (1:2 Minimum RR): [Insert target price coordinate or write N/A]
-TAKE PROFIT (1:3 Maximum RR): [Insert target price coordinate or write N/A]
-FINAL RATIONALE: [Provide the core SMC reason or structural rule confirming this execution target.]`
+==== METADATA BLOCK ====
+DIRECTIONAL DECISION: [EXECUTE BUY ORDER / EXECUTE SELL ORDER / STAND DOWN]
+ENTRY LEVEL: [Insert coordinate price or N/A]
+STOP LOSS: [Insert coordinate price or N/A]
+TAKE PROFIT (1:2): [Insert coordinate price or N/A]
+TAKE PROFIT (1:3): [Insert coordinate price or N/A]
+FINAL RATIONALE: [One clear sentence summarizing structural compliance or lack thereof]`
             }];
 
             images.forEach(b64 => {
