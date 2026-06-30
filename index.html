@@ -699,7 +699,8 @@
             } catch (error) {
                 statusText.innerText = "Execution failed.";
                 output.innerText = `Error: ${error.message}`;
-            } disabled = false;
+            } finally {
+                btn.disabled = false;
                 btn.className = "w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 px-4 rounded-xl transition duration-200 shadow-md text-center text-xs tracking-wider uppercase";
                 btn.innerText = "Run Strategy Validation";
             }
