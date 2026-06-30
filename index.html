@@ -362,11 +362,35 @@
         function handleChatImageSelection(event) {
             const file = event.target.files[0];
             if (!file) return;
+            
+            document.getElementById("chatImagePreviewBox").classList.remove("hidden");
             const reader = new FileReader();
             reader.onload = function(e) {
-                chatBoxAttachedImageRaw = e.target.result.split(',')[1];
-                document.getElementById("chatImagePreviewThumb").src = e.target.result;
-                document.getElementById("chatImagePreviewBox").classList.remove("hidden");
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    const maxDimension = 1024;
+                    if (width > maxDimension || height > maxDimension) {
+                        if (width > height) {
+                            height = Math.round((height * maxDimension) / width);
+                            width = maxDimension;
+                        } else {
+                            width = Math.round((width * maxDimension) / height);
+                            height = maxDimension;
+                        }
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                    chatBoxAttachedImageRaw = compressedDataUrl.split(',')[1];
+                    document.getElementById("chatImagePreviewThumb").src = compressedDataUrl;
+                };
+                img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
@@ -391,7 +415,7 @@
 
             let messageHtml = `<div class="bg-slate-900 border border-slate-800 text-white p-2.5 rounded-xl rounded-tr-none max-w-[85%] ml-auto shadow-xs text-left">`;
             if (chatBoxAttachedImageRaw) {
-                messageHtml += `<img src="data:image/png;base64,${chatBoxAttachedImageRaw}" class="w-full h-auto rounded mb-1.5 border border-slate-700">`;
+                messageHtml += `<img src="data:image/jpeg;base64,${chatBoxAttachedImageRaw}" class="w-full h-auto rounded mb-1.5 border border-slate-700">`;
             }
             messageHtml += `${userText || "Analyzing attached trade chart..."}</div>`;
             
@@ -412,7 +436,7 @@
             
             if (currentImageContext) {
                 inlineParts.push({
-                    inlineData: { mimeType: "image/png", data: currentImageContext }
+                    inlineData: { mimeType: "image/jpeg", data: currentImageContext }
                 });
             }
 
@@ -426,7 +450,15 @@
                     })
                 });
 
-                if (!response.ok) throw new Error();
+                if (!response.ok) {
+                    let errMsg = `HTTP Error ${response.status}`;
+                    try {
+                        const errJson = await response.json();
+                        if (errJson.error?.message) errMsg += `: ${errJson.error.message}`;
+                    } catch(e) {}
+                    throw new Error(errMsg);
+                }
+
                 const resData = await response.json();
                 const aiResponse = resData.candidates[0].content.parts[0].text;
 
@@ -434,7 +466,7 @@
                 msgBox.innerHTML += `<div class="bg-stone-100 border border-stone-200/60 text-stone-700 p-2.5 rounded-xl rounded-tl-none max-w-[85%] shadow-xs">${aiResponse.replace(/\n/g, '<br>')}</div>`;
             } catch (err) {
                 if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
-                msgBox.innerHTML += `<div class="bg-red-50 border border-red-100 text-red-600 p-2.5 rounded-xl rounded-tl-none max-w-[85%] font-bold shadow-xs">Error connecting to AI execution engine.</div>`;
+                msgBox.innerHTML += `<div class="bg-red-50 border border-red-100 text-red-600 p-2.5 rounded-xl rounded-tl-none max-w-[85%] font-bold shadow-xs">Error: ${err.message}</div>`;
             }
             msgBox.scrollTop = msgBox.scrollHeight;
         }
@@ -471,7 +503,6 @@
                     let width = img.width;
                     let height = img.height;
                     
-                    // Downscale maximum dimension to 1024px to drastically save free tier tokens
                     const maxDimension = 1024;
                     if (width > maxDimension || height > maxDimension) {
                         if (width > height) {
@@ -488,11 +519,10 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
                     
-                    // Compress image to 70% quality JPEG
                     const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
                     targetLiveCharts[indexPosition] = compressedDataUrl.split(',')[1];
                     
-                    labelElement.innerText = "Ready (Free Tier) ✓";
+                    labelElement.innerText = "Ready (Optimized) ✓";
                     labelElement.className = "text-[10px] text-emerald-600 font-black mt-1";
                 };
                 img.src = e.target.result;
@@ -514,7 +544,6 @@
                     let width = img.width;
                     let height = img.height;
                     
-                    // Downscale maximum dimension to 1024px to drastically save free tier tokens
                     const maxDimension = 1024;
                     if (width > maxDimension || height > maxDimension) {
                         if (width > height) {
@@ -531,11 +560,10 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
                     
-                    // Compress image to 70% quality JPEG
                     const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
                     positionManagementChartRaw = compressedDataUrl.split(',')[1];
                     
-                    labelElement.innerText = "Capture Array Ready (Free Tier) ✓";
+                    labelElement.innerText = "Capture Array Ready ✓";
                     labelElement.className = "text-[10px] text-emerald-600 font-black mt-1";
                 };
                 img.src = e.target.result;
@@ -754,7 +782,7 @@
                 }
             } catch (error) {
                 statusText.innerText = "Execution failed.";
-                output.innerText = `Error: ${error.message}`;
+                output.innerHTML = `<span class="text-red-500 font-bold">Error:</span> ${error.message}`;
             } finally {
                 btn.disabled = false;
                 btn.className = "w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 px-4 rounded-xl transition duration-200 shadow-md text-center text-xs tracking-wider uppercase";
@@ -805,7 +833,7 @@
                 registerJournalEntry(pair, "POSITION INSIGHT", responseText);
             } catch (error) {
                 statusText.innerText = "Evaluation failed.";
-                output.innerText = `Error: ${error.message}`;
+                output.innerHTML = `<span class="text-red-500 font-bold">Error:</span> ${error.message}`;
             } finally {
                 btn.disabled = false;
                 btn.innerText = "Evaluate Position Holding Integrity";
@@ -886,7 +914,7 @@ your setup level trackers]`
 
             images.forEach(b64 => {
                 partsPayload.push({
-                    inlineData: { mimeType: "image/png", data: b64 }
+                    inlineData: { mimeType: "image/jpeg", data: b64 }
                 });
             });
 
@@ -901,7 +929,16 @@ your setup level trackers]`
                     }
                 })
             });
-            if (!response.ok) throw new Error("Failed API transaction");
+
+            if (!response.ok) {
+                let errMsg = `HTTP Error ${response.status}`;
+                try {
+                    const errData = await response.json();
+                    if (errData.error?.message) errMsg += `: ${errData.error.message}`;
+                } catch(e) {}
+                throw new Error(errMsg);
+            }
+
             const resData = await response.json();
             return resData.candidates[0].content.parts[0].text;
         }
@@ -912,7 +949,7 @@ your setup level trackers]`
                     text: `You are an autonomous trade management engine evaluating ${assetPair} position opened at level ${entryPrice}. Scan the chart to check right-axis scale values. Output exact holding breakdown rules. Include 'KEEP HOLDING' or 'EXIT TRADE NOW' in your response.`
                 },
                 {
-                    inlineData: { mimeType: "image/png", data: imageB64 }
+                    inlineData: { mimeType: "image/jpeg", data: imageB64 }
                 }
             ];
 
@@ -924,7 +961,16 @@ your setup level trackers]`
                     generationConfig: { temperature: 0.1, maxOutputTokens: 400 }
                 })
             });
-            if (!response.ok) throw new Error("Failed management API transaction");
+
+            if (!response.ok) {
+                let errMsg = `HTTP Error ${response.status}`;
+                try {
+                    const errData = await response.json();
+                    if (errData.error?.message) errMsg += `: ${errData.error.message}`;
+                } catch(e) {}
+                throw new Error(errMsg);
+            }
+
             const resData = await response.json();
             return resData.candidates[0].content.parts[0].text;
         }
