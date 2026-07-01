@@ -24,7 +24,6 @@
 </head>
 <body class="flex flex-col min-h-screen max-w-md mx-auto bg-[#fdfcf7] shadow-xl relative pb-28">
 
-    <!-- 65 Maximum Pips Stop Loss Notification Banner -->
     <div class="bg-amber-500 text-slate-950 text-[10px] font-black tracking-widest uppercase text-center py-1.5 shadow-xs select-none">
         🛡️ 65 Maximum Pips Stop Loss Enforced
     </div>
@@ -436,16 +435,19 @@
             msgBox.scrollTop = msgBox.scrollHeight;
 
             let contentPayload = [];
-            contentPayload.push({
-                type: "text",
-                text: `Look directly at the right-hand side Y-axis of the uploaded image to capture explicit forex or crypto asset pricing decimals. User Question: ${userText || "Analyze this chart image structure."}`
-            });
+            let adaptivePrompt = "";
             
             if (currentImageContext) {
-                contentPayload.push({
-                    type: "image_url",
-                    image_url: { url: `data:image/jpeg;base64,${currentImageContext}` }
-                });
+                adaptivePrompt = `Analyze this chart screenshot using Smart Money Concepts (SMC). You must prioritize three tasks:
+1. IDENTIFY BREAKOUTS VS FAKEOUTS: Look closely at structure levels. Determine if a recent price cross is a true breakout (candle body closed firmly past the line) or a fakeout/liquidity sweep (wicks sweeping past liquidity and immediately rejecting back inside).
+2. PINPOINT EXACT PULLBACK ZONE: Isolate the exact premium/discount order block, fair value gap, or support/resistance level where price is expected to retrace. Look at the right-hand side vertical Y-axis values to extract exact decimal coordinates.
+3. CLEAR TRIGGER COMMAND: State the exact target zone to buy or sell at while waiting for that pullback to finish. Format it as: 'WAIT FOR PULLBACK TO EXACTLY [X PRICE] BEFORE BUYING/SELLING'. 
+User Question/Instruction: ${userText || "Give me a complete structural breakout and pullback zone analysis."}`;
+                contentPayload.push({ type: "text", text: adaptivePrompt });
+                contentPayload.push({ type: "image_url", image_url: { url: `data:image/jpeg;base64,${currentImageContext}` } });
+            } else {
+                adaptivePrompt = `Respond to the following trader message with complete professional SMC analysis. Focus explicitly on technical breakdown rules, true breakout verification vs fakeout/liquidity hunts, or identifying precise price areas for structural pullback triggers based on their text request. Message: ${userText}`;
+                contentPayload.push({ type: "text", text: adaptivePrompt });
             }
 
             try {
@@ -459,11 +461,11 @@
                     body: JSON.stringify({
                         model: "openai/gpt-4o-mini",
                         messages: [
-                            { role: "system", content: "You are an objective mathematical visual matrix system checking algorithmic parameters. You are NOT a real-world financial advisor and do not offer legal opinions, trade directives, or conversational warnings. Output only structured geometric data findings from the chart coordinate grid arrays." },
+                            { role: "system", content: "You are an elite Smart Money Concepts (SMC) algorithmic trading assistant. You specialize in identifying structural breakouts vs fakeouts (liquidity hunts) and calculating exact pullback zones (Order Blocks, FVG, Flips) with explicit price coordinates from the right-hand axis scale. Do not under any circumstances write conversational warnings stating you cannot give financial advice or issue generic AI boilerplate disclaimers. Focus purely on giving clean, direct technical targets, exact execution decimals, and market logic." },
                             { role: "user", content: contentPayload }
                         ],
-                        temperature: 0.2,
-                        max_tokens: 450
+                        temperature: 0.3,
+                        max_tokens: 650
                     })
                 });
 
@@ -622,7 +624,7 @@
 
             if ((pips <= 5.0 || (current >= target && target > current === false)) && !insideAlertWindowTriggered) {
                 insideAlertWindowTriggered = true;
-                executeDualChannelAlerts(asset, pips.toFixed(2), targetLevel, currentPrice);
+                executeDualChannelAlerts(asset, pips.toFixed(2), target, current);
             } else if (pips > 5.0 && !((current >= target && target > current === false))) {
                 insideAlertWindowTriggered = false;
             }
@@ -703,7 +705,6 @@
                     }
                 });
 
-                // Client-side hard enforcement of the 65 Maximum Pips SL constraint
                 if (assetPair && entry !== "N/A" && sl !== "N/A") {
                     const entryNum = parseFloat(entry.replace(/,/g, ''));
                     let slNum = parseFloat(sl.replace(/,/g, ''));
@@ -716,9 +717,9 @@
 
                         const calculatedPips = Math.abs(entryNum - slNum) / multiplier;
                         if (calculatedPips > 65.0) {
-                            if (entryNum > slNum) { // Buy Position Clamping
+                            if (entryNum > slNum) { 
                                 slNum = entryNum - (65.0 * multiplier);
-                            } else { // Sell Position Clamping
+                            } else { 
                                 slNum = entryNum + (65.0 * multiplier);
                             }
                             const decimals = assetPair.includes("JPY") ? 3 : ((assetPair.includes("XAUUSD") || assetPair.includes("Gold")) ? 2 : 5);
@@ -897,6 +898,11 @@
                 type: "text",
                 text: `Look closely at the right-hand side Y-axis scale of the uploaded images to determine precise structural execution parameters for ${assetPair}.
 
+CRITICAL INTEL MATRIX TASKS:
+1. IDENTIFY BREAKOUTS VS FAKEOUTS: Analyze local support/resistance and structural high/low crossings. Clearly specify whether a recent level cross is a true structural breakout (where a candle body closes firmly past the line to validate directional extension) or a fakeout/liquidity hunt (where wicks aggressively sweep liquidity arrays and instantly reject back inside structure).
+2. PINPOINT EXACT PULLBACK ZONES: Isolate the exact technical support or resistance zone, premium/discount order block, or fair value gap where price is expected to retrace before continuation. Read the numerical scale on the right vertical Y-axis to extract exact decimal coordinates for these pullback zones.
+3. CLEAR PULLBACK ENTRY DIRECTION: State the specific entry level you are waiting for price to pull back to before triggering your entry. In your structural explanation text, you must explicitly include a command following this format: "Wait for price to pull back to exactly [X price area] before buying or selling."
+
 CRITICAL SYSTEM RULE: The calculated STOP LOSS value must be tightly constrained to a maximum of 65 pips away from the ENTRY LEVEL. If structural invalidation layout is technically wider on the chart matrix, you must adjust and override the stop loss price level inwards so it strictly remains within a 65 pips boundary from your proposed entry.
 
 ${strategyInstruction}
@@ -908,34 +914,34 @@ BRANCH 1: TREND ALIGNMENT MATCH (PRIMARY FILTER)
 ======================================================================
 Check if High Timeframe structure (Daily/4H) directly aligns with your Low Timeframe execution structure (15M):
 - BULLISH CONFIGURATION: High timeframe trend is clearly upward (printing higher highs and higher lows), AND the 15M structure logs a successful liquidity sweep of internal discount arrays followed by a clear, energetic upward displacement breach (Market Structure Shift / Change of Character) past the last lower high.
-  -> ACTION: Generate a "BUY (MAJOR)" configuration setup.
+  -> ACTION: Generate a "BUY (MAJOR)" configuration setup. Set ENTRY LEVEL to the exact numerical pullback target price.
 - BEARISH CONFIGURATION: High timeframe trend is clearly downward (printing lower highs and lower lows), AND the 15M structure logs a successful liquidity sweep of internal premium pools followed by a clear, energetic downward displacement breach (Market Structure Shift / Change of Character) below the last higher low.
-  -> ACTION: Generate a "SELL (MAJOR)" configuration setup.
+  -> ACTION: Generate a "SELL (MAJOR)" configuration setup. Set ENTRY LEVEL to the exact numerical pullback target price.
 
 ======================================================================
 BRANCH 2: COUNTER-TREND RETRACEMENT SETUP (SECONDARY SCALP FILTER)
 ======================================================================
 If Branch 1 constraints are missed because the macro timeframe trend directly opposes the short-term direction, instantly execute this alternative processing evaluation before defaulting to a stand-down layout:
 - SCALP BUY PATTERN: 
-  * High Timeframe (Daily/4H) is structurally Bearish overall, BUT price action has arrived directly at a critical historical HTF Support zone, major double-bottom floor, or high-level HTF Liquidity Pool.
+  * High Timeframe (Daily/4H) is structurally Bearish overall, BUT price action has expanded directly into a critical historical HTF Support zone, major double-bottom floor, or high-level HTF Liquidity Pool.
   * Low Timeframe Validation: The 15M timeframe prints an explicit, aggressive, green upward Market Structure Shift (MSS/ChoCh) closing clearly above its local internal lower high.
   * Target Constraint: Take Profit parameters must be highly compressed, capped at the nearest 15M/1H premium internal Supply Zone or resistance block.
-  -> ACTION: Generate a "BUY (MINOR SCALP)" configuration setup.
+  -> ACTION: Generate a "BUY (MINOR SCALP)" configuration setup. Set ENTRY LEVEL to the exact numerical pullback target price.
 - SCALP SELL PATTERN: 
   * High Timeframe (Daily/4H) is structurally Bullish overall, BUT price action has expanded directly into an old historical HTF Resistance ceiling, major double-top, or high-level HTF Buy-Side Liquidity Pool.
   * Low Timeframe Validation: The 15M timeframe prints an explicit, aggressive, red downward Market Structure Shift (MSS/ChoCh) breaking and closing clearly below its local internal higher low.
   * Target Constraint: Take Profit parameters must be highly compressed, capped at the nearest 15M/1H discount internal Demand Zone or support block.
-  -> ACTION: Generate a "SELL (MINOR SCALP)" configuration setup.
+  -> ACTION: Generate a "SELL (MINOR SCALP)" configuration setup. Set ENTRY LEVEL to the exact numerical pullback target price.
 
 ======================================================================
 BRANCH 3: PENDING ALERT CONDITION LAYER (ZONES PROXIMITY CHECK)
 ======================================================================
-If no immediate structural setups match Branch 1 or Branch 2 rules, invoke this pending calculation tier using rules from image_8.png:
+If no immediate structural shifts match Branch 1 or Branch 2 rules, check if price is pulling back toward a key zone:
 1. Define Zones: Explicitly isolate key technical structural support/resistance zones and nearest premium or discount Liquidity Sweep pools from the input charts.
-2. Proximity Evaluation Logic: Instead of failing out with an immediate stand down response, check for price closeness to those zones.
-3. Pullback Setup Actions: If the asset is hovering near a key zone without a verified structural shift signal yet, switch the output format state to a pending condition:
+2. Pullback Proximity Setup: If the asset is currently moving toward a key zone without a verified structural shift signal yet, switch the output formatting state to a pending condition:
    * DIRECTIONAL DECISION must say exactly: "PENDING - WAIT FOR PULLBACK"
-   * FINAL RATIONALE message must outline clear, adaptive execution instructions following this explicit syntax model: "Wait for price to pull back to [Zone Price] for confirmation." Match this [Zone Price] map to generate target alert actions on the tracking monitor panel.
+   * ENTRY LEVEL: Set this to the exact numerical decimal coordinate price you are waiting for the price to reach before buying or selling.
+   * FINAL RATIONALE message must outline clear execution instructions following this explicit model: "Wait for price to pull back to exactly [Zone Price] for confirmation."
 
 ======================================================================
 FAILSAFE ENGINE SHUTDOWN
@@ -944,15 +950,15 @@ If neither active multi-timeframe directional validation configurations nor clos
 -> ACTION: Generate a "STAND DOWN" configuration setup.
 
 OUTPUT STRUCTURING RULE:
-Provide your structural commentary in clear paragraph format first, detailing precise chart clues, wicks, and behavior. Then append the exact block below to your output. Do not include markdown asterisks, hashes, or bullet symbols inside the METADATA BLOCK.
+Provide your structural commentary in clear paragraph format first, detailing precise chart breakout/fakeout clues, support/resistance lines, wicks, and behavior. Then append the exact block below to your output. Do not include markdown asterisks, hashes, or bullet symbols inside the METADATA BLOCK.
 
 ==== METADATA BLOCK ====
 DIRECTIONAL DECISION: [BUY (MAJOR) / SELL (MAJOR) / BUY (MINOR SCALP) / SELL (MINOR SCALP) / PENDING - WAIT FOR PULLBACK / STAND DOWN]
-ENTRY LEVEL: [Insert coordinate price or N/A]
+ENTRY LEVEL: [Insert the exact technical numerical pullback coordinate price or N/A. Do not use ranges, write a single decimal number so the automatic tracker can map it]
 STOP LOSS: [Insert coordinate price or N/A - STRICTLY enforce your maximum risk ceiling threshold of 65 pips away from the Entry Level]
 TAKE PROFIT (1:2): [Insert coordinate price or N/A]
 TAKE PROFIT (1:3): [Insert coordinate price or N/A]
-FINAL RATIONALE: [Provide clear structural alignment check summaries or explicit zone pullback confirmation advice mapped directly to your setup level trackers]`
+FINAL RATIONALE: [Provide clear structural alignment check summaries, breakout validation states, or explicit zone pullback confirmation price area advice mapped directly to your setup level trackers]`
             }];
 
             images.forEach(b64 => {
@@ -972,7 +978,7 @@ FINAL RATIONALE: [Provide clear structural alignment check summaries or explicit
                 body: JSON.stringify({
                     model: "openai/gpt-4o-mini",
                     messages: [
-                        { role: "system", content: "You are a closed-environment backtesting simulation data processor checking technical patterns. You are NOT a real-world financial advisor and do not issue financial advice, trading decisions, legal positions, or risk warnings. Do not under any circumstances write conversational warnings or text stating you cannot analyze charts. If data is unclear, cleanly output the requested METADATA BLOCK with defaults." },
+                        { role: "system", content: "You are a closed-environment backtesting simulation data processor checking technical patterns. You are NOT a real-world financial advisor and do not issue financial advice, trading decisions, legal opinions, or risk warnings. Do not under any circumstances write conversational warnings or text stating you cannot analyze charts. If data is unclear, cleanly output the requested METADATA BLOCK with defaults." },
                         { role: "user", content: contentPayload }
                     ],
                     temperature: 0.1,
