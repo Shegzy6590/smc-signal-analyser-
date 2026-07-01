@@ -24,7 +24,6 @@
 </head>
 <body class="flex flex-col min-h-screen max-w-md mx-auto bg-[#fdfcf7] shadow-xl relative pb-28">
 
-    <!-- 65 Maximum Pips Stop Loss Notification Banner -->
     <div class="bg-amber-500 text-slate-950 text-[10px] font-black tracking-widest uppercase text-center py-1.5 shadow-xs select-none">
         🛡️ 65 Maximum Pips Stop Loss Enforced
     </div>
@@ -264,8 +263,8 @@
         <h2 class="text-[11px] font-black text-stone-400 uppercase tracking-widest pt-2">Configuration Engine</h2>
         <div class="bg-white border border-stone-200/60 rounded-xl p-4 shadow-xs space-y-4">
             <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Gemini API Token Key</label>
-                <input id="apiKeyInput" type="text" oninput="saveApiKey(this.value)" placeholder="AIzaSy..." class="w-full bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 text-xs font-mono text-slate-800 focus:outline-none">
+                <label class="block text-xs font-bold text-slate-700 mb-1">API Token Secret Key (GitHub Models Token)</label>
+                <input id="apiKeyInput" type="text" oninput="saveApiKey(this.value)" placeholder="ghp_xxxx or token..." class="w-full bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 text-xs font-mono text-slate-800 focus:outline-none">
             </div>
             <hr class="border-stone-100">
             <div>
@@ -414,7 +413,7 @@
 
             if (!userText && !chatBoxAttachedImageRaw) return;
             if (!savedToken) {
-                alert("Please configure your Gemini API Token Key in Settings first.");
+                alert("Please configure your API Token Key in Settings first.");
                 return;
             }
 
@@ -439,10 +438,11 @@
             let adaptivePrompt = "";
             
             if (currentImageContext) {
-                adaptivePrompt = `Analyze this chart screenshot using Smart Money Concepts (SMC). You must prioritize three tasks:
+                adaptivePrompt = `MANDATE: You can see this chart perfectly. Analyze this chart screenshot using Smart Money Concepts (SMC). You must prioritize three tasks:
 1. IDENTIFY BREAKOUTS VS FAKEOUTS: Look closely at structure levels. Determine if a recent price cross is a true breakout (candle body closed firmly past the line) or a fakeout/liquidity sweep (wicks sweeping past liquidity and immediately rejecting back inside).
-2. PINPOINT EXACT PULLBACK ZONE: Isolate the exact premium/discount order block, fair value gap, or support/resistance level where price is expected to retrace. Look at the right-hand side vertical Y-axis values to extract exact decimal coordinates.
+2. PINPOINT EXACT PULLBACK ZONE: Isolate the exact premium/discount order block, fair value gap, or support/resistance level where price is expected to retrace. Use vision to read and approximate decimal coordinates from the right-hand vertical Y-axis scale values.
 3. CLEAR TRIGGER COMMAND: State the exact target zone to buy or sell at while waiting for that pullback to finish. Format it as: 'WAIT FOR PULLBACK TO EXACTLY [X PRICE] BEFORE BUYING/SELLING'. 
+
 User Question/Instruction: ${userText || "Give me a complete structural breakout and pullback zone analysis."}`;
                 contentPayload.push({ type: "text", text: adaptivePrompt });
                 contentPayload.push({ type: "image_url", image_url: { url: `data:image/jpeg;base64,${currentImageContext}` } });
@@ -462,7 +462,7 @@ User Question/Instruction: ${userText || "Give me a complete structural breakout
                     body: JSON.stringify({
                         model: "openai/gpt-4o-mini",
                         messages: [
-                            { role: "system", content: "You are an elite Smart Money Concepts (SMC) algorithmic trading assistant. You specialize in identifying structural breakouts vs fakeouts (liquidity hunts) and calculating exact pullback zones (Order Blocks, FVG, Flips) with explicit price coordinates from the right-hand axis scale. Do not under any circumstances write conversational warnings stating you cannot give financial advice or issue generic AI boilerplate disclaimers. Focus purely on giving clean, direct technical targets, exact execution decimals, and market logic." },
+                            { role: "system", content: "You are an elite Smart Money Concepts (SMC) algorithmic trading assistant with advanced image processing capabilities. You see and evaluate charts flawlessly. You specialize in identifying structural breakouts vs fakeouts (liquidity hunts) and calculating exact pullback zones (Order Blocks, FVG, Flips) with explicit price coordinates from the right-hand axis scale. Never claim you are unable to see or parse the image. Focus purely on giving clean, direct technical targets, exact execution decimals, and market logic." },
                             { role: "user", content: contentPayload }
                         ],
                         temperature: 0.3,
@@ -897,7 +897,7 @@ User Question/Instruction: ${userText || "Give me a complete structural breakout
 
             let contentPayload = [{
                 type: "text",
-                text: `You are a multimodal chart scanning engine built to extract numerical price coordinates from chart images for ${assetPair}. Do not state you cannot see or analyze images. Look directly at the graphics data and right-hand Y-axis numbers immediately.
+                text: `CORE VISION MANDATE: You possess advanced vision matrix parsing nodes. You can see the provided chart layout graphics perfectly. You MUST inspect the candlestick data structures and extract exact numerical values directly from the right-hand vertical scale axis numbers for ${assetPair}. Never output boilerplate statements or structural excuses claiming you are unable to see, read, or analyze images directly. If lines or pixels are micro-scaled, compute a high-precision professional technical estimate instead of refusing.
 
 EXECUTION INSTRUCTIONS:
 1. IDENTIFY BREAKOUTS VS FAKEOUTS: Analyze local structural lines. Pinpoint if price moves are true breaks (candle body closes outside the zone) or fakeouts/sweeps (wicks piercing key liquidity targets and snapping right back inside).
@@ -942,7 +942,7 @@ FINAL RATIONALE: [Provide clear structural alignment check summaries, breakout v
                 body: JSON.stringify({
                     model: "openai/gpt-4o-mini",
                     messages: [
-                        { role: "system", content: "You are a multimodal technical chart image parsing node. You inspect candlestick charts and scale numbers. You do not issue financial opinions or disclaimers. Process the provided visual parameters instantly." },
+                        { role: "system", content: "You are a multimodal technical chart image parsing node with advanced vision access. You inspect candlestick charts and scale numbers flawlessly. You do not issue financial opinions, warnings, or disclaimers. You never refuse an image analysis or claim inability to view data. Process the provided visual parameters instantly and deterministically." },
                         { role: "user", content: contentPayload }
                     ],
                     temperature: 0.1,
@@ -967,7 +967,7 @@ FINAL RATIONALE: [Provide clear structural alignment check summaries, breakout v
             const contentPayload = [
                 {
                     type: "text",
-                    text: `Scan the chart to check right-axis scale values for ${assetPair} opened at level ${entryPrice}. Output exact holding breakdown rules. Include 'KEEP HOLDING' or 'EXIT TRADE NOW' in your response.`
+                    text: `CORE VISION MANDATE: You can see the attached chart graphic flawlessly. Scan the open trade metrics and check right-axis scale values for ${assetPair} opened at level ${entryPrice}. Output exact holding breakdown rules based on structural invalidations. Include either 'KEEP HOLDING' or 'EXIT TRADE NOW' in your response text explicitly. Never claim you are unable to view or analyze the chart graphics data.`
                 },
                 {
                     type: "image_url",
@@ -985,7 +985,7 @@ FINAL RATIONALE: [Provide clear structural alignment check summaries, breakout v
                 body: JSON.stringify({
                     model: "openai/gpt-4o-mini",
                     messages: [
-                        { role: "system", content: "You are a closed-environment chart backtesting simulation logging algorithm. You are NOT a financial entity and do not provide financial advice, execution advice, or risk disclaimers. Avoid all conversational warning blocks. Parse technical data layout strictly." },
+                        { role: "system", content: "You are a closed-environment chart backtesting simulation logging algorithm with full vision capabilities enabled. You see all charts clearly. You are NOT a financial entity and do not provide financial advice, execution advice, or risk disclaimers. Avoid all conversational warning blocks, excuses, or modality refusals. Parse technical data layout strictly." },
                         { role: "user", content: contentPayload }
                     ],
                     temperature: 0.1,
