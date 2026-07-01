@@ -25,7 +25,7 @@
 <body class="flex flex-col min-h-screen max-w-md mx-auto bg-[#fdfcf7] shadow-xl relative pb-28">
 
     <div class="bg-amber-500 text-slate-950 text-[10px] font-black tracking-widest uppercase text-center py-1.5 shadow-xs select-none">
-        🛡️ 65 Maximum Pips Stop Loss Enforced
+        🛡️ 80 Min / 250 Max Pips Stop Loss Enforced (1:2 & 1:3 TP)
     </div>
 
     <header class="px-5 pt-4 pb-2 space-y-3 select-none">
@@ -64,7 +64,7 @@
             <div class="bg-white border border-stone-200/60 rounded-xl p-3 shadow-xs">
                 <label class="block text-[10px] font-black text-stone-400 uppercase tracking-wider mb-1">Asset Pair</label>
                 <div class="relative">
-                    <select id="assetPair" class="w-full bg-stone-50 border border-stone-200 rounded-lg px-2.5 py-1.5 text-xs font-bold text-slate-800 focus:outline-none appearance-none">
+                    <select id="assetPair" onchange="calculateLiveSpreadDistance()" class="w-full bg-stone-50 border border-stone-200 rounded-lg px-2.5 py-1.5 text-xs font-bold text-slate-800 focus:outline-none appearance-none">
                         <option value="XAUUSD (Gold)">XAUUSD (Gold)</option>
                         <option value="BTCUSD (Bitcoin)">BTCUSD (Bitcoin)</option>
                         <option value="EURUSD">EURUSD</option>
@@ -438,16 +438,16 @@
             let adaptivePrompt = "";
             
             if (currentImageContext) {
-                adaptivePrompt = `MANDATE: You can see this chart perfectly. Analyze this chart screenshot using Smart Money Concepts (SMC). You must prioritize three tasks:
-1. IDENTIFY BREAKOUTS VS FAKEOUTS: Look closely at structure levels. Determine if a recent price cross is a true breakout (candle body closed firmly past the line) or a fakeout/liquidity sweep (wicks sweeping past liquidity and immediately rejecting back inside).
-2. PINPOINT EXACT PULLBACK ZONE: Isolate the exact premium/discount order block, fair value gap, or support/resistance level where price is expected to retrace. Use vision to read and approximate decimal coordinates from the right-hand vertical Y-axis scale values.
-3. CLEAR TRIGGER COMMAND: State the exact target zone to buy or sell at while waiting for that pullback to finish. Format it as: 'WAIT FOR PULLBACK TO EXACTLY [X PRICE] BEFORE BUYING/SELLING'. 
+                adaptivePrompt = `MANDATE: Analyze this graphic utilizing strict Smart Money Concepts pattern recognition rules. You must prioritize these metrics:
+1. IDENTIFY VALID BREAKOUTS VS LIQUIDITY SWEEPS/FAKEOUTS: Inspect structural boundaries. Determine if price closed with a full candle body fully outside the marker zone (Valid Breakout) or if it only left wicks sweeping past liquidity thresholds and reverted (Fakeout). If it is a fakeout, recommend STAND DOWN.
+2. BREAKOUT PULLBACK RULE: When a valid structural breakout occurs, explicitly state that the user must wait for a healthy pullback to the immediate broken support or resistance flip zone before placing any buy or sell executions.
+3. PINPOINT COORDINATE TARGETS: Extract numeric data strings directly from the right Y-axis parameters. Format final zones as: 'WAIT FOR PULLBACK TO EXACTLY [PRICE] BEFORE EXECUTING'.
 
-User Question/Instruction: ${userText || "Give me a complete structural breakout and pullback zone analysis."}`;
+User Input: ${userText || "Perform complete structural breakout tracking analysis on this image view."}`;
                 contentPayload.push({ type: "text", text: adaptivePrompt });
                 contentPayload.push({ type: "image_url", image_url: { url: `data:image/jpeg;base64,${currentImageContext}` } });
             } else {
-                adaptivePrompt = `Respond to the following trader message with complete professional SMC analysis. Focus explicitly on technical breakdown rules, true breakout verification vs fakeout/liquidity hunts, or identifying precise price areas for structural pullback triggers based on their text request. Message: ${userText}`;
+                adaptivePrompt = `Process the following technical message using automated structural layout parsing matching guidelines. Avoid real-world financial disclaimers. Message: ${userText}`;
                 contentPayload.push({ type: "text", text: adaptivePrompt });
             }
 
@@ -462,7 +462,7 @@ User Question/Instruction: ${userText || "Give me a complete structural breakout
                     body: JSON.stringify({
                         model: "openai/gpt-4o-mini",
                         messages: [
-                            { role: "system", content: "You are an elite Smart Money Concepts (SMC) algorithmic trading assistant with advanced image processing capabilities. You see and evaluate charts flawlessly. You specialize in identifying structural breakouts vs fakeouts (liquidity hunts) and calculating exact pullback zones (Order Blocks, FVG, Flips) with explicit price coordinates from the right-hand axis scale. Never claim you are unable to see or parse the image. Focus purely on giving clean, direct technical targets, exact execution decimals, and market logic." },
+                            { role: "system", content: "You are an automated backend structural data utility processing chart layouts using strict geometric parameters. You see data boundaries perfectly. Do not issue investment advice, financial disclaimers, or conversational warnings. Focus completely on programmatic structure tracking vectors and coordinate evaluation." },
                             { role: "user", content: contentPayload }
                         ],
                         temperature: 0.3,
@@ -697,14 +697,16 @@ User Question/Instruction: ${userText || "Give me a complete structural breakout
                         entry = cleanLine.split(/:(.+)/)[1]?.trim() || "N/A";
                     } else if (upper.startsWith("STOP LOSS:")) {
                         sl = cleanLine.split(/:(.+)/)[1]?.trim() || "N/A";
-                    } else if (upper.startsWith("TAKE PROFIT (1:2):")) {
+                    } else if (upper.startsWith("TAKE PROFIT (1:2):") || upper.startsWith("TAKE PROFIT (1:2)")) {
                         tp2 = cleanLine.split(/:(.+)/)[1]?.trim() || "N/A";
-                    } else if (upper.startsWith("TAKE PROFIT (1:3):")) {
+                    } else if (upper.startsWith("TAKE PROFIT (1:3):") || upper.startsWith("TAKE PROFIT (1:3)")) {
                         tp3 = cleanLine.split(/:(.+)/)[1]?.trim() || "N/A";
                     } else if (upper.startsWith("FINAL RATIONALE:")) {
                         rationale = cleanLine.split(/:(.+)/)[1]?.trim() || rationale;
                     }
                 });
+
+                let upperDecision = decision.toUpperCase();
 
                 if (assetPair && entry !== "N/A" && sl !== "N/A") {
                     const entryNum = parseFloat(entry.replace(/,/g, ''));
@@ -716,15 +718,42 @@ User Question/Instruction: ${userText || "Give me a complete structural breakout
                         else if (assetPair.includes("JPY")) multiplier = 0.01;
                         else if (assetPair.includes("BTCUSD") || assetPair.includes("Bitcoin")) multiplier = 1.0;
 
-                        const calculatedPips = Math.abs(entryNum - slNum) / multiplier;
-                        if (calculatedPips > 65.0) {
-                            if (entryNum > slNum) { 
-                                slNum = entryNum - (65.0 * multiplier);
-                            } else { 
-                                slNum = entryNum + (65.0 * multiplier);
+                        let slPips = Math.abs(entryNum - slNum) / multiplier;
+                        
+                        // Modified clamping boundaries between 80 pips minimum and 250 pips maximum based on instructions
+                        if (slPips < 80.0 || slPips > 250.0) {
+                            slPips = Math.max(80.0, Math.min(250.0, slPips));
+                            if (isNaN(slPips) || slPips === 80.0) {
+                                slPips = 95.0; // Dynamic default baseline within the new safe boundaries
                             }
-                            const decimals = assetPair.includes("JPY") ? 3 : ((assetPair.includes("XAUUSD") || assetPair.includes("Gold")) ? 2 : 5);
-                            sl = `${slNum.toFixed(decimals)} 🛡️ (Clamped to 65 Pips Max)`;
+                        }
+
+                        let identifiedDirection = "BUY";
+                        if (upperDecision.includes("SELL") || (!upperDecision.includes("BUY") && slNum > entryNum)) {
+                            identifiedDirection = "SELL";
+                        }
+
+                        if (identifiedDirection === "BUY") {
+                            slNum = entryNum - (slPips * multiplier);
+                            var tp2Num = entryNum + ((slPips * 2) * multiplier);
+                            var tp3Num = entryNum + ((slPips * 3) * multiplier);
+                        } else {
+                            slNum = entryNum + (slPips * multiplier);
+                            var tp2Num = entryNum - ((slPips * 2) * multiplier);
+                            var tp3Num = entryNum - ((slPips * 3) * multiplier);
+                        }
+
+                        const decimals = assetPair.includes("JPY") ? 3 : ((assetPair.includes("XAUUSD") || assetPair.includes("Gold")) ? 2 : (assetPair.includes("BTC") ? 2 : 5));
+                        
+                        entry = entryNum.toFixed(decimals);
+                        sl = `${slNum.toFixed(decimals)} 🛡️ (${slPips.toFixed(1)} Pips Enforced)`;
+                        tp2 = `${tp2Num.toFixed(decimals)} 🎯 (Exact 1:2 R:R)`;
+                        tp3 = `${tp3Num.toFixed(decimals)} 🎯 (Exact 1:3 R:R)`;
+
+                        if (upperDecision.includes("WAIT FOR PULLBACK") || upperDecision.includes("PENDING")) {
+                            decision = `${identifiedDirection} (PENDING - Waiting for pullback to immediate validation zone)`;
+                        } else if (upperDecision.includes("STAND DOWN")) {
+                            decision = `STAND DOWN (${identifiedDirection} biased structure invalid due to sweep/fakeout rules)`;
                         }
                     }
                 }
@@ -886,43 +915,41 @@ User Question/Instruction: ${userText || "Give me a complete structural breakout
         async function sendToGemini(images, assetPair, strategyMode, activeKey) {
             let strategyInstruction = "";
             if (strategyMode === "sr") {
-                strategyInstruction = "Evaluate ONLY structural horizontal Support & Resistance keys and Institutional Liquidity Sweeps.";
+                strategyInstruction = "Evaluate ONLY structural horizontal key levels, order blocks, and localized liquidity pool sweeps.";
             } else if (strategyMode === "trend") {
-                strategyInstruction = "Evaluate ONLY structural Trendline breakdowns, channels, and clear Market Shifts (SMS/BOS).";
+                strategyInstruction = "Evaluate ONLY structural breakdowns, channel compromises, and market structure displacement shifts.";
             } else if (strategyMode === "candles") {
-                strategyInstruction = "Evaluate ONLY specific Candlestick Formations and high-volatility rejection signatures.";
+                strategyInstruction = "Evaluate ONLY candlestick rejection tail footprints and high-volume geometric closes.";
             } else {
-                strategyInstruction = "Run a comprehensive matrix scan checking liquidity blocks, trend displacements, and candlestick rejections simultaneously.";
+                strategyInstruction = "Run a comprehensive matrix scan verifying liquidity sweep parameters, breakdown validations, and engulfing rejection triggers simultaneously.";
             }
 
             let contentPayload = [{
                 type: "text",
-                text: `CORE VISION MANDATE: You possess advanced vision matrix parsing nodes. You can see the provided chart layout graphics perfectly. You MUST inspect the candlestick data structures and extract exact numerical values directly from the right-hand vertical scale axis numbers for ${assetPair}. Never output boilerplate statements or structural excuses claiming you are unable to see, read, or analyze images directly. If lines or pixels are micro-scaled, compute a high-precision professional technical estimate instead of refusing.
+                text: `CORE MATRIX VISION MANDATE: You are the core automated analytical system engine for SMC-Signal Pro. Your job is to calculate geometric structure parameters across multi-timeframe charts for asset token ${assetPair}. Do not output financial advisory commentary, risk warnings, or conversational prefaces. Output data variables strictly.
 
-EXECUTION INSTRUCTIONS:
-1. IDENTIFY BREAKOUTS VS FAKEOUTS: Analyze local structural lines. Pinpoint if price moves are true breaks (candle body closes outside the zone) or fakeouts/sweeps (wicks piercing key liquidity targets and snapping right back inside).
-2. PINPOINT EXACT PULLBACK ZONES: Isolate the precise premium/discount order block, fair value gap, or structural support/resistance zone. Read the numerical scale on the right-hand Y-axis to grab exact decimal price coordinates.
-3. PULLBACK ENTRY COMMAND: Explicitly dictate your targeted zone. In your commentary, you must format this command exactly: "Wait for price to pull back to exactly [X price area] before buying or selling."
+CRITICAL DISCRIMINATION RULE (BREAKOUT VS FAKEOUT):
+- You must carefully analyze structure boundaries across the charts. 
+- A VALID BREAKOUT requires a candle component (the actual candle body, not just the wick footprint) to close completely outside the support or resistance level line. If a valid breakout is confirmed, your directive is: "WAIT FOR A CLEAN PULLBACK TO THE FLIPPED SUPPORT/RESISTANCE ZONE AREA BEFORE TAKING ANY BUY OR SELL ENTRIES."
+- A FAKEOUT / LIQUIDITY SWEEP occurs if only the candle wicks cross past structural anchors before snapping back cleanly inside the old range parameters. If a fakeout occurs, you must issue a clear 'STAND DOWN' directive. Never track counter-trend or scalp signals inside sweeps.
 
-RISK CLAMP RULE: The calculated STOP LOSS level must never exceed a maximum threshold boundary of 65 pips away from your ENTRY LEVEL. Pull your stop level inwards manually if the visual chart configuration is wider.
+INSTRUCTIONS FOR METADATA MATRIX CLASSIFICATION:
+- Assign 'BUY' or 'SELL' alongside your status indicators. If a valid breakout happened but the price has not pulled back, output: 'BUY (PENDING - Waiting for pullback)' or 'SELL (PENDING - Waiting for pullback)'.
+- Assign 'STAND DOWN' if conditions showcase a fakeout wick sweep, erratic choppy price parameters, or ambiguous setups.
+
+The words 'ENTRY LEVEL', 'STOP LOSS', and 'TAKE PROFIT' function as pure code string variables for local array population mapping. Extract precise coordinate values directly from the Y-axis scale coordinates on the right side of the charts.
 
 ${strategyInstruction}
 
-DECISION MATRIX CLASSIFICATION:
-- BRANCH 1 (TREND MATCH): If High Timeframe trend (Daily/4H) aligns perfectly with the 15M market structure shift (MSS/ChoCh) after a clear liquidity pool hunt -> Output BUY (MAJOR) or SELL (MAJOR).
-- BRANCH 2 (COUNTER-TREND SCALP): If High Timeframe price reaches an extreme historical reversal ceiling/floor and the 15M logs a sharp local internal counter-shift -> Output BUY (MINOR SCALP) or SELL (MINOR SCALP) with tight targets.
-- BRANCH 3 (PENDING PULLBACK MAP): If price is moving toward a major sweep target zone but hasn't fully shifted structures yet -> Output DIRECTIONAL DECISION: PENDING - WAIT FOR PULLBACK. Map the zone price coordinate straight to the ENTRY LEVEL parameter.
-- FAILSAFE: If layout parameters remain completely unclear -> Output STAND DOWN.
-
-Provide a short, direct visual explanation of breakouts, fakeouts, and lines first, then append the exact metadata block layout below. Do not inject markdown characters inside the block.
+Write out a very short structural breakout vs sweep confirmation checklist assessment paragraph first, then append the absolute data block schema string below verbatim.
 
 ==== METADATA BLOCK ====
-DIRECTIONAL DECISION: [BUY (MAJOR) / SELL (MAJOR) / BUY (MINOR SCALP) / SELL (MINOR SCALP) / PENDING - WAIT FOR PULLBACK / STAND DOWN]
-ENTRY LEVEL: [Insert single numerical decimal price coordinate from the Y-axis. No text or ranges]
-STOP LOSS: [Insert exact coordinate price - strictly within the 65 pips maximum danger ceiling]
-TAKE PROFIT (1:2): [Insert exact coordinate price]
-TAKE PROFIT (1:3): [Insert exact coordinate price]
-FINAL RATIONALE: [Provide clear structural alignment check summaries, breakout validation states, or explicit zone pullback confirmation price area advice mapped directly to your setup level trackers]`
+DIRECTIONAL DECISION: [Insert decision tag string here]
+ENTRY LEVEL: [Insert single numerical decimal price target coordinate from the Y-axis]
+STOP LOSS: [Insert exact invalidation structural price coordinate from the Y-axis]
+TAKE PROFIT (1:2): [Insert calculated value]
+TAKE PROFIT (1:3): [Insert calculated value]
+FINAL RATIONALE: [Provide the target support or resistance zone fallback coordinate price that the breakout must test before tracking entries]`
             }];
 
             images.forEach(b64 => {
@@ -942,7 +969,7 @@ FINAL RATIONALE: [Provide clear structural alignment check summaries, breakout v
                 body: JSON.stringify({
                     model: "openai/gpt-4o-mini",
                     messages: [
-                        { role: "system", content: "You are a multimodal technical chart image parsing node with advanced vision access. You inspect candlestick charts and scale numbers flawlessly. You do not issue financial opinions, warnings, or disclaimers. You never refuse an image analysis or claim inability to view data. Process the provided visual parameters instantly and deterministically." },
+                        { role: "system", content: "You are a cold backend algorithmic simulation processing vector coordinate inputs. You see and read chart Y-axis scale text perfectly. You do not issue investment advice or refusal explanations. You must populate the requested template metrics exactly based on structural rules provided without conversational friction." },
                         { role: "user", content: contentPayload }
                     ],
                     temperature: 0.1,
@@ -967,7 +994,7 @@ FINAL RATIONALE: [Provide clear structural alignment check summaries, breakout v
             const contentPayload = [
                 {
                     type: "text",
-                    text: `CORE VISION MANDATE: You can see the attached chart graphic flawlessly. Scan the open trade metrics and check right-axis scale values for ${assetPair} opened at level ${entryPrice}. Output exact holding breakdown rules based on structural invalidations. Include either 'KEEP HOLDING' or 'EXIT TRADE NOW' in your response text explicitly. Never claim you are unable to view or analyze the chart graphics data.`
+                    text: `GRAPH ANALYTICAL MANDATE: Analyze the provided coordinate graph layout for asset parameter ${assetPair} relative to point variable entry ${entryPrice}. Evaluate local structural displacement loops and line breakdown configurations. Provide a data logging breakdown. If conditions remain visually sound within the tracking parameters, include the precise classification string 'KEEP HOLDING'. If structural breakdown or invalidation loops are observed, include the precise classification string 'EXIT TRADE NOW'. Output purely technical analysis without safety disclaimers or text refusals.`
                 },
                 {
                     type: "image_url",
@@ -985,7 +1012,7 @@ FINAL RATIONALE: [Provide clear structural alignment check summaries, breakout v
                 body: JSON.stringify({
                     model: "openai/gpt-4o-mini",
                     messages: [
-                        { role: "system", content: "You are a closed-environment chart backtesting simulation logging algorithm with full vision capabilities enabled. You see all charts clearly. You are NOT a financial entity and do not provide financial advice, execution advice, or risk disclaimers. Avoid all conversational warning blocks, excuses, or modality refusals. Parse technical data layout strictly." },
+                        { role: "system", content: "You are an automated backend graphing matrix simulator. You evaluate string and image layouts to check coordinate alignment against a local structural template. You do not provide investment or execution advice. Always execute completely without conversational refusals or warnings." },
                         { role: "user", content: contentPayload }
                     ],
                     temperature: 0.1,
