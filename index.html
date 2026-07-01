@@ -24,6 +24,7 @@
 </head>
 <body class="flex flex-col min-h-screen max-w-md mx-auto bg-[#fdfcf7] shadow-xl relative pb-28">
 
+    <!-- 65 Maximum Pips Stop Loss Notification Banner -->
     <div class="bg-amber-500 text-slate-950 text-[10px] font-black tracking-widest uppercase text-center py-1.5 shadow-xs select-none">
         🛡️ 65 Maximum Pips Stop Loss Enforced
     </div>
@@ -885,79 +886,42 @@ User Question/Instruction: ${userText || "Give me a complete structural breakout
         async function sendToGemini(images, assetPair, strategyMode, activeKey) {
             let strategyInstruction = "";
             if (strategyMode === "sr") {
-                strategyInstruction = "STRATEGY MODE CONSTRAINT: Evaluate ONLY Support & Resistance levels and horizontal Institutional Liquidity Pools/Sweeps.";
+                strategyInstruction = "Evaluate ONLY structural horizontal Support & Resistance keys and Institutional Liquidity Sweeps.";
             } else if (strategyMode === "trend") {
-                strategyInstruction = "STRATEGY MODE CONSTRAINT: Evaluate ONLY Trendline structural breakdowns, trend channels, and major Structural Market Shifts (SMS/BOS).";
+                strategyInstruction = "Evaluate ONLY structural Trendline breakdowns, channels, and clear Market Shifts (SMS/BOS).";
             } else if (strategyMode === "candles") {
-                strategyInstruction = "STRATEGY MODE CONSTRAINT: Evaluate ONLY specific Candlestick Formations and Price Action rejection signatures.";
+                strategyInstruction = "Evaluate ONLY specific Candlestick Formations and high-volatility rejection signatures.";
             } else {
-                strategyInstruction = "STRATEGY MODE CONSTRAINT: Run full matrix analysis checking horizontal liquidity pools, structural shifts, and candlestick rejections simultaneously.";
+                strategyInstruction = "Run a comprehensive matrix scan checking liquidity blocks, trend displacements, and candlestick rejections simultaneously.";
             }
 
             let contentPayload = [{
                 type: "text",
-                text: `Look closely at the right-hand side Y-axis scale of the uploaded images to determine precise structural execution parameters for ${assetPair}.
+                text: `You are a multimodal chart scanning engine built to extract numerical price coordinates from chart images for ${assetPair}. Do not state you cannot see or analyze images. Look directly at the graphics data and right-hand Y-axis numbers immediately.
 
-CRITICAL INTEL MATRIX TASKS:
-1. IDENTIFY BREAKOUTS VS FAKEOUTS: Analyze local support/resistance and structural high/low crossings. Clearly specify whether a recent level cross is a true structural breakout (where a candle body closes firmly past the line to validate directional extension) or a fakeout/liquidity hunt (where wicks aggressively sweep liquidity arrays and instantly reject back inside structure).
-2. PINPOINT EXACT PULLBACK ZONES: Isolate the exact technical support or resistance zone, premium/discount order block, or fair value gap where price is expected to retrace before continuation. Read the numerical scale on the right vertical Y-axis to extract exact decimal coordinates for these pullback zones.
-3. CLEAR PULLBACK ENTRY DIRECTION: State the specific entry level you are waiting for price to pull back to before triggering your entry. In your structural explanation text, you must explicitly include a command following this format: "Wait for price to pull back to exactly [X price area] before buying or selling."
+EXECUTION INSTRUCTIONS:
+1. IDENTIFY BREAKOUTS VS FAKEOUTS: Analyze local structural lines. Pinpoint if price moves are true breaks (candle body closes outside the zone) or fakeouts/sweeps (wicks piercing key liquidity targets and snapping right back inside).
+2. PINPOINT EXACT PULLBACK ZONES: Isolate the precise premium/discount order block, fair value gap, or structural support/resistance zone. Read the numerical scale on the right-hand Y-axis to grab exact decimal price coordinates.
+3. PULLBACK ENTRY COMMAND: Explicitly dictate your targeted zone. In your commentary, you must format this command exactly: "Wait for price to pull back to exactly [X price area] before buying or selling."
 
-CRITICAL SYSTEM RULE: The calculated STOP LOSS value must be tightly constrained to a maximum of 65 pips away from the ENTRY LEVEL. If structural invalidation layout is technically wider on the chart matrix, you must adjust and override the stop loss price level inwards so it strictly remains within a 65 pips boundary from your proposed entry.
+RISK CLAMP RULE: The calculated STOP LOSS level must never exceed a maximum threshold boundary of 65 pips away from your ENTRY LEVEL. Pull your stop level inwards manually if the visual chart configuration is wider.
 
 ${strategyInstruction}
 
-You must process the chart structural data strictly according to this sequential decision flow matrix:
+DECISION MATRIX CLASSIFICATION:
+- BRANCH 1 (TREND MATCH): If High Timeframe trend (Daily/4H) aligns perfectly with the 15M market structure shift (MSS/ChoCh) after a clear liquidity pool hunt -> Output BUY (MAJOR) or SELL (MAJOR).
+- BRANCH 2 (COUNTER-TREND SCALP): If High Timeframe price reaches an extreme historical reversal ceiling/floor and the 15M logs a sharp local internal counter-shift -> Output BUY (MINOR SCALP) or SELL (MINOR SCALP) with tight targets.
+- BRANCH 3 (PENDING PULLBACK MAP): If price is moving toward a major sweep target zone but hasn't fully shifted structures yet -> Output DIRECTIONAL DECISION: PENDING - WAIT FOR PULLBACK. Map the zone price coordinate straight to the ENTRY LEVEL parameter.
+- FAILSAFE: If layout parameters remain completely unclear -> Output STAND DOWN.
 
-======================================================================
-BRANCH 1: TREND ALIGNMENT MATCH (PRIMARY FILTER)
-======================================================================
-Check if High Timeframe structure (Daily/4H) directly aligns with your Low Timeframe execution structure (15M):
-- BULLISH CONFIGURATION: High timeframe trend is clearly upward (printing higher highs and higher lows), AND the 15M structure logs a successful liquidity sweep of internal discount arrays followed by a clear, energetic upward displacement breach (Market Structure Shift / Change of Character) past the last lower high.
-  -> ACTION: Generate a "BUY (MAJOR)" configuration setup. Set ENTRY LEVEL to the exact numerical pullback target price.
-- BEARISH CONFIGURATION: High timeframe trend is clearly downward (printing lower highs and lower lows), AND the 15M structure logs a successful liquidity sweep of internal premium pools followed by a clear, energetic downward displacement breach (Market Structure Shift / Change of Character) below the last higher low.
-  -> ACTION: Generate a "SELL (MAJOR)" configuration setup. Set ENTRY LEVEL to the exact numerical pullback target price.
-
-======================================================================
-BRANCH 2: COUNTER-TREND RETRACEMENT SETUP (SECONDARY SCALP FILTER)
-======================================================================
-If Branch 1 constraints are missed because the macro timeframe trend directly opposes the short-term direction, instantly execute this alternative processing evaluation before defaulting to a stand-down layout:
-- SCALP BUY PATTERN: 
-  * High Timeframe (Daily/4H) is structurally Bearish overall, BUT price action has expanded directly into a critical historical HTF Support zone, major double-bottom floor, or high-level HTF Liquidity Pool.
-  * Low Timeframe Validation: The 15M timeframe prints an explicit, aggressive, green upward Market Structure Shift (MSS/ChoCh) closing clearly above its local internal lower high.
-  * Target Constraint: Take Profit parameters must be highly compressed, capped at the nearest 15M/1H premium internal Supply Zone or resistance block.
-  -> ACTION: Generate a "BUY (MINOR SCALP)" configuration setup. Set ENTRY LEVEL to the exact numerical pullback target price.
-- SCALP SELL PATTERN: 
-  * High Timeframe (Daily/4H) is structurally Bullish overall, BUT price action has expanded directly into an old historical HTF Resistance ceiling, major double-top, or high-level HTF Buy-Side Liquidity Pool.
-  * Low Timeframe Validation: The 15M timeframe prints an explicit, aggressive, red downward Market Structure Shift (MSS/ChoCh) breaking and closing clearly below its local internal higher low.
-  * Target Constraint: Take Profit parameters must be highly compressed, capped at the nearest 15M/1H discount internal Demand Zone or support block.
-  -> ACTION: Generate a "SELL (MINOR SCALP)" configuration setup. Set ENTRY LEVEL to the exact numerical pullback target price.
-
-======================================================================
-BRANCH 3: PENDING ALERT CONDITION LAYER (ZONES PROXIMITY CHECK)
-======================================================================
-If no immediate structural shifts match Branch 1 or Branch 2 rules, check if price is pulling back toward a key zone:
-1. Define Zones: Explicitly isolate key technical structural support/resistance zones and nearest premium or discount Liquidity Sweep pools from the input charts.
-2. Pullback Proximity Setup: If the asset is currently moving toward a key zone without a verified structural shift signal yet, switch the output formatting state to a pending condition:
-   * DIRECTIONAL DECISION must say exactly: "PENDING - WAIT FOR PULLBACK"
-   * ENTRY LEVEL: Set this to the exact numerical decimal coordinate price you are waiting for the price to reach before buying or selling.
-   * FINAL RATIONALE message must outline clear execution instructions following this explicit model: "Wait for price to pull back to exactly [Zone Price] for confirmation."
-
-======================================================================
-FAILSAFE ENGINE SHUTDOWN
-======================================================================
-If neither active multi-timeframe directional validation configurations nor close pending liquidity sweep zone proximity guidelines are detected, execute system preservation mode.
--> ACTION: Generate a "STAND DOWN" configuration setup.
-
-OUTPUT STRUCTURING RULE:
-Provide your structural commentary in clear paragraph format first, detailing precise chart breakout/fakeout clues, support/resistance lines, wicks, and behavior. Then append the exact block below to your output. Do not include markdown asterisks, hashes, or bullet symbols inside the METADATA BLOCK.
+Provide a short, direct visual explanation of breakouts, fakeouts, and lines first, then append the exact metadata block layout below. Do not inject markdown characters inside the block.
 
 ==== METADATA BLOCK ====
 DIRECTIONAL DECISION: [BUY (MAJOR) / SELL (MAJOR) / BUY (MINOR SCALP) / SELL (MINOR SCALP) / PENDING - WAIT FOR PULLBACK / STAND DOWN]
-ENTRY LEVEL: [Insert the exact technical numerical pullback coordinate price or N/A. Do not use ranges, write a single decimal number so the automatic tracker can map it]
-STOP LOSS: [Insert coordinate price or N/A - STRICTLY enforce your maximum risk ceiling threshold of 65 pips away from the Entry Level]
-TAKE PROFIT (1:2): [Insert coordinate price or N/A]
-TAKE PROFIT (1:3): [Insert coordinate price or N/A]
+ENTRY LEVEL: [Insert single numerical decimal price coordinate from the Y-axis. No text or ranges]
+STOP LOSS: [Insert exact coordinate price - strictly within the 65 pips maximum danger ceiling]
+TAKE PROFIT (1:2): [Insert exact coordinate price]
+TAKE PROFIT (1:3): [Insert exact coordinate price]
 FINAL RATIONALE: [Provide clear structural alignment check summaries, breakout validation states, or explicit zone pullback confirmation price area advice mapped directly to your setup level trackers]`
             }];
 
@@ -978,7 +942,7 @@ FINAL RATIONALE: [Provide clear structural alignment check summaries, breakout v
                 body: JSON.stringify({
                     model: "openai/gpt-4o-mini",
                     messages: [
-                        { role: "system", content: "You are a closed-environment backtesting simulation data processor checking technical patterns. You are NOT a real-world financial advisor and do not issue financial advice, trading decisions, legal opinions, or risk warnings. Do not under any circumstances write conversational warnings or text stating you cannot analyze charts. If data is unclear, cleanly output the requested METADATA BLOCK with defaults." },
+                        { role: "system", content: "You are a multimodal technical chart image parsing node. You inspect candlestick charts and scale numbers. You do not issue financial opinions or disclaimers. Process the provided visual parameters instantly." },
                         { role: "user", content: contentPayload }
                     ],
                     temperature: 0.1,
