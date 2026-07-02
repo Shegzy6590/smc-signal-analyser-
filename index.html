@@ -592,8 +592,8 @@ User Input: ${userText || "Perform complete structural breakout tracking analysi
         }
 
         function calculateLiveSpreadDistance() {
-            const target = parseFloat(document.getElementById("targetLevelInput").value);
-            const current = parseFloat(document.getElementById("currentPriceInput").value);
+            let target = parseFloat(document.getElementById("targetLevelInput").value);
+            let current = parseFloat(document.getElementById("currentPriceInput").value);
             const asset = document.getElementById("assetPair").value;
             const distanceOutput = document.getElementById("distanceOutput");
             const statusLabel = document.getElementById("trackerStatus");
@@ -623,10 +623,10 @@ User Input: ${userText || "Perform complete structural breakout tracking analysi
             statusLabel.innerText = "MONITORING SETUP LIVE";
             statusLabel.className = "inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-black bg-amber-500 text-slate-950 uppercase tracking-wide animate-pulse";
 
-            if ((pips <= 5.0 || (current >= target && target > current === false)) && !insideAlertWindowTriggered) {
+            if (pips <= 0.5 && !insideAlertWindowTriggered) {
                 insideAlertWindowTriggered = true;
                 executeDualChannelAlerts(asset, pips.toFixed(2), target, current);
-            } else if (pips > 5.0 && !((current >= target && target > current === false))) {
+            } else if (pips > 0.5) {
                 insideAlertWindowTriggered = false;
             }
         }
@@ -720,11 +720,10 @@ User Input: ${userText || "Perform complete structural breakout tracking analysi
 
                         let slPips = Math.abs(entryNum - slNum) / multiplier;
                         
-                        // Modified clamping boundaries between 80 pips minimum and 250 pips maximum based on instructions
                         if (slPips < 80.0 || slPips > 250.0) {
                             slPips = Math.max(80.0, Math.min(250.0, slPips));
                             if (isNaN(slPips) || slPips === 80.0) {
-                                slPips = 95.0; // Dynamic default baseline within the new safe boundaries
+                                slPips = 95.0; 
                             }
                         }
 
@@ -745,13 +744,19 @@ User Input: ${userText || "Perform complete structural breakout tracking analysi
 
                         const decimals = assetPair.includes("JPY") ? 3 : ((assetPair.includes("XAUUSD") || assetPair.includes("Gold")) ? 2 : (assetPair.includes("BTC") ? 2 : 5));
                         
+                        let zonePocketOffset = 5.0 * multiplier;
+                        let secondaryZonePrice = identifiedDirection === "BUY" ? (entryNum - zonePocketOffset) : (entryNum + zonePocketOffset);
+                        
+                        let priceLowRange = Math.min(entryNum, secondaryZonePrice).toFixed(decimals);
+                        let priceHighRange = Math.max(entryNum, secondaryZonePrice).toFixed(decimals);
+
                         entry = entryNum.toFixed(decimals);
                         sl = `${slNum.toFixed(decimals)} 🛡️ (${slPips.toFixed(1)} Pips Enforced)`;
                         tp2 = `${tp2Num.toFixed(decimals)} 🎯 (Exact 1:2 R:R)`;
                         tp3 = `${tp3Num.toFixed(decimals)} 🎯 (Exact 1:3 R:R)`;
 
                         if (upperDecision.includes("WAIT FOR PULLBACK") || upperDecision.includes("PENDING")) {
-                            decision = `${identifiedDirection} (PENDING - Waiting for pullback to immediate validation zone)`;
+                            decision = `${identifiedDirection} (PENDING - Wait for price to pull back to around this zone area price around ${priceHighRange} and ${priceLowRange})`;
                         } else if (upperDecision.includes("STAND DOWN")) {
                             decision = `STAND DOWN (${identifiedDirection} biased structure invalid due to sweep/fakeout rules)`;
                         }
