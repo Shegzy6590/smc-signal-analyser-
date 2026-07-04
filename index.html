@@ -872,7 +872,7 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                     }
 
                     // Dispatch outbound packet routing via Telegram stream networks
-                    AppEngine.routeTelegramNotification(calculatedReport);
+                    await AppEngine.routeTelegramNotification(calculatedReport);
 
                 } catch (err) {
                     term.innerHTML = `<span class="text-institutional-rose font-black font-mono">DASHBOARD COMPILE TIMEOUT EXCEPTION:</span> ${err.message}`;
@@ -941,7 +941,7 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                 if (!AppStore.config.tgToken || !AppStore.config.tgChatId) return;
                 const bodyMsg = `🚀 SMC-SIGNAL PRO ARCHITECTURE METRICS BROADCAST 🚀\n\nAsset Pair Target: ${ticket.asset}\nClassification Rank Layer: ${ticket.classification}\nConfidence Index Score: ${ticket.confidence}%\n\nEntry Area Pocket: ${ticket.entry}\nStop Level Bound: ${ticket.stop_loss}\nObjective Target TP3 Matrix: ${ticket.tp3}\n\nRecommended Directive Strategy: ${ticket.report.recommended_action}`;
                 
-                fetch(`https://api.telegram.org/bot${AppStore.config.tgToken}/sendMessage`, {
+                await fetch(`https://api.telegram.org/bot${AppStore.config.tgToken}/sendMessage`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ chat_id: AppStore.config.tgChatId, text: bodyMsg })
