@@ -1024,15 +1024,16 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                 let directionalVector = "BUY";
                 if (smc.daily_bias === "BEARISH" || (rawSl > rawE)) directionalVector = "SELL";
 
-                // Enforce Stop Loss Corridor (Min: 80 pips, Max: 250 pips)
+                // Enforce Stop Loss Corridor (Min: Configured, Max: 250 pips)
                 let structuralPips = Math.abs(rawE - rawSl) * def.multiplier;
                 let enforcedPips = structuralPips;
-                if (enforcedPips < 80) enforcedPips = 80;
+                let minSlConfig = AppStore.config.minSl;
+                if (enforcedPips < minSlConfig) enforcedPips = minSlConfig;
                 if (enforcedPips > 250) enforcedPips = 250;
 
                 // Set Strategy Enforcement Notice if an out-of-bounds violation occurs
-                if (structuralPips < 80 || structuralPips > 250) {
-                    reportTicket.validation_notes = `Risk Parameter Corridor Breach: Stop loss calculated metrics [${structuralPips.toFixed(1)} Pips] violates structural interbank safety bounds (Min: 80, Max: 250 Pips). Automatically corrected to ${enforcedPips} pips.`;
+                if (structuralPips < minSlConfig || structuralPips > 250) {
+                    reportTicket.validation_notes = `Risk Parameter Corridor Breach: Stop loss calculated metrics [${structuralPips.toFixed(1)} Pips] violates structural interbank safety bounds (Min: ${minSlConfig}, Max: 250 Pips). Automatically corrected to ${enforcedPips} pips.`;
                 }
 
                 // Compute final validated SL price directly from corrected pips corridor
@@ -1067,7 +1068,7 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                 let validationAttempts = 0;
                 while (validationAttempts < 5) {
                     let checkPips = Math.abs(rawE - finalSl) * def.multiplier;
-                    let slInRange = (checkPips >= 79.9 && checkPips <= 250.1);
+                    let slInRange = (checkPips >= (minSlConfig - 0.1) && checkPips <= 250.1);
                     
                     let checkTp1R = Math.abs(finalTp1 - rawE) / finalRiskDelta;
                     let checkTp2R = Math.abs(finalTp2 - rawE) / finalRiskDelta;
