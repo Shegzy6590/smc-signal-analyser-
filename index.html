@@ -296,7 +296,7 @@
                     
                     <div class="grid grid-cols-2 gap-3">
                         <div class="space-y-1">
-                            <label class="block text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wide">AI Provider Matrix Route</label>
+                            <label class="block text-[9px] font-black text-slate-505 dark:text-slate-400 uppercase tracking-wide">AI Provider Matrix Route</label>
                             <select id="configAiProvider" class="w-full bg-white dark:bg-institutional-950 border border-slate-200 dark:border-institutional-800 rounded-lg px-2 py-1.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none">
                                 <option value="github_models" selected>GitHub Models Portal</option>
                                 <option value="openai_direct">OpenAI Enterprise API</option>
@@ -1000,10 +1000,6 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                     return reportTicket;
                 }
 
-                let riskDelta = Math.abs(rawE - rawSl);
-                let computedPips = riskDelta * def.multiplier;
-                reportTicket.pip_distance = computedPips;
-
                 // Process Multi-Timeframe Strategy Alignment (Passed / Failed Flags)
                 reportTicket.checklist = {
                     htf: (smc.daily_bias && smc.daily_bias !== "CONSOLIDATING") ? "PASSED" : "FAILED",
@@ -1018,23 +1014,98 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                     reportTicket.validation_notes = "Technical Strategy Filter Exception: One or more technical timeframe multi-layer synchronization blocks failed validation rule checks.";
                 }
 
-                // Strict Institutional Stop Loss Parameter Enforcements Matrix (Min 80, Max 250 Pips Verification)
-                if (computedPips < 80 || computedPips > 250) {
-                    reportTicket.passed_rules = false;
-                    reportTicket.validation_notes = `Risk Parameter Corridor Breach: Stop loss calculated metrics [${computedPips.toFixed(1)} Pips] violates structural interbank safety bounds (Min: 80, Max: 250 Pips).`;
-                }
-
                 // Check overall confidence configuration bounds rule thresholds
                 if (reportTicket.confidence < AppStore.config.confidenceThreshold) {
                     reportTicket.passed_rules = false;
                     reportTicket.validation_notes = `Confidence Threshold Safeguard: Calculation confidence index [${reportTicket.confidence}%] fails target system settings filters [${AppStore.config.confidenceThreshold}%].`;
                 }
 
+                // Enforce trade direction vector calculation
                 let directionalVector = "BUY";
                 if (smc.daily_bias === "BEARISH" || (rawSl > rawE)) directionalVector = "SELL";
 
+                // Enforce Stop Loss Corridor (Min: 80 pips, Max: 250 pips)
+                let structuralPips = Math.abs(rawE - rawSl) * def.multiplier;
+                let enforcedPips = structuralPips;
+                if (enforcedPips < 80) enforcedPips = 80;
+                if (enforcedPips > 250) enforcedPips = 250;
+
+                // Set Strategy Enforcement Notice if an out-of-bounds violation occurs
+                if (structuralPips < 80 || structuralPips > 250) {
+                    reportTicket.validation_notes = `Risk Parameter Corridor Breach: Stop loss calculated metrics [${structuralPips.toFixed(1)} Pips] violates structural interbank safety bounds (Min: 80, Max: 250 Pips). Automatically corrected to ${enforcedPips} pips.`;
+                }
+
+                // Compute final validated SL price directly from corrected pips corridor
+                let finalSl = rawSl;
+                if (directionalVector === "BUY") {
+                    finalSl = rawE - (enforcedPips / def.multiplier);
+                } else {
+                    finalSl = rawE + (enforcedPips / def.multiplier);
+                }
+
+                // Calculate Take Profits from the final validated Stop Loss
+                let finalRiskDelta = Math.abs(rawE - finalSl);
+                let m1 = 2.0;
+                let m2 = 3.0;
+                let m3 = parseFloat(AppStore.config.targetRr) || 4.0;
+                if (m3 <= 3.0) {
+                    m3 = 4.0; // Ensure TP3 ordering is correct and farthest
+                }
+
+                let finalTp1, finalTp2, finalTp3;
+                if (directionalVector === "BUY") {
+                    finalTp1 = rawE + (m1 * finalRiskDelta);
+                    finalTp2 = rawE + (m2 * finalRiskDelta);
+                    finalTp3 = rawE + (m3 * finalRiskDelta);
+                } else {
+                    finalTp1 = rawE - (m1 * finalRiskDelta);
+                    finalTp2 = rawE - (m2 * finalRiskDelta);
+                    finalTp3 = rawE - (m3 * finalRiskDelta);
+                }
+
+                // Validation Layer & Self-Correction Engine to guarantee absolute mathematical precision
+                let validationAttempts = 0;
+                while (validationAttempts < 5) {
+                    let checkPips = Math.abs(rawE - finalSl) * def.multiplier;
+                    let slInRange = (checkPips >= 79.9 && checkPips <= 250.1);
+                    
+                    let checkTp1R = Math.abs(finalTp1 - rawE) / finalRiskDelta;
+                    let checkTp2R = Math.abs(finalTp2 - rawE) / finalRiskDelta;
+                    let checkTp3R = Math.abs(finalTp3 - rawE) / finalRiskDelta;
+                    
+                    let tp1Exactly2R = Math.abs(checkTp1R - 2.0) < 0.01;
+                    let tp2Exactly3R = Math.abs(checkTp2R - 3.0) < 0.01;
+                    let tp3ExactlyMR = Math.abs(checkTp3R - m3) < 0.01;
+                    
+                    let orderingIsCorrect = false;
+                    if (directionalVector === "BUY") {
+                        orderingIsCorrect = (rawE < finalTp1) && (finalTp1 < finalTp2) && (finalTp2 < finalTp3) && (finalSl < rawE);
+                    } else {
+                        orderingIsCorrect = (rawE > finalTp1) && (finalTp1 > finalTp2) && (finalTp2 > finalTp3) && (finalSl > rawE);
+                    }
+                    
+                    if (slInRange && tp1Exactly2R && tp2Exactly3R && tp3ExactlyMR && orderingIsCorrect) {
+                        break;
+                    } else {
+                        if (directionalVector === "BUY") {
+                            finalSl = rawE - (enforcedPips / def.multiplier);
+                            finalRiskDelta = Math.abs(rawE - finalSl);
+                            finalTp1 = rawE + (2.0 * finalRiskDelta);
+                            finalTp2 = rawE + (3.0 * finalRiskDelta);
+                            finalTp3 = rawE + (m3 * finalRiskDelta);
+                        } else {
+                            finalSl = rawE + (enforcedPips / def.multiplier);
+                            finalRiskDelta = Math.abs(rawE - finalSl);
+                            finalTp1 = rawE - (2.0 * finalRiskDelta);
+                            finalTp2 = rawE - (3.0 * finalRiskDelta);
+                            finalTp3 = rawE - (m3 * finalRiskDelta);
+                        }
+                    }
+                    validationAttempts++;
+                }
+
                 // Ultimate Strategic Override Guard Execution Channel
-                if (!reportTicket.passed_rules) {
+                if (!reportTicket.passed_rules && !reportTicket.validation_notes.includes("Corridor Breach")) {
                     reportTicket.verdict = "STAND DOWN";
                     reportTicket.classification = "Exit Immediately";
                     reportTicket.report.recommended_action = "STAND DOWN: NO TRADE";
@@ -1042,20 +1113,14 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                     reportTicket.verdict = directionalVector;
                 }
 
+                // Format values for strict layout uniformity and scannability
                 reportTicket.entry = rawE.toFixed(def.decimals);
-                reportTicket.stop_loss = rawSl.toFixed(def.decimals);
-
-                if (directionalVector === "BUY") {
-                    reportTicket.tp1 = (rawE + (riskDelta * 1.5)).toFixed(def.decimals);
-                    reportTicket.tp2 = (rawE + (riskDelta * 2.5)).toFixed(def.decimals);
-                    reportTicket.tp3 = (rawE + (riskDelta * AppStore.config.targetRr)).toFixed(def.decimals);
-                    reportTicket.rr_efficiency = `1:${AppStore.config.targetRr.toFixed(1)}`;
-                } else {
-                    reportTicket.tp1 = (rawE - (riskDelta * 1.5)).toFixed(def.decimals);
-                    reportTicket.tp2 = (rawE - (riskDelta * 2.5)).toFixed(def.decimals);
-                    reportTicket.tp3 = (rawE - (riskDelta * AppStore.config.targetRr)).toFixed(def.decimals);
-                    reportTicket.rr_efficiency = `1:${AppStore.config.targetRr.toFixed(1)}`;
-                }
+                reportTicket.stop_loss = finalSl.toFixed(def.decimals);
+                reportTicket.tp1 = finalTp1.toFixed(def.decimals);
+                reportTicket.tp2 = finalTp2.toFixed(def.decimals);
+                reportTicket.tp3 = finalTp3.toFixed(def.decimals);
+                reportTicket.pip_distance = Math.abs(parseFloat(reportTicket.entry) - parseFloat(reportTicket.stop_loss)) * def.multiplier;
+                reportTicket.rr_efficiency = `1:${m3.toFixed(1)}`;
 
                 return reportTicket;
             },
