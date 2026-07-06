@@ -2,7 +2,7 @@
 <html lang="en" class="h-full dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>SMC-Signal Pro v3.0</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -58,11 +58,67 @@
             50% { opacity: 0.8; transform: scale(0.98); }
         }
         .pulse-element { animation: subtle-pulse 3s infinite ease-in-out; }
+        
+        /* Premium Splash System Graphic Styles */
+        .cross-grid {
+            background-image: radial-gradient(rgba(245, 158, 11, 0.1) 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+        @keyframes scan-laser {
+            0% { top: 0%; opacity: 0; }
+            10% { opacity: 0.4; }
+            90% { opacity: 0.4; }
+            100% { top: 100%; opacity: 0; }
+        }
+        .animate-scan-laser {
+            animation: scan-laser 5.5s infinite linear;
+        }
     </style>
 </head>
-<body class="h-full font-sans bg-slate-950 dark:bg-[#020406] text-slate-800 dark:text-slate-200 flex justify-center selection:bg-amber-500/30 selection:text-amber-400">
+<body class="h-full w-full font-sans bg-slate-950 dark:bg-[#020406] text-slate-800 dark:text-slate-200 flex flex-col selection:bg-amber-500/30 selection:text-amber-400 overflow-x-hidden">
 
-    <div class="w-full max-w-md bg-white dark:bg-institutional-950 min-h-screen flex flex-col relative border-x border-slate-200 dark:border-institutional-800/40 shadow-2xl pb-24 transition-colors duration-200">
+    <!-- PREMIUM INSTITUTIONAL STARTUP EXPERIENTIAL OVERLAY -->
+    <div id="premiumSplashScreen" class="fixed inset-0 bg-[#020406] z-[9999] flex flex-col items-center justify-center overflow-hidden transition-opacity duration-1000 select-none">
+        <div class="absolute inset-0 opacity-20 pointer-events-none cross-grid"></div>
+        <div class="absolute inset-0 opacity-10 pointer-events-none flex items-center justify-center">
+            <svg class="w-full h-full max-h-[60vh]" viewBox="0 0 800 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0,240 Q120,160 280,260 T580,110 T800,160" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round" />
+                <line x1="150" y1="0" x2="150" y2="400" stroke="#1a1f30" stroke-width="0.5" />
+                <line x1="350" y1="0" x2="350" y2="400" stroke="#1a1f30" stroke-width="0.5" />
+                <line x1="550" y1="0" x2="550" y2="400" stroke="#1a1f30" stroke-width="0.5" />
+                <line x1="0" y1="120" x2="800" y2="120" stroke="#1a1f30" stroke-width="0.5" />
+                <line x1="0" y1="260" x2="800" y2="260" stroke="#1a1f30" stroke-width="0.5" />
+            </svg>
+        </div>
+        <div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent opacity-30 animate-scan-laser"></div>
+        <div id="splashParticles" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+
+        <div class="z-10 text-center space-y-6 max-w-md px-6 flex flex-col items-center">
+            <div id="splashLogo" class="opacity-0 transition-all duration-700 transform translate-y-4">
+                <h1 class="text-2xl font-black tracking-tight text-white flex items-center gap-2">
+                    SMC-SIGNAL <span class="text-xs bg-[#f59e0b] text-black font-black px-2 py-0.5 rounded shadow-[0_0_15px_rgba(245,158,11,0.4)]">PRO v3.0</span>
+                </h1>
+                <p class="text-[9px] text-slate-400 uppercase tracking-widest font-bold mt-1">AI Institutional Market Platform</p>
+            </div>
+
+            <div class="h-14 flex flex-col items-center justify-center mt-2">
+                <div id="splashGreeting" class="text-sm font-bold text-slate-200 opacity-0 transition-all duration-500 transform translate-y-2"></div>
+                <div id="splashMotivation" class="text-xs text-amber-400 font-medium tracking-wide opacity-0 transition-all duration-500 mt-1"></div>
+            </div>
+
+            <div class="w-64 border-t border-slate-800/60 pt-4 mt-4 flex flex-col items-center">
+                <div id="splashStatusText" class="text-[10px] font-mono text-slate-400 tracking-wide transition-all duration-300 text-center min-h-[1.5rem]">
+                    Initializing Core System Modules...
+                </div>
+                <div class="w-full h-[1px] bg-slate-900 mt-2 rounded-full overflow-hidden relative">
+                    <div class="absolute inset-y-0 left-0 bg-amber-500 w-0 transition-all duration-300" id="splashProgressBar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CORE CONTAINER RESCALED FOR FULL SCREEN SCREEN VIEWS -->
+    <div class="w-full bg-white dark:bg-institutional-950 min-h-screen flex flex-col relative pb-24 transition-colors duration-200">
         
         <!-- TOP INSTITUTIONAL DATA STRIP -->
         <div id="globalTickerRibbon" class="bg-slate-100 dark:bg-institutional-900 border-b border-slate-200 dark:border-institutional-800/60 px-4 py-2 flex justify-between items-center text-[10px] tracking-wider font-mono font-bold text-slate-500 dark:text-slate-400 select-none">
@@ -143,7 +199,7 @@
                 <!-- CLEAN UPLOAD ARCHIVE VAULTS BOXES -->
                 <div class="space-y-2">
                     <h3 class="text-[10px] font-black text-slate-400 dark:text-institutional-400 uppercase tracking-widest px-1">Evidence Screenshot Coordinates</h3>
-                    <div class="grid grid-cols-2 gap-3">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                         <!-- DAILY -->
                         <label class="relative bg-slate-50 dark:bg-institutional-900 border border-dashed border-slate-300 dark:border-institutional-800 hover:border-institutional-700 rounded-xl p-3 text-center cursor-pointer block group transition">
                             <h4 class="text-xs font-black text-slate-800 dark:text-white group-hover:text-institutional-amber transition font-mono">1. DAILY CONTEXT</h4>
@@ -190,7 +246,7 @@
 
             <!-- TAB 2: LIVE RISK MANAGEMENT AND ADVANCED DRAWDOWN LOGIC -->
             <main id="positionTab" class="tab-panel p-4 space-y-4">
-                <div class="bg-slate-50 dark:bg-institutional-900 border border-slate-200 dark:border-institutional-800 rounded-xl p-4 space-y-3">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 bg-slate-50 dark:bg-institutional-900 border border-slate-200 dark:border-institutional-800 rounded-xl p-4">
                     <div>
                         <label class="block text-[9px] font-black text-slate-400 dark:text-institutional-400 uppercase tracking-widest mb-1">Active Pair Evaluation Target</label>
                         <select id="manageAssetSelect" class="w-full bg-white dark:bg-institutional-950 border border-slate-200 dark:border-institutional-800 rounded-lg px-2.5 py-2 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-institutional-amber appearance-none cursor-pointer">
@@ -263,7 +319,7 @@
                 <div class="flex justify-between items-center bg-slate-50 dark:bg-institutional-900 p-3 rounded-xl border border-slate-200 dark:border-institutional-800">
                     <div class="space-y-0.5">
                         <h2 class="text-[10px] font-black text-slate-400 dark:text-institutional-400 uppercase tracking-widest">Local Database Journal Memory</h2>
-                        <p class="text-[9px] text-slate-500 dark:text-slate-400 font-bold uppercase font-mono">SMC Local Sandbox Indexing</p>
+                        <p class="text-[9px] text-slate-505 dark:text-slate-400 font-bold uppercase font-mono">SMC Local Sandbox Indexing</p>
                     </div>
                     <div class="flex gap-2">
                         <button onclick="JournalSystem.clearDatabase()" class="text-[9px] bg-institutional-rose/10 border border-institutional-rose/30 text-institutional-rose font-black px-2.5 py-1.5 rounded uppercase font-mono hover:bg-institutional-rose/20 transition">Wipe</button>
@@ -314,6 +370,21 @@
                     <div class="space-y-1.5">
                         <label class="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wide font-mono">Secret Bearer Key Gateway Authorization</label>
                         <input id="configApiKey" type="password" oninput="AppEngine.saveConfigData()" placeholder="ghp_xxxxxxxx or sk-proj-xxxxxx..." class="w-full bg-white dark:bg-institutional-950 border border-slate-200 dark:border-institutional-800 rounded-lg px-3 py-2 text-xs font-mono font-bold text-slate-900 dark:text-white focus:outline-none focus:border-institutional-amber">
+                    </div>
+
+                    <!-- PREMIUM PERSONALIZATION CONTROLS -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="space-y-1">
+                            <label class="block text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wide">Display Name</label>
+                            <input id="configDisplayName" type="text" oninput="AppEngine.saveConfigData()" placeholder="e.g. Adeniyi" class="w-full bg-white dark:bg-institutional-950 border border-slate-200 dark:border-institutional-800 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-institutional-amber">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="block text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wide">Startup Sound</label>
+                            <select id="configStartupSound" onchange="AppEngine.saveConfigData()" class="w-full bg-white dark:bg-institutional-950 border border-slate-200 dark:border-institutional-800 rounded-lg px-2 py-1.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-institutional-amber">
+                                <option value="true" selected>☑ ON</option>
+                                <option value="false">☐ OFF</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
@@ -448,8 +519,8 @@
             </div>
         </div>
 
-        <!-- GLOBAL NAVIGATION DOCK TERMINAL CONTROLLER BAR (Matches image.png Layout Framework) -->
-        <nav class="absolute bottom-0 left-0 right-0 bg-slate-50 dark:bg-institutional-900 border-t border-slate-200 dark:border-institutional-800/80 px-4 py-3 flex justify-between items-center select-none z-40 transition-colors duration-200">
+        <!-- GLOBAL NAVIGATION DOCK TERMINAL CONTROLLER BAR (Fixed responsive anchoring alignment) -->
+        <nav class="fixed bottom-0 left-0 right-0 bg-slate-50 dark:bg-institutional-900 border-t border-slate-200 dark:border-institutional-800/80 px-4 py-3 flex justify-between items-center select-none z-40 transition-colors duration-200">
             <button id="nav-pipeline" onclick="AppEngine.switchTab('pipeline')" class="nav-btn flex flex-col items-center gap-1 text-slate-900 dark:text-white font-black">
                 <i data-lucide="binary" class="w-4.5 h-4.5 stroke-[2.5]"></i>
                 <span class="text-[9px] tracking-widest uppercase font-mono">Matrix</span>
@@ -489,7 +560,9 @@
                 autoJournal: true,
                 newsFilterActive: true,
                 tgToken: '',
-                tgChatId: ''
+                tgChatId: '',
+                displayName: '',
+                startupSound: true
             },
             activeAsset: 'EURUSD',
             activeDecisionMetadata: null,
@@ -499,7 +572,6 @@
 
         // Complete Extended Financial Instruments Reference Matrix Mapping Database Array
         const AssetDefinitions = {
-            // Forex Majors & Crosses
             EURUSD: { type: 'forex', label: 'EURUSD (Forex)', multiplier: 10000, decimals: 5 },
             GBPUSD: { type: 'forex', label: 'GBPUSD (Forex)', multiplier: 10000, decimals: 5 },
             USDJPY: { type: 'forex', label: 'USDJPY (Forex)', multiplier: 100, decimals: 3 },
@@ -527,15 +599,12 @@
             GBPNZD: { type: 'forex', label: 'GBPNZD (Forex)', multiplier: 10000, decimals: 5 },
             EURCAD: { type: 'forex', label: 'EURCAD (Forex)', multiplier: 10000, decimals: 5 },
             EURCHF: { type: 'forex', label: 'EURCHF (Forex)', multiplier: 10000, decimals: 5 },
-            // Commodities
             XAUUSD: { type: 'commodity', label: 'XAUUSD (Gold)', multiplier: 10, decimals: 2 },
             XAGUSD: { type: 'commodity', label: 'XAGUSD (Silver)', multiplier: 100, decimals: 2 },
-            // Cryptocurrencies
             BTCUSD: { type: 'crypto', label: 'BTCUSD (Bitcoin)', multiplier: 1, decimals: 2 },
             ETHUSD: { type: 'crypto', label: 'ETHUSD (Ethereum)', multiplier: 1, decimals: 2 },
             SOLUSD: { type: 'crypto', label: 'SOLUSD (Solana)', multiplier: 1, decimals: 2 },
             BNBUSD: { type: 'crypto', label: 'BNBUSD (Binance)', multiplier: 1, decimals: 2 },
-            // Indices
             US30:   { type: 'index', label: 'US30 (Dow Jones)', multiplier: 1, decimals: 1 },
             NAS100: { type: 'index', label: 'NAS100 (Nasdaq)', multiplier: 1, decimals: 1 },
             SPX500: { type: 'index', label: 'SPX500 (S&P 500)', multiplier: 1, decimals: 1 },
@@ -552,7 +621,123 @@
             AppEngine.startClockDaemon();
             AppEngine.pollMacroThreatFeeds();
             lucide.createIcons();
+            PremiumSplashEngine.executeSequence();
         });
+
+        // Premium Electronic Startup Sound & Overlay Driver Node
+        const PremiumSplashEngine = {
+            executeSequence() {
+                const splash = document.getElementById("premiumSplashScreen");
+                if (!splash) return;
+
+                // Ambient Background Particle Generator
+                const container = document.getElementById("splashParticles");
+                if (container) {
+                    for (let i = 0; i < 24; i++) {
+                        const p = document.createElement("div");
+                        p.className = "absolute bg-amber-500/20 rounded-full pointer-events-none";
+                        const d = Math.random() * 3 + 1;
+                        p.style.width = `${d}px`;
+                        p.style.height = `${d}px`;
+                        p.style.left = `${Math.random() * 100}%`;
+                        p.style.top = `${Math.random() * 100}%`;
+                        p.style.animation = `subtle-pulse ${Math.random() * 3 + 2}s infinite ease-in-out`;
+                        container.appendChild(p);
+                    }
+                }
+
+                // Autoplay Web Audio API Financial Telemetry Chime Synthesizer
+                if (AppStore.config.startupSound !== false) {
+                    try {
+                        const AudioContext = window.AudioContext || window.webkitAudioContext;
+                        if (AudioContext) {
+                            const ctx = new AudioContext();
+                            const now = ctx.currentTime;
+                            
+                            const osc1 = ctx.createOscillator();
+                            const gain1 = ctx.createGain();
+                            osc1.type = 'sine';
+                            osc1.frequency.setValueAtTime(523.25, now); // C5
+                            osc1.frequency.exponentialRampToValueAtTime(783.99, now + 0.12); // G5
+                            osc1.frequency.exponentialRampToValueAtTime(1046.50, now + 0.35); // C6
+                            
+                            gain1.gain.setValueAtTime(0.0, now);
+                            gain1.gain.linearRampToValueAtTime(0.12, now + 0.04);
+                            gain1.gain.exponentialRampToValueAtTime(0.001, now + 1.4);
+                            
+                            osc1.connect(gain1);
+                            gain1.connect(ctx.destination);
+                            osc1.start(now);
+                            osc1.stop(now + 1.5);
+                        }
+                    } catch (e) { console.log("Autoplay context initialization trace muted until operational click action context layout."); }
+                }
+
+                // Step 3: Logo Glow Display Trigger
+                setTimeout(() => {
+                    const logo = document.getElementById("splashLogo");
+                    if (logo) logo.classList.remove("opacity-0", "translate-y-4");
+                }, 500);
+
+                // Step 4 & 5: Personalized Workspace Greeting Commands Sequence Layout
+                setTimeout(() => {
+                    const greet = document.getElementById("splashGreeting");
+                    const motiv = document.getElementById("splashMotivation");
+                    const uName = AppStore.config.displayName;
+
+                    if (greet) {
+                        greet.innerText = uName ? `Welcome Back, ${uName}` : "Welcome to Institutional Access";
+                        greet.classList.remove("opacity-0", "translate-y-2");
+                    }
+                    setTimeout(() => {
+                        if (motiv) {
+                            motiv.innerText = uName ? `Let's make good profit, ${uName}.` : "Let's make good profit.";
+                            motiv.classList.remove("opacity-0");
+                        }
+                    }, 600);
+                }, 1200);
+
+                // Step 6: Telemetry Rotating Engine Installation Feedback Streams Matrix Loop Check
+                const matrices = [
+                    "Initializing Institutional Market Engine…",
+                    "Synchronizing Strategy Matrix…",
+                    "Loading Smart Money Concepts…",
+                    "Preparing AI Institutional Analyst…",
+                    "Scanning Multi-Timeframe Market Structure…",
+                    "Loading Liquidity Engine…",
+                    "Preparing Institutional Intelligence…",
+                    "Dashboard Ready."
+                ];
+
+                let idx = 0;
+                const statusTxt = document.getElementById("splashStatusText");
+                const progBar = document.getElementById("splashProgressBar");
+
+                const streamInterval = setInterval(() => {
+                    if (idx < matrices.length) {
+                        if (statusTxt) {
+                            statusTxt.style.opacity = "0";
+                            setTimeout(() => {
+                                statusTxt.innerText = matrices[idx];
+                                statusTxt.style.opacity = "1";
+                            }, 80);
+                        }
+                        if (progBar) {
+                            progBar.style.width = `${((idx + 1) / matrices.length) * 100}%`;
+                        }
+                        idx++;
+                    } else {
+                        clearInterval(streamInterval);
+                    }
+                }, 380);
+
+                // Step 7: Premium Platform Reveal Alpha Blend Transition
+                setTimeout(() => {
+                    splash.style.opacity = "0";
+                    setTimeout(() => splash.remove(), 1000);
+                }, 5200);
+            }
+        };
 
         const AppEngine = {
             initializeInterfaceAssetMenus() {
@@ -604,20 +789,24 @@
                 }
 
                 // Hydrate all DOM input fields inside settings tab dynamically
-                document.getElementById("configApiKey").value = AppStore.config.apiKey;
-                document.getElementById("configAiProvider").value = AppStore.config.aiProvider;
-                document.getElementById("configModelSelection").value = AppStore.config.modelSelection;
-                document.getElementById("configTemperature").value = AppStore.config.temperature;
-                document.getElementById("configThemeSelection").value = AppStore.config.themeSelection;
-                document.getElementById("configRiskPct").value = AppStore.config.riskPct;
-                document.getElementById("configTargetRr").value = AppStore.config.targetRr;
-                document.getElementById("configMinSl").value = AppStore.config.minSl;
-                document.getElementById("configConfidenceThreshold").value = AppStore.config.confidenceThreshold;
-                document.getElementById("configCompressionQuality").value = AppStore.config.compressionQuality;
-                document.getElementById("configAutoJournal").checked = AppStore.config.autoJournal;
-                document.getElementById("configNewsFilterActive").checked = AppStore.config.newsFilterActive;
-                document.getElementById("configTgToken").value = AppStore.config.tgToken;
-                document.getElementById("configTgChatId").value = AppStore.config.tgChatId;
+                document.getElementById("configApiKey").value = AppStore.config.apiKey || '';
+                document.getElementById("configAiProvider").value = AppStore.config.aiProvider || 'github_models';
+                document.getElementById("configModelSelection").value = AppStore.config.modelSelection || 'openai/gpt-4o-mini';
+                document.getElementById("configTemperature").value = AppStore.config.temperature ?? 0.1;
+                document.getElementById("configThemeSelection").value = AppStore.config.themeSelection || 'dark';
+                document.getElementById("configRiskPct").value = AppStore.config.riskPct ?? 1.0;
+                document.getElementById("configTargetRr").value = AppStore.config.targetRr ?? 3.0;
+                document.getElementById("configMinSl").value = AppStore.config.minSl ?? 80;
+                document.getElementById("configConfidenceThreshold").value = AppStore.config.confidenceThreshold ?? 70;
+                document.getElementById("configCompressionQuality").value = AppStore.config.compressionQuality ?? 0.65;
+                document.getElementById("configAutoJournal").checked = AppStore.config.autoJournal ?? true;
+                document.getElementById("configNewsFilterActive").checked = AppStore.config.newsFilterActive ?? true;
+                document.getElementById("configTgToken").value = AppStore.config.tgToken || '';
+                document.getElementById("configTgChatId").value = AppStore.config.tgChatId || '';
+                
+                // Hydrate Injected Identity & Experience fields
+                document.getElementById("configDisplayName").value = AppStore.config.displayName || '';
+                document.getElementById("configStartupSound").value = AppStore.config.startupSound !== false ? "true" : "false";
 
                 this.applyInterfaceThemeVariant();
             },
@@ -637,6 +826,10 @@
                 AppStore.config.newsFilterActive = document.getElementById("configNewsFilterActive").checked;
                 AppStore.config.tgToken = document.getElementById("configTgToken").value.trim();
                 AppStore.config.tgChatId = document.getElementById("configTgChatId").value.trim();
+                
+                // Save Personalized Variable Targets
+                AppStore.config.displayName = document.getElementById("configDisplayName").value.trim();
+                AppStore.config.startupSound = document.getElementById("configStartupSound").value === "true";
 
                 localStorage.setItem("smc_pro_v3_config_payload", JSON.stringify(AppStore.config));
                 this.pollMacroThreatFeeds();
@@ -691,17 +884,15 @@
                     return;
                 }
 
-                // Simulate/Parse Mock Calendar Events Architecture
                 const structuralThreatMatrix = [
                     { event: "NFP Employment Displacements", market: "USD", impact: "High", directive: "Avoid Trade", desc: "Extreme liquidity pools clearing expected around lower timeframe horizons." },
                     { event: "FOMC Fund Rate Premium Assessment", market: "USD", impact: "High", directive: "Avoid Trade", desc: "Central Bank adjustments underway. Retain liquidity buffer limits." },
                     { event: "Core CPI Inflation Report Stream", market: "EUR", impact: "Medium", directive: "Trade With Caution", desc: "Imbalance mitigation sweeps projected at London session cross." }
                 ];
 
-                const activeThreat = structuralThreatMatrix[0]; // Active Threat Simulation Core Mapping
+                const activeThreat = structuralThreatMatrix[0];
                 AppStore.macroThreatFeeds = [activeThreat];
 
-                // Render Main Header Alert Segment
                 fBox.className = "p-2 rounded-lg bg-institutional-rose/10 border border-institutional-rose/30 flex items-center gap-2.5 transition-all duration-300";
                 fIcon.innerHTML = `<i data-lucide="shield-alert" class="w-4 h-4 text-institutional-rose"></i>`;
                 fTitle.innerText = `HIGH IMPACT: ${activeThreat.event}`;
@@ -710,7 +901,6 @@
                 indicator.innerText = `NEWS FILTER: ${activeThreat.directive.toUpperCase()}`;
                 indicator.className = "text-institutional-rose font-black";
 
-                // Render Mid Dashboard Clean Alert Box Layer Overlay
                 overlay.classList.remove("hidden");
                 if (activeThreat.directive === "Avoid Trade") {
                     overlay.className = "rounded-xl p-3 border border-institutional-rose/30 bg-institutional-rose/10 flex items-center justify-between gap-3 text-slate-900 dark:text-white";
@@ -859,19 +1049,15 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                     const rawRes = await response.json();
                     const aiExtraction = JSON.parse(rawRes.choices[0].message.content);
 
-                    // Forward to deterministic mathematical rules validation layer
                     const calculatedReport = AnalyticalRulesEngine.processMatrixCalculations(aiExtraction, AppStore.activeAsset);
                     AppStore.activeDecisionMetadata = calculatedReport;
 
-                    // Display Comprehensive Report Dashboard Page Output
                     term.innerHTML = AnalyticalRulesEngine.renderReportHTML(calculatedReport);
 
-                    // Push directly into automated Trade Journal Memory repository tracking structure
                     if (AppStore.config.autoJournal) {
                         JournalSystem.commitEntryTicket(calculatedReport);
                     }
 
-                    // Dispatch outbound packet routing via Telegram stream networks
                     await AppEngine.routeTelegramNotification(calculatedReport);
 
                 } catch (err) {
@@ -1000,7 +1186,6 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                     return reportTicket;
                 }
 
-                // Process Multi-Timeframe Strategy Alignment (Passed / Failed Flags)
                 reportTicket.checklist = {
                     htf: (smc.daily_bias && smc.daily_bias !== "CONSOLIDATING") ? "PASSED" : "FAILED",
                     h4: (smc.h4_direction && smc.h4_direction !== "CONSOLIDATING") ? "PASSED" : "FAILED",
@@ -1008,35 +1193,29 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                     m15: (smc.m15_setup && smc.m15_setup !== "NONE") ? "PASSED" : "FAILED"
                 };
 
-                // Strategy parameters checkpoint check validation rules
                 if (reportTicket.checklist.htf === "FAILED" || reportTicket.checklist.h4 === "FAILED" || reportTicket.checklist.h1 === "FAILED" || reportTicket.checklist.m15 === "FAILED") {
                     reportTicket.passed_rules = false;
                     reportTicket.validation_notes = "Technical Strategy Filter Exception: One or more technical timeframe multi-layer synchronization blocks failed validation rule checks.";
                 }
 
-                // Check overall confidence configuration bounds rule thresholds
                 if (reportTicket.confidence < AppStore.config.confidenceThreshold) {
                     reportTicket.passed_rules = false;
                     reportTicket.validation_notes = `Confidence Threshold Safeguard: Calculation confidence index [${reportTicket.confidence}%] fails target system settings filters [${AppStore.config.confidenceThreshold}%].`;
                 }
 
-                // Enforce trade direction vector calculation
                 let directionalVector = "BUY";
                 if (smc.daily_bias === "BEARISH" || (rawSl > rawE)) directionalVector = "SELL";
 
-                // Enforce Stop Loss Corridor (Min: Configured, Max: 250 pips)
                 let structuralPips = Math.abs(rawE - rawSl) * def.multiplier;
                 let enforcedPips = structuralPips;
                 let minSlConfig = AppStore.config.minSl;
                 if (enforcedPips < minSlConfig) enforcedPips = minSlConfig;
                 if (enforcedPips > 250) enforcedPips = 250;
 
-                // Set Strategy Enforcement Notice if an out-of-bounds violation occurs
                 if (structuralPips < minSlConfig || structuralPips > 250) {
                     reportTicket.validation_notes = `Risk Parameter Corridor Breach: Stop loss calculated metrics [${structuralPips.toFixed(1)} Pips] violates structural interbank safety bounds (Min: ${minSlConfig}, Max: 250 Pips). Automatically corrected to ${enforcedPips} pips.`;
                 }
 
-                // Compute final validated SL price directly from corrected pips corridor
                 let finalSl = rawSl;
                 if (directionalVector === "BUY") {
                     finalSl = rawE - (enforcedPips / def.multiplier);
@@ -1044,13 +1223,12 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                     finalSl = rawE + (enforcedPips / def.multiplier);
                 }
 
-                // Calculate Take Profits from the final validated Stop Loss
                 let finalRiskDelta = Math.abs(rawE - finalSl);
                 let m1 = 2.0;
                 let m2 = 3.0;
                 let m3 = parseFloat(AppStore.config.targetRr) || 4.0;
                 if (m3 <= 3.0) {
-                    m3 = 4.0; // Ensure TP3 ordering is correct and farthest
+                    m3 = 4.0;
                 }
 
                 let finalTp1, finalTp2, finalTp3;
@@ -1064,7 +1242,6 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                     finalTp3 = rawE - (m3 * finalRiskDelta);
                 }
 
-                // Validation Layer & Self-Correction Engine to guarantee absolute mathematical precision
                 let validationAttempts = 0;
                 while (validationAttempts < 5) {
                     let checkPips = Math.abs(rawE - finalSl) * def.multiplier;
@@ -1105,7 +1282,6 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                     validationAttempts++;
                 }
 
-                // Ultimate Strategic Override Guard Execution Channel
                 if (!reportTicket.passed_rules && !reportTicket.validation_notes.includes("Corridor Breach")) {
                     reportTicket.verdict = "STAND DOWN";
                     reportTicket.classification = "Exit Immediately";
@@ -1114,7 +1290,6 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                     reportTicket.verdict = directionalVector;
                 }
 
-                // Format values for strict layout uniformity and scannability
                 reportTicket.entry = rawE.toFixed(def.decimals);
                 reportTicket.stop_loss = finalSl.toFixed(def.decimals);
                 reportTicket.tp1 = finalTp1.toFixed(def.decimals);
@@ -1141,8 +1316,6 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
 
                 return `
                     <div class="space-y-4 font-sans text-xs">
-                        
-                        <!-- CORE STRATEGY VERDICT CARD SEGMENT (Re-integrated per image_3.png framework blueprints) -->
                         <div class="bg-white dark:bg-institutional-950 p-4 rounded-xl border border-slate-200 dark:border-institutional-800 space-y-1.5 shadow-sm">
                             <p class="text-[9px] font-black tracking-widest uppercase text-slate-400 font-mono">Core Strategy Verdict</p>
                             <div class="flex items-center justify-between">
@@ -1158,7 +1331,6 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                             ` : ''}
                         </div>
 
-                        <!-- CASCADING CHECKLIST DIAGNOSTICS MATRIX PANEL (Matches image_3.png setup logs directly) -->
                         <div class="bg-white dark:bg-institutional-950 p-4 rounded-xl border border-slate-200 dark:border-institutional-800 space-y-2.5 font-mono text-[10px]">
                             <p class="text-[9px] font-black tracking-widest uppercase text-slate-400">Cascading Checklist Diagnostics</p>
                             <div class="space-y-1.5">
@@ -1181,7 +1353,6 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                             </div>
                         </div>
 
-                        <!-- PROBABILITIES AND VALUE MONITOR PIP ESTIMATORS WIDGET -->
                         <div class="grid grid-cols-2 gap-3 font-mono text-[10px]">
                             <div class="bg-white dark:bg-institutional-950 p-2.5 rounded-xl border border-slate-200 dark:border-institutional-800 space-y-1">
                                 <p class="text-slate-400 text-[8px] uppercase font-black tracking-widest">Probability Models Matrix</p>
@@ -1195,7 +1366,6 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                             </div>
                         </div>
 
-                        <!-- TARGET EXECUTION COEFFICIENTS MATRIX (Re-aligned text fields formatting variables matches) -->
                         <div class="bg-white dark:bg-institutional-950 border border-slate-200 dark:border-institutional-800 rounded-xl p-3 space-y-2 font-mono text-[10px]">
                             <h5 class="text-center text-[9px] text-institutional-amber font-black tracking-widest uppercase border-b border-slate-200 dark:border-institutional-800/60 pb-1.5">Target Execution Coefficients Matrix</h5>
                             <div class="grid grid-cols-2 gap-x-4 gap-y-1.5 text-slate-700 dark:text-slate-300">
@@ -1211,7 +1381,6 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                             </div>
                         </div>
 
-                        <!-- EXTENDED TEXTUAL DETAILED ANALYSIS BLOCK REPORT -->
                         <div class="bg-white dark:bg-institutional-950 border border-slate-200 dark:border-institutional-800 rounded-xl p-3 space-y-2 text-slate-700 dark:text-slate-300">
                             <div>
                                 <span class="text-[8px] font-black tracking-widest uppercase text-slate-400 font-mono block">Overall Position Health Status</span>
@@ -1239,7 +1408,6 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                                 <p class="text-slate-600 dark:text-slate-400 font-medium">${ticket.report.explanation}</p>
                             </div>
                         </div>
-
                     </div>
                 `;
             }
@@ -1402,7 +1570,7 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                     if (filter === "ALL") return match;
                     if (filter === "WIN") return match && item.outcome === "WIN";
                     if (filter === "LOSS") return match && item.outcome === "LOSS";
-                    if (filter === "STAND DOWN") return match && item.classification.includes("Exit") || item.recommendation.includes("STAND");
+                    if (filter === "STAND DOWN") return match && (item.classification.includes("Exit") || item.recommendation.includes("STAND"));
                     return match;
                 });
 
@@ -1518,7 +1686,7 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
 
                 let imgMarkup = "";
                 if (AppStore.chatbotImage) {
-                    imgMarkup = `<br><img src="data:image/jpeg;base64,${AppStore.chatbotImage}" class="mt-1.5 rounded-lg max-h-24 ml-auto border border-slate-200 dark:border-institutional-800" />`;
+                    imgMarkup = `<br><img src="data:image/jpeg;base64,${AppStore.chatbotImage}" class="mt-1.5 rounded-lg max-h-48 max-w-full object-contain ml-auto border border-slate-200 dark:border-institutional-800" />`;
                 }
 
                 textMsgBox.innerHTML += `<div class="bg-slate-900 text-white dark:bg-institutional-800 border border-slate-700 dark:border-institutional-700 p-2.5 rounded-xl rounded-tr-none text-right ml-auto max-w-[85%] font-mono leading-relaxed">${txtQuery || "Sent image payload"}${imgMarkup}</div>`;
@@ -1531,17 +1699,18 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
 
                 let operationalVariablesLogs = "No calculations datasets actively processed in current terminal tracking environment runtime dashboard session framework components yet.";
                 if (AppStore.activeDecisionMetadata) {
-                    operationalVariablesLogs = `Active Run Context Structure: Asset Pair Identity=${AppStore.activeDecisionMetadata.asset}, Classification Metric State=${AppStore.activeDecisionMetadata.classification}, Identified Geometries Matrix=${AppStore.activeDecisionMetadata.patterns.join(" ")}, Computed Entry Scale Bounds Point=${AppStore.activeDecisionMetadata.entry}, Computed Stop Protection Boundary Line=${AppStore.activeDecisionMetadata.stop_loss}, Recommendation Action Directive Log Text=${AppStore.activeDecisionMetadata.report.recommended_action}, Textual Explanation Log Data=${AppStore.activeDecisionMetadata.report.explanation}`;
+                    operationalVariablesLogs = `Active Run Context Structure: Asset Pair Identity=${AppStore.activeDecisionMetadata.asset}, Classification Metric State=${AppStore.activeDecisionMetadata.classification}, Confidence Score Score=${AppStore.activeDecisionMetadata.confidence}%.`;
                 }
 
-                let userContent = [];
-                userContent.push({ type: "text", text: `Contextual Environment Parameters Logs: ${operationalVariablesLogs}\n\nUser Question Query Stream: ${txtQuery || "Analyze attached coordinate snapshot within strategic order flow setup parameters."}` });
-                
+                let systemContextPrompt = `You are the interactive cognitive explainer node of the floor dashboard. The user is asking about Smart Money Concepts (SMC) trading mechanics or their current computed setup.
+Operational metrics logs: ${operationalVariablesLogs}
+Respond precisely, professionally, and concisely to their question. Keep it under 3 sentences.`;
+
+                let payloadData = [];
                 if (AppStore.chatbotImage) {
-                    userContent.push({ type: "image_url", image_url: { url: `data:image/jpeg;base64,${AppStore.chatbotImage}` } });
+                    payloadData.push({ type: "image_url", image_url: { url: `data:image/jpeg;base64,${AppStore.chatbotImage}` } });
                 }
-
-                CognitiveChat.clearAttachedImage();
+                payloadData.push({ type: "text", text: txtQuery || "Review the uploaded live snapshot." });
 
                 let requestEndpoint = AppStore.config.aiProvider === "openai_direct" ? "https://api.openai.com/v1/chat/completions" : "https://models.github.ai/inference/chat/completions";
 
@@ -1555,25 +1724,32 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                         body: JSON.stringify({
                             model: AppStore.config.modelSelection,
                             messages: [
-                                { role: "system", content: "You are the educational strategy explainer engine sub-component node of an institutional SMC market analytics console dashboard application platform. Educate users regarding Smart Money Concepts, market structure, order flow displacement, or interpret the active generated analytical terminal logs context fields targets variables strings safely." },
-                                { role: "user", content: userContent }
+                                { role: "system", content: systemContextPrompt },
+                                { role: "user", content: payloadData }
                             ],
-                            temperature: 0.3,
-                            max_tokens: 450
+                            temperature: 0.2
                         })
                     });
 
-                    const resBody = await response.json();
-                    const replyText = resBody.choices[0].message.content;
+                    if (!response.ok) throw new Error(`Status error: ${response.status}`);
+                    const jsonRes = await response.json();
+                    const aiReply = jsonRes.choices[0].message.content;
 
-                    if (document.getElementById(tokenLoaderKey)) document.getElementById(tokenLoaderKey).remove();
-                    textMsgBox.innerHTML += `<div class="bg-slate-50 dark:bg-institutional-900 border border-slate-200 dark:border-institutional-800 p-2.5 rounded-xl rounded-tl-none max-w-[90%] text-slate-700 dark:text-slate-300 leading-relaxed text-justify">${replyText.replace(/\n/g, '<br>')}</div>`;
-
-                } catch(e) {
-                    if (document.getElementById(tokenLoaderKey)) document.getElementById(tokenLoaderKey).remove();
-                    textMsgBox.innerHTML += `<div class="bg-institutional-rose/10 border border-institutional-rose/20 p-2.5 rounded-xl text-institutional-rose font-bold font-mono text-[10px]">Communication array exception failure logged trace path: ${e.message}</div>`;
+                    const loaderNode = document.getElementById(tokenLoaderKey);
+                    if (loaderNode) {
+                        loaderNode.className = "bg-slate-100 dark:bg-institutional-900 border border-slate-200 dark:border-institutional-800 p-2.5 rounded-xl rounded-tl-none leading-relaxed text-justify max-w-[85%]";
+                        loaderNode.innerHTML = aiReply.replace(/\n/g, "<br>");
+                    }
+                } catch(err) {
+                    const loaderNode = document.getElementById(tokenLoaderKey);
+                    if (loaderNode) {
+                        loaderNode.className = "bg-institutional-rose/10 border border-institutional-rose/20 text-institutional-rose p-2.5 rounded-xl rounded-tl-none font-mono";
+                        loaderNode.innerText = "Error parsing cognitive system pipeline responses paths: " + err.message;
+                    }
+                } finally {
+                    CognitiveChat.clearAttachedImage();
+                    textMsgBox.scrollTop = textMsgBox.scrollHeight;
                 }
-                textMsgBox.scrollTop = textMsgBox.scrollHeight;
             }
         };
     </script>
