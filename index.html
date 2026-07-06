@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>SMC-Signal Pro v3.0</title>
+    <title>SMC-Signal Pro v4.0</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons CDN -->
@@ -73,6 +73,17 @@
         .animate-scan-laser {
             animation: scan-laser 5.5s infinite linear;
         }
+        @keyframes neonGlow {
+            0%, 100% { filter: drop-shadow(0 0 2px rgba(245,158,11,0.2)); }
+            50% { filter: drop-shadow(0 0 12px rgba(245,158,11,0.6)); }
+        }
+        .premium-glow { animation: neonGlow 4s infinite ease-in-out; }
+        @keyframes matrixFlow {
+            0% { transform: translateY(-30px); opacity: 0; }
+            50% { opacity: 0.3; }
+            100% { transform: translateY(30px); opacity: 0; }
+        }
+        .matrix-data { animation: matrixFlow 6s infinite linear; }
     </style>
 </head>
 <body class="h-full w-full font-sans bg-slate-950 dark:bg-[#020406] text-slate-800 dark:text-slate-200 flex flex-col selection:bg-amber-500/30 selection:text-amber-400 overflow-x-hidden">
@@ -80,9 +91,20 @@
     <!-- PREMIUM INSTITUTIONAL STARTUP EXPERIENTIAL OVERLAY -->
     <div id="premiumSplashScreen" class="fixed inset-0 bg-[#020406] z-[9999] flex flex-col items-center justify-center overflow-hidden transition-opacity duration-1000 select-none">
         <div class="absolute inset-0 opacity-20 pointer-events-none cross-grid"></div>
-        <div class="absolute inset-0 opacity-10 pointer-events-none flex items-center justify-center">
-            <svg class="w-full h-full max-h-[60vh]" viewBox="0 0 800 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0,240 Q120,160 280,260 T580,110 T800,160" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round" />
+        
+        <!-- Live Trading Grid Visualizer HUD Simulation -->
+        <div class="absolute inset-0 opacity-15 pointer-events-none flex items-center justify-center">
+            <svg class="w-full h-full max-h-[75vh]" viewBox="0 0 800 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Moving Candlestick Simulations -->
+                <rect x="100" y="140" width="8" height="60" fill="#10b981" opacity="0.6"/>
+                <line x1="104" y1="110" x2="104" y2="220" stroke="#10b981" stroke-width="1" />
+                <rect x="220" y="180" width="8" height="90" fill="#f43f5e" opacity="0.6"/>
+                <line x1="224" y1="150" x2="224" y2="290" stroke="#f43f5e" stroke-width="1" />
+                <rect x="450" y="80" width="8" height="110" fill="#10b981" opacity="0.6"/>
+                <line x1="454" y1="60" x2="454" y2="210" stroke="#10b981" stroke-width="1" />
+                <!-- Trend Vectors and Grid Lines -->
+                <path d="M0,240 Q120,160 280,260 T580,110 T800,160" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round" class="premium-glow" />
+                <path d="M0,280 Q140,210 300,300 T600,150 T800,190" stroke="#64748b" stroke-width="1" stroke-dasharray="4 4" opacity="0.4" />
                 <line x1="150" y1="0" x2="150" y2="400" stroke="#1a1f30" stroke-width="0.5" />
                 <line x1="350" y1="0" x2="350" y2="400" stroke="#1a1f30" stroke-width="0.5" />
                 <line x1="550" y1="0" x2="550" y2="400" stroke="#1a1f30" stroke-width="0.5" />
@@ -90,20 +112,28 @@
                 <line x1="0" y1="260" x2="800" y2="260" stroke="#1a1f30" stroke-width="0.5" />
             </svg>
         </div>
-        <div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent opacity-30 animate-scan-laser"></div>
+        
+        <!-- Matrix-style Financial Stream Decorators -->
+        <div class="absolute inset-0 pointer-events-none flex justify-between px-12 text-[9px] font-mono text-amber-500/10 select-none overflow-hidden">
+            <div class="matrix-data mt-10">EURUSD +0.042%<br>XAUUSD 2341.20<br>LIQ_SWEEP_RETR</div>
+            <div class="matrix-data mt-24" style="animation-delay: 2s;">GBPUSD -0.112%<br>BOS_CONFIRMED<br>HTF_ALIGN_TRUE</div>
+            <div class="matrix-data mt-5" style="animation-delay: 4s;">NAS100 +0.89%<br>ORDER_BLOCK_VAL<br>FVG_GAP_FILL</div>
+        </div>
+
+        <div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent opacity-40 animate-scan-laser"></div>
         <div id="splashParticles" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
 
-        <div class="z-10 text-center space-y-6 max-w-md px-6 flex flex-col items-center">
-            <div id="splashLogo" class="opacity-0 transition-all duration-700 transform translate-y-4">
+        <div class="z-10 text-center space-y-6 max-w-md px-6 flex flex-col items-center transition-transform duration-1000 scale-95" id="splashDisplayFrame">
+            <div id="splashLogo" class="opacity-0 transition-all duration-1000 transform translate-y-4">
                 <h1 class="text-2xl font-black tracking-tight text-white flex items-center gap-2">
-                    SMC-SIGNAL <span class="text-xs bg-[#f59e0b] text-black font-black px-2 py-0.5 rounded shadow-[0_0_15px_rgba(245,158,11,0.4)]">PRO v3.0</span>
+                    SMC-SIGNAL <span class="text-xs bg-[#f59e0b] text-black font-black px-2 py-0.5 rounded shadow-[0_0_15px_rgba(245,158,11,0.4)]">PRO v4.0</span>
                 </h1>
                 <p class="text-[9px] text-slate-400 uppercase tracking-widest font-bold mt-1">AI Institutional Market Platform</p>
             </div>
 
-            <div class="h-14 flex flex-col items-center justify-center mt-2">
-                <div id="splashGreeting" class="text-sm font-bold text-slate-200 opacity-0 transition-all duration-500 transform translate-y-2"></div>
-                <div id="splashMotivation" class="text-xs text-amber-400 font-medium tracking-wide opacity-0 transition-all duration-500 mt-1"></div>
+            <div class="h-20 flex flex-col items-center justify-center mt-2">
+                <div id="splashGreeting" class="text-sm font-bold text-slate-200 opacity-0 transition-all duration-700 transform translate-y-2"></div>
+                <div id="splashMotivation" class="text-xs text-amber-400 font-medium tracking-wide opacity-0 transition-all duration-700 mt-1 max-w-xs text-center leading-normal"></div>
             </div>
 
             <div class="w-64 border-t border-slate-800/60 pt-4 mt-4 flex flex-col items-center">
@@ -134,7 +164,7 @@
             <div class="flex justify-between items-center">
                 <div>
                     <h1 class="text-xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
-                        SMC-SIGNAL <span class="text-xs bg-institutional-amber text-black font-black px-1.5 py-0.5 rounded">PRO v3.0</span>
+                        SMC-SIGNAL <span class="text-xs bg-institutional-amber text-black font-black px-1.5 py-0.5 rounded">PRO v4.0</span>
                     </h1>
                     <p class="text-[10px] text-slate-400 dark:text-institutional-400 uppercase tracking-widest font-bold mt-0.5">AI Institutional Market Analyst</p>
                 </div>
@@ -229,7 +259,7 @@
 
                 <!-- CORE INFERENCE TRIGGER ACTUATOR -->
                 <div class="pt-2">
-                    <button id="executeMatrixBtn" onclick="AppEngine.executeAIEngineAnalysis()" class="w-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-black font-black py-3 px-4 rounded-xl transition shadow-lg active:scale-[0.99] cursor-pointer text-xs tracking-wider uppercase font-mono">
+                    <button id="executeMatrixBtn" onclick="SoundEngine.playUiSound('click'); AppEngine.executeAIEngineAnalysis()" class="w-full bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-black font-black py-3 px-4 rounded-xl transition shadow-lg active:scale-[0.99] cursor-pointer text-xs tracking-wider uppercase font-mono">
                         Generate Complete AI Analysis
                     </button>
                 </div>
@@ -291,7 +321,7 @@
                     </label>
                 </div>
 
-                <button id="executeManageBtn" onclick="AppEngine.executeManagementAnalysis()" class="w-full bg-slate-800 hover:bg-slate-700 dark:bg-institutional-800 dark:hover:bg-institutional-700 text-white font-bold py-3 px-4 rounded-xl border border-slate-700 dark:border-institutional-700 transition tracking-wider text-xs uppercase font-mono">
+                <button id="executeManageBtn" onclick="SoundEngine.playUiSound('click'); AppEngine.executeManagementAnalysis()" class="w-full bg-slate-800 hover:bg-slate-700 dark:bg-institutional-800 dark:hover:bg-slate-700 text-white font-bold py-3 px-4 rounded-xl border border-slate-700 dark:border-institutional-700 transition tracking-wider text-xs uppercase font-mono">
                     Evaluate Live Position Risk Balance
                 </button>
 
@@ -319,10 +349,10 @@
                 <div class="flex justify-between items-center bg-slate-50 dark:bg-institutional-900 p-3 rounded-xl border border-slate-200 dark:border-institutional-800">
                     <div class="space-y-0.5">
                         <h2 class="text-[10px] font-black text-slate-400 dark:text-institutional-400 uppercase tracking-widest">Local Database Journal Memory</h2>
-                        <p class="text-[9px] text-slate-505 dark:text-slate-400 font-bold uppercase font-mono">SMC Local Sandbox Indexing</p>
+                        <p class="text-[9px] text-slate-500 dark:text-slate-400 font-bold uppercase font-mono">SMC Local Sandbox Indexing</p>
                     </div>
                     <div class="flex gap-2">
-                        <button onclick="JournalSystem.clearDatabase()" class="text-[9px] bg-institutional-rose/10 border border-institutional-rose/30 text-institutional-rose font-black px-2.5 py-1.5 rounded uppercase font-mono hover:bg-institutional-rose/20 transition">Wipe</button>
+                        <button onclick="SoundEngine.playUiSound('click'); JournalSystem.clearDatabase()" class="text-[9px] bg-institutional-rose/10 border border-institutional-rose/30 text-institutional-rose font-black px-2.5 py-1.5 rounded uppercase font-mono hover:bg-institutional-rose/20 transition">Wipe</button>
                     </div>
                 </div>
 
@@ -352,7 +382,7 @@
                     
                     <div class="grid grid-cols-2 gap-3">
                         <div class="space-y-1">
-                            <label class="block text-[9px] font-black text-slate-505 dark:text-slate-400 uppercase tracking-wide">AI Provider Matrix Route</label>
+                            <label class="block text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wide">AI Provider Matrix Route</label>
                             <select id="configAiProvider" class="w-full bg-white dark:bg-institutional-950 border border-slate-200 dark:border-institutional-800 rounded-lg px-2 py-1.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none">
                                 <option value="github_models" selected>GitHub Models Portal</option>
                                 <option value="openai_direct">OpenAI Enterprise API</option>
@@ -379,11 +409,77 @@
                             <input id="configDisplayName" type="text" oninput="AppEngine.saveConfigData()" placeholder="e.g. Adeniyi" class="w-full bg-white dark:bg-institutional-950 border border-slate-200 dark:border-institutional-800 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-institutional-amber">
                         </div>
                         <div class="space-y-1">
-                            <label class="block text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wide">Startup Sound</label>
-                            <select id="configStartupSound" onchange="AppEngine.saveConfigData()" class="w-full bg-white dark:bg-institutional-950 border border-slate-200 dark:border-institutional-800 rounded-lg px-2 py-1.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-institutional-amber">
-                                <option value="true" selected>☑ ON</option>
-                                <option value="false">☐ OFF</option>
-                            </select>
+                            <label class="block text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wide">Custom Motivational Msg</label>
+                            <input id="configCustomMotivation" type="text" oninput="AppEngine.saveConfigData()" placeholder="Let’s make good and profitable risk" class="w-full bg-white dark:bg-institutional-950 border border-slate-200 dark:border-institutional-800 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-institutional-amber">
+                        </div>
+                    </div>
+
+                    <!-- PREMIUM SOUND SYSTEM CONTROL CONFIGS -->
+                    <div class="bg-slate-100 dark:bg-institutional-950 border border-slate-200 dark:border-institutional-800/80 rounded-xl p-3 space-y-3">
+                        <p class="text-[9px] font-black tracking-widest uppercase text-amber-500 font-mono">5. Low-Latency Chime & Speech Synthesizer Node</p>
+                        <div class="grid grid-cols-2 gap-2 text-[10px]">
+                            <div class="space-y-1">
+                                <label class="block text-[8px] font-black text-slate-400 uppercase">Startup Sound</label>
+                                <select id="configStartupSound" onchange="AppEngine.saveConfigData()" class="w-full bg-white dark:bg-institutional-900 border border-slate-200 dark:border-institutional-800 rounded px-1.5 py-1 text-xs focus:outline-none">
+                                    <option value="true">☑ ON</option>
+                                    <option value="false">☐ OFF</option>
+                                </select>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="block text-[8px] font-black text-slate-400 uppercase">UI Sound Effects</label>
+                                <select id="configUiSoundEffects" onchange="AppEngine.saveConfigData()" class="w-full bg-white dark:bg-institutional-900 border border-slate-200 dark:border-institutional-800 rounded px-1.5 py-1 text-xs focus:outline-none">
+                                    <option value="true">☑ ON</option>
+                                    <option value="false">☐ OFF</option>
+                                </select>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="block text-[8px] font-black text-slate-400 uppercase">Notification Sounds</label>
+                                <select id="configNotificationSounds" onchange="AppEngine.saveConfigData()" class="w-full bg-white dark:bg-institutional-900 border border-slate-200 dark:border-institutional-800 rounded px-1.5 py-1 text-xs focus:outline-none">
+                                    <option value="true">☑ ON</option>
+                                    <option value="false">☐ OFF</option>
+                                </select>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="block text-[8px] font-black text-slate-400 uppercase">Voice Greeting</label>
+                                <select id="configVoiceGreeting" onchange="AppEngine.saveConfigData()" class="w-full bg-white dark:bg-institutional-900 border border-slate-200 dark:border-institutional-800 rounded px-1.5 py-1 text-xs focus:outline-none">
+                                    <option value="true" selected>☑ ON</option>
+                                    <option value="false">☐ OFF</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- PHASE 4 ATLAS VOICE ENGINE APPENDED CONTROLS -->
+                        <div class="grid grid-cols-3 gap-2 text-[10px] pt-1 border-t border-slate-200 dark:border-institutional-800/40">
+                            <div class="space-y-1">
+                                <label class="block text-[8px] font-black text-slate-400 uppercase">Voice Type</label>
+                                <select id="configVoiceType" onchange="AppEngine.saveConfigData()" class="w-full bg-white dark:bg-institutional-900 border border-slate-200 dark:border-institutional-800 rounded px-1.5 py-1 text-xs focus:outline-none">
+                                    <option value="pre_recorded" selected>Pre-recorded</option>
+                                    <option value="future_tts">Future TTS Core</option>
+                                </select>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="block text-[8px] font-black text-slate-400 uppercase">Greeting Style</label>
+                                <select id="configGreetingStyle" onchange="AppEngine.saveConfigData()" class="w-full bg-white dark:bg-institutional-900 border border-slate-200 dark:border-institutional-800 rounded px-1.5 py-1 text-xs focus:outline-none">
+                                    <option value="formal">Formal</option>
+                                    <option value="friendly">Friendly</option>
+                                    <option value="professional" selected>Professional</option>
+                                </select>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="block text-[8px] font-black text-slate-400 uppercase">Time Greeting</label>
+                                <select id="configTimeBasedGreeting" onchange="AppEngine.saveConfigData()" class="w-full bg-white dark:bg-institutional-900 border border-slate-200 dark:border-institutional-800 rounded px-1.5 py-1 text-xs focus:outline-none">
+                                    <option value="true" selected>☑ ON</option>
+                                    <option value="false">☐ OFF</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1 pt-1 border-t border-slate-200 dark:border-institutional-800/40">
+                            <div class="flex justify-between items-center text-[8px] font-black text-slate-400 uppercase">
+                                <span>Master Volume Slider</span>
+                                <span id="volumeValueLabel">75%</span>
+                            </div>
+                            <input id="configMasterVolume" type="range" min="0" max="100" value="75" oninput="document.getElementById('volumeValueLabel').innerText = this.value + '%'; AppEngine.saveConfigData();" class="w-full accent-amber-500 bg-slate-200 dark:bg-institutional-800 h-1 rounded-lg appearance-none cursor-pointer">
                         </div>
                     </div>
 
@@ -454,23 +550,23 @@
                         <input id="configTgToken" type="password" oninput="AppEngine.saveConfigData()" placeholder="Telegram Bot Token Key Link" class="w-full bg-white dark:bg-institutional-950 border border-slate-200 dark:border-institutional-800 rounded-lg px-2.5 py-1.5 text-xs font-mono text-slate-900 dark:text-white focus:outline-none">
                         <input id="configTgChatId" type="text" oninput="AppEngine.saveConfigData()" placeholder="Destination Chat ID Identity" class="w-full bg-white dark:bg-institutional-950 border border-slate-200 dark:border-institutional-800 rounded-lg px-2.5 py-1.5 text-xs font-mono text-slate-900 dark:text-white focus:outline-none">
                     </div>
-                    <button onclick="AppEngine.dispatchTelegramTest()" class="w-full bg-white dark:bg-institutional-800 text-slate-900 dark:text-slate-200 border border-slate-300 dark:border-institutional-700 font-bold text-[10px] py-1.5 px-3 rounded-lg hover:bg-slate-100 transition uppercase tracking-wider font-mono">
+                    <button onclick="SoundEngine.playUiSound('click'); AppEngine.dispatchTelegramTest()" class="w-full bg-white dark:bg-institutional-800 text-slate-900 dark:text-slate-200 border border-slate-300 dark:border-institutional-700 font-bold text-[10px] py-1.5 px-3 rounded-lg hover:bg-slate-100 transition uppercase tracking-wider font-mono">
                         Test Connection Routing Packet
                     </button>
                 </div>
 
                 <!-- COMPLETE LEDGER DATABASE LOCAL DATA MANAGEMENT PACKETS COMPONENT ACTIONS -->
                 <div class="bg-slate-50 dark:bg-institutional-900 border border-slate-200 dark:border-institutional-800 rounded-xl p-4 space-y-3">
-                    <h3 class="text-[10px] font-black text-slate-400 dark:text-institutional-400 uppercase tracking-widest border-b border-slate-200 dark:border-institutional-800 pb-1.5 font-mono">4. Database Ledger Sandbox Synchronization</h3>
+                    <h3 class="text-[10px] font-black text-slate-400 dark:text-institutional-400 uppercase tracking-widest border-b border-slate-200 dark:border-institutional-800 pb-1.5 font-mono">4. Database Ledger Sandbox Sandbox Synchronization</h3>
                     <div class="grid grid-cols-2 gap-2">
-                        <button onclick="JournalSystem.exportDatabase()" class="text-[10px] bg-slate-200 hover:bg-slate-300 dark:bg-institutional-800 dark:hover:bg-institutional-700 text-slate-800 dark:text-white font-black py-2 rounded uppercase font-mono transition">Export Backup Matrix</button>
-                        <label class="text-[10px] bg-slate-200 hover:bg-slate-300 dark:bg-institutional-800 dark:hover:bg-institutional-700 text-slate-800 dark:text-white font-black py-2 rounded uppercase font-mono text-center cursor-pointer transition">
+                        <button onclick="SoundEngine.playUiSound('click'); JournalSystem.exportDatabase()" class="text-[10px] bg-slate-200 hover:bg-slate-300 dark:bg-institutional-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-black py-2 rounded uppercase font-mono transition">Export Backup Matrix</button>
+                        <label class="text-[10px] bg-slate-200 hover:bg-slate-300 dark:bg-institutional-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-black py-2 rounded uppercase font-mono text-center cursor-pointer transition">
                             Import Restore Data
                             <input type="file" accept=".json" class="hidden" onchange="JournalSystem.importDatabase(event)">
                         </label>
                     </div>
                     <div class="border-t border-slate-200 dark:border-institutional-800/60 pt-2 text-center">
-                        <button onclick="AppEngine.hardResetApplication()" class="text-[9px] text-institutional-rose font-bold uppercase font-mono tracking-widest hover:underline">
+                        <button onclick="SoundEngine.playUiSound('warning'); AppEngine.hardResetApplication()" class="text-[9px] text-institutional-rose font-bold uppercase font-mono tracking-widest hover:underline">
                             ⚡ Factory Hard Reset Application Instance
                         </button>
                     </div>
@@ -481,7 +577,7 @@
 
         <!-- RE-INTEGRATED CONTEXTUAL SYSTEM EXPLAINER FLOATING WIDGET ELEMENT -->
         <div id="cognitiveChatWidget" class="fixed bottom-24 right-4 z-50 flex flex-col items-end select-none max-w-[280px]">
-            <button onclick="CognitiveChat.toggleView()" class="bg-slate-900 dark:bg-white text-white dark:text-black p-3 rounded-full shadow-2xl hover:bg-slate-800 transition active:scale-95 cursor-pointer flex items-center justify-center border border-slate-700 dark:border-institutional-800">
+            <button onclick="SoundEngine.playUiSound('panel_open'); CognitiveChat.toggleView()" class="bg-slate-900 dark:bg-white text-white dark:text-black p-3 rounded-full shadow-2xl hover:bg-slate-800 transition active:scale-95 cursor-pointer flex items-center justify-center border border-slate-700 dark:border-institutional-800">
                 <i data-lucide="message-square-code" class="w-5 h-5"></i>
             </button>
 
@@ -490,7 +586,7 @@
                     <span class="text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5 text-slate-900 dark:text-white font-mono">
                         <span class="w-1.5 h-1.5 bg-institutional-amber rounded-full animate-ping"></span>SMC Interactive Explainer
                     </span>
-                    <button onclick="CognitiveChat.toggleView()" class="text-slate-400 dark:text-institutional-400 hover:text-slate-900 dark:hover:text-white text-xs font-bold px-1">✕</button>
+                    <button onclick="SoundEngine.playUiSound('panel_close'); CognitiveChat.toggleView()" class="text-slate-400 dark:text-institutional-400 hover:text-slate-900 dark:hover:text-white text-xs font-bold px-1">✕</button>
                 </div>
                 
                 <div id="cognitiveMessagesBox" class="flex-1 p-3 overflow-y-auto space-y-3 text-[11px] bg-white dark:bg-institutional-950 custom-scrollbar text-slate-700 dark:text-slate-300 font-medium">
@@ -504,7 +600,7 @@
                     <span class="text-institutional-emerald font-mono font-bold flex items-center gap-1">
                         <i data-lucide="image" class="w-3 h-3"></i> IMAGE ATTACHED
                     </span>
-                    <button onclick="CognitiveChat.clearAttachedImage()" class="text-institutional-rose font-bold hover:underline">Remove</button>
+                    <button onclick="SoundEngine.playUiSound('click'); CognitiveChat.clearAttachedImage()" class="text-institutional-rose font-bold hover:underline">Remove</button>
                 </div>
 
                 <div class="p-2 border-t border-slate-200 dark:border-institutional-800 bg-slate-50 dark:bg-institutional-900 flex gap-1.5 items-center">
@@ -514,26 +610,26 @@
                         <input type="file" id="cognitiveImageInput" accept="image/*" class="hidden" onchange="CognitiveChat.handleImageUpload(event)">
                     </label>
                     <input id="cognitiveInput" type="text" placeholder="Inquire about structural strategy logic..." class="flex-1 bg-white dark:bg-institutional-950 border border-slate-200 dark:border-institutional-800 rounded-lg px-2.5 py-1.5 text-[11px] focus:outline-none text-slate-900 dark:text-white font-medium" onkeydown="if(event.key === 'Enter') CognitiveChat.sendMessage()">
-                    <button onclick="CognitiveChat.sendMessage()" class="bg-slate-900 dark:bg-white text-white dark:text-black px-2.5 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider hover:bg-slate-800 transition">Send</button>
+                    <button onclick="SoundEngine.playUiSound('click'); CognitiveChat.sendMessage()" class="bg-slate-900 dark:bg-white text-white dark:text-black px-2.5 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider hover:bg-slate-800 transition">Send</button>
                 </div>
             </div>
         </div>
 
         <!-- GLOBAL NAVIGATION DOCK TERMINAL CONTROLLER BAR (Fixed responsive anchoring alignment) -->
         <nav class="fixed bottom-0 left-0 right-0 bg-slate-50 dark:bg-institutional-900 border-t border-slate-200 dark:border-institutional-800/80 px-4 py-3 flex justify-between items-center select-none z-40 transition-colors duration-200">
-            <button id="nav-pipeline" onclick="AppEngine.switchTab('pipeline')" class="nav-btn flex flex-col items-center gap-1 text-slate-900 dark:text-white font-black">
+            <button id="nav-pipeline" onclick="SoundEngine.playUiSound('click'); AppEngine.switchTab('pipeline')" class="nav-btn flex flex-col items-center gap-1 text-slate-900 dark:text-white font-black">
                 <i data-lucide="binary" class="w-4.5 h-4.5 stroke-[2.5]"></i>
                 <span class="text-[9px] tracking-widest uppercase font-mono">Matrix</span>
             </button>
-            <button id="nav-position" onclick="AppEngine.switchTab('position')" class="nav-btn flex flex-col items-center gap-1 text-slate-400 dark:text-institutional-400 font-bold hover:text-slate-900 dark:hover:text-white">
+            <button id="nav-position" onclick="SoundEngine.playUiSound('click'); AppEngine.switchTab('position')" class="nav-btn flex flex-col items-center gap-1 text-slate-400 dark:text-institutional-400 font-bold hover:text-slate-900 dark:hover:text-white">
                 <i data-lucide="shield-alert" class="w-4.5 h-4.5"></i>
                 <span class="text-[9px] tracking-widest uppercase font-mono">Live Risk</span>
             </button>
-            <button id="nav-journal" onclick="AppEngine.switchTab('journal')" class="nav-btn flex flex-col items-center gap-1 text-slate-400 dark:text-institutional-400 font-bold hover:text-slate-900 dark:hover:text-white">
+            <button id="nav-journal" onclick="SoundEngine.playUiSound('click'); AppEngine.switchTab('journal')" class="nav-btn flex flex-col items-center gap-1 text-slate-400 dark:text-institutional-400 font-bold hover:text-slate-900 dark:hover:text-white">
                 <i data-lucide="database" class="w-4.5 h-4.5"></i>
                 <span class="text-[9px] tracking-widest uppercase font-mono">Ledger</span>
             </button>
-            <button id="nav-settings" onclick="AppEngine.switchTab('settings')" class="nav-btn flex flex-col items-center gap-1 text-slate-400 dark:text-institutional-400 font-bold hover:text-slate-900 dark:hover:text-white">
+            <button id="nav-settings" onclick="SoundEngine.playUiSound('click'); AppEngine.switchTab('settings')" class="nav-btn flex flex-col items-center gap-1 text-slate-400 dark:text-institutional-400 font-bold hover:text-slate-900 dark:hover:text-white">
                 <i data-lucide="sliders" class="w-4.5 h-4.5"></i>
                 <span class="text-[9px] tracking-widest uppercase font-mono">Config</span>
             </button>
@@ -562,7 +658,15 @@
                 tgToken: '',
                 tgChatId: '',
                 displayName: '',
-                startupSound: true
+                customMotivation: '',
+                startupSound: true,
+                uiSoundEffects: true,
+                notificationSounds: true,
+                voiceGreeting: true,        // Phase 4: Enable Voice Greeting Default: ON
+                voiceType: 'pre_recorded',   // Phase 4: Voice Type Default: Pre-recorded Audio
+                greetingStyle: 'professional', // Phase 4: Greeting Style Default: Professional
+                timeBasedGreeting: true,    // Phase 4: Time Based Greeting Default: ON
+                masterVolume: 75
             },
             activeAsset: 'EURUSD',
             activeDecisionMetadata: null,
@@ -570,7 +674,248 @@
             chatbotImage: null
         };
 
-        // Complete Extended Financial Instruments Reference Matrix Mapping Database Array
+        // Low-Latency Dedicated Modular Audio Manager Infrastructure Core
+        const SoundEngine = {
+            audioCtx: null,
+            cache: {},
+            files: {
+                'startup': '/public/audio/system/startup-chime.mp3',
+                'startup_soft': '/public/audio/system/startup-soft.mp3',
+                'click': '/public/audio/ui/button-click.mp3',
+                'toggle': '/public/audio/ui/toggle.mp3',
+                'select': '/public/audio/ui/select.mp3',
+                'back': '/public/audio/ui/back.mp3',
+                'success': '/public/audio/notification/success.mp3',
+                'warning': '/public/audio/notification/warning.mp3',
+                'error': '/public/audio/notification/error.mp3',
+                'notification': '/public/audio/notification/notification.mp3',
+                'analysis_complete': '/public/audio/notification/analysis-complete.mp3',
+                'buy_signal': '/public/audio/notification/buy-signal.mp3',
+                'sell_signal': '/public/audio/notification/sell-signal.mp3'
+            },
+            initialized: false,
+
+            init() {
+                if (this.initialized) return;
+                try {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContext) {
+                        this.audioCtx = new AudioContext();
+                        this.initialized = true;
+                        this.preloadAll();
+                    }
+                } catch (e) {
+                    console.warn("Audio Context init blocked or unsupported.", e);
+                }
+            },
+
+            unlock() {
+                this.init();
+                if (this.audioCtx && this.audioCtx.state === 'suspended') {
+                    this.audioCtx.resume().catch(() => null);
+                }
+            },
+
+            async preloadAll() {
+                const relevantKeys = ['startup', 'startup_soft', 'click', 'toggle', 'select', 'back', 'success', 'warning', 'error', 'notification', 'analysis_complete', 'buy_signal', 'sell_signal'];
+                relevantKeys.forEach(key => {
+                    this.preloadFile(key, this.files[key]);
+                });
+            },
+
+            async preloadFile(key, url) {
+                if (this.cache[key]) return this.cache[key];
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) return null;
+                    const arrayBuffer = await response.arrayBuffer();
+                    if (this.audioCtx) {
+                        const audioBuffer = await this.audioCtx.decodeAudioData(arrayBuffer);
+                        this.cache[key] = audioBuffer;
+                        return audioBuffer;
+                    }
+                } catch (e) {}
+                return null;
+            },
+
+            getVolumeGain() {
+                return (AppStore.config.masterVolume ?? 75) / 100;
+            },
+
+            playBuffer(key) {
+                this.unlock();
+                if (!this.audioCtx) return;
+                
+                const buffer = this.cache[key];
+                if (!buffer) return;
+
+                try {
+                    const source = this.audioCtx.createBufferSource();
+                    source.buffer = buffer;
+
+                    const gainNode = this.audioCtx.createGain();
+                    gainNode.gain.setValueAtTime(this.getVolumeGain(), this.audioCtx.currentTime);
+
+                    source.connect(gainNode);
+                    gainNode.connect(this.audioCtx.destination);
+                    source.start(0);
+                } catch (e) {}
+            },
+
+            playChime(type) {
+                if (type === 'startup') {
+                    if (AppStore.config.startupSound === false) return;
+                    this.playBuffer('startup');
+                } else if (type === 'analysis_complete') {
+                    if (AppStore.config.notificationSounds === false) return;
+                    this.playBuffer('analysis_complete');
+                } else if (type === 'signal_generated') {
+                    if (AppStore.config.notificationSounds === false) return;
+                    if (AppStore.activeDecisionMetadata && AppStore.activeDecisionMetadata.verdict === 'BUY') {
+                        this.playBuffer('buy_signal');
+                    } else if (AppStore.activeDecisionMetadata && AppStore.activeDecisionMetadata.verdict === 'SELL') {
+                        this.playBuffer('sell_signal');
+                    } else {
+                        this.playBuffer('notification');
+                    }
+                } else if (type === 'success') {
+                    if (AppStore.config.notificationSounds === false) return;
+                    this.playBuffer('success');
+                }
+            },
+
+            uiSoundEffects(action) {
+                if (AppStore.config.uiSoundEffects === false) return;
+                if (action === 'click' || action === 'panel_open' || action === 'panel_close') {
+                    this.playBuffer('click');
+                } else if (action === 'warning' || action === 'error') {
+                    if (AppStore.config.notificationSounds === false) return;
+                    this.playBuffer(action);
+                } else if (this.files[action]) {
+                    this.playBuffer(action);
+                } else {
+                    this.playBuffer('click'); 
+                }
+            },
+            
+            playUiSound(action) {
+                this.uiSoundEffects(action);
+            }
+        };
+
+        // PHASE 4: DEDICATED MODULAR VOICE MANAGER ARCHITECTURE
+        const VoiceManager = {
+            queue: [],
+            currentAudio: null,
+            isPlaying: false,
+
+            async playTrack(trackKey) {
+                if (!AppStore.config.voiceGreeting) return;
+                if (AppStore.config.startupSound === false) return;
+
+                // Support decoupled substitution of future cloud text-to-speech providers cleanly
+                if (AppStore.config.voiceType === 'future_tts') {
+                    console.log(`[VoiceManager TTS Core] Abstract rendering vocal syntax pipeline for sequence track: ${trackKey}`);
+                    return;
+                }
+
+                const voiceFileMap = {
+                    'good_morning': '/public/audio/voice/good-morning.mp3',
+                    'good_afternoon': '/public/audio/voice/good-afternoon.mp3',
+                    'good_evening': '/public/audio/voice/good-evening.mp3',
+                    'good_night': '/public/audio/voice/good-night.mp3',
+                    'welcome_back': '/public/audio/voice/welcome-back.mp3',
+                    'welcome': '/public/audio/voice/welcome.mp3',
+                    'atlas_introduction': '/public/audio/voice/atlas-introduction.mp3',
+                    'ai_ready': '/public/audio/voice/ai-ready.mp3',
+                    'market_ready': '/public/audio/voice/market-ready.mp3',
+                    'lets_make_smart_trades': '/public/audio/voice/lets-make-smart-trades.mp3',
+                    'lets_make_good_profit': '/public/audio/voice/lets-make-good-profit.mp3'
+                };
+
+                const url = voiceFileMap[trackKey];
+                if (!url) return;
+
+                return new Promise((resolve) => {
+                    try {
+                        const audio = new Audio(url);
+                        this.currentAudio = audio;
+                        audio.volume = (AppStore.config.masterVolume ?? 75) / 100;
+
+                        audio.onended = () => {
+                            this.currentAudio = null;
+                            resolve();
+                        };
+                        audio.onerror = () => {
+                            // Fail cleanly and silently without browser errors if track coordinates are missing
+                            this.currentAudio = null;
+                            resolve();
+                        };
+                        audio.play().catch(() => {
+                            resolve();
+                        });
+                    } catch (e) {
+                        resolve();
+                    }
+                });
+            },
+
+            addToQueue(trackKey) {
+                this.queue.push(trackKey);
+                this.processQueue();
+            },
+
+            async processQueue() {
+                if (this.isPlaying) return;
+                this.isPlaying = true;
+
+                while (this.queue.length > 0) {
+                    const track = this.queue.shift();
+                    await this.playTrack(track);
+                }
+
+                this.isPlaying = false;
+            },
+
+            stopGracefully() {
+                this.queue = [];
+                if (this.currentAudio) {
+                    try { this.currentAudio.pause(); } catch(e){}
+                    this.currentAudio = null;
+                }
+                this.isPlaying = false;
+            },
+
+            triggerStartupSequence() {
+                if (!AppStore.config.voiceGreeting) return;
+
+                // 1. Time-Based Greeting Node
+                let timeGreeting = 'good_morning';
+                if (AppStore.config.timeBasedGreeting) {
+                    const hours = new Date().getHours();
+                    if (hours >= 5 && hours < 12) timeGreeting = 'good_morning';
+                    else if (hours >= 12 && hours < 17) timeGreeting = 'good_afternoon';
+                    else if (hours >= 17 && hours < 22) timeGreeting = 'good_evening';
+                    else timeGreeting = 'good_night';
+                }
+                this.addToQueue(timeGreeting);
+
+                // 2. Personal Display Name Integration
+                if (AppStore.config.displayName) {
+                    this.addToQueue('welcome_back');
+                } else {
+                    this.addToQueue('welcome');
+                }
+
+                // 3. Spoken Telemetry Sequences Pipeline
+                this.addToQueue('atlas_introduction');
+                this.addToQueue('ai_ready');
+                this.addToQueue('market_ready');
+                this.addToQueue('lets_make_smart_trades');
+                this.addToQueue('lets_make_good_profit');
+            }
+        };
+
         const AssetDefinitions = {
             EURUSD: { type: 'forex', label: 'EURUSD (Forex)', multiplier: 10000, decimals: 5 },
             GBPUSD: { type: 'forex', label: 'GBPUSD (Forex)', multiplier: 10000, decimals: 5 },
@@ -582,38 +927,11 @@
             EURGBP: { type: 'forex', label: 'EURGBP (Forex)', multiplier: 10000, decimals: 5 },
             EURJPY: { type: 'forex', label: 'EURJPY (Forex)', multiplier: 100, decimals: 3 },
             GBPJPY: { type: 'forex', label: 'GBPJPY (Forex)', multiplier: 100, decimals: 3 },
-            GBPCHF: { type: 'forex', label: 'GBPCHF (Forex)', multiplier: 10000, decimals: 5 },
-            EURAUD: { type: 'forex', label: 'EURAUD (Forex)', multiplier: 10000, decimals: 5 },
-            EURNZD: { type: 'forex', label: 'EURNZD (Forex)', multiplier: 10000, decimals: 5 },
-            AUDNZD: { type: 'forex', label: 'AUDNZD (Forex)', multiplier: 10000, decimals: 5 },
-            AUDJPY: { type: 'forex', label: 'AUDJPY (Forex)', multiplier: 100, decimals: 3 },
-            AUDCAD: { type: 'forex', label: 'AUDCAD (Forex)', multiplier: 10000, decimals: 5 },
-            AUDCHF: { type: 'forex', label: 'AUDCHF (Forex)', multiplier: 10000, decimals: 5 },
-            CADJPY: { type: 'forex', label: 'CADJPY (Forex)', multiplier: 100, decimals: 3 },
-            CHFJPY: { type: 'forex', label: 'CHFJPY (Forex)', multiplier: 100, decimals: 3 },
-            NZDJPY: { type: 'forex', label: 'NZDJPY (Forex)', multiplier: 100, decimals: 3 },
-            NZDCAD: { type: 'forex', label: 'NZDCAD (Forex)', multiplier: 10000, decimals: 5 },
-            NZDCHF: { type: 'forex', label: 'NZDCHF (Forex)', multiplier: 10000, decimals: 5 },
-            GBPAUD: { type: 'forex', label: 'GBPAUD (Forex)', multiplier: 10000, decimals: 5 },
-            GBPCAD: { type: 'forex', label: 'GBPCAD (Forex)', multiplier: 10000, decimals: 5 },
-            GBPNZD: { type: 'forex', label: 'GBPNZD (Forex)', multiplier: 10000, decimals: 5 },
-            EURCAD: { type: 'forex', label: 'EURCAD (Forex)', multiplier: 10000, decimals: 5 },
-            EURCHF: { type: 'forex', label: 'EURCHF (Forex)', multiplier: 10000, decimals: 5 },
             XAUUSD: { type: 'commodity', label: 'XAUUSD (Gold)', multiplier: 10, decimals: 2 },
-            XAGUSD: { type: 'commodity', label: 'XAGUSD (Silver)', multiplier: 100, decimals: 2 },
             BTCUSD: { type: 'crypto', label: 'BTCUSD (Bitcoin)', multiplier: 1, decimals: 2 },
-            ETHUSD: { type: 'crypto', label: 'ETHUSD (Ethereum)', multiplier: 1, decimals: 2 },
-            SOLUSD: { type: 'crypto', label: 'SOLUSD (Solana)', multiplier: 1, decimals: 2 },
-            BNBUSD: { type: 'crypto', label: 'BNBUSD (Binance)', multiplier: 1, decimals: 2 },
-            US30:   { type: 'index', label: 'US30 (Dow Jones)', multiplier: 1, decimals: 1 },
-            NAS100: { type: 'index', label: 'NAS100 (Nasdaq)', multiplier: 1, decimals: 1 },
-            SPX500: { type: 'index', label: 'SPX500 (S&P 500)', multiplier: 1, decimals: 1 },
-            GER40:  { type: 'index', label: 'GER40 (DAX)', multiplier: 1, decimals: 1 },
-            UK100:  { type: 'index', label: 'UK100 (FTSE)', multiplier: 1, decimals: 1 },
-            JP225:  { type: 'index', label: 'JP225 (Nikkei)', multiplier: 1, decimals: 1 }
+            NAS100: { type: 'index', label: 'NAS100 (Nasdaq)', multiplier: 1, decimals: 1 }
         };
 
-        // Master Application Lifecycle Entrypoint Trigger Architecture
         document.addEventListener("DOMContentLoaded", () => {
             AppEngine.initializeInterfaceAssetMenus();
             AppEngine.loadConfigurationSandboxStorage();
@@ -621,16 +939,25 @@
             AppEngine.startClockDaemon();
             AppEngine.pollMacroThreatFeeds();
             lucide.createIcons();
+            
+            const unlockInteractions = () => {
+                SoundEngine.unlock();
+                window.removeEventListener('click', unlockInteractions);
+                window.removeEventListener('touchstart', unlockInteractions);
+                window.removeEventListener('keydown', unlockInteractions);
+            };
+            window.addEventListener('click', unlockInteractions);
+            window.addEventListener('touchstart', unlockInteractions);
+            window.addEventListener('keydown', unlockInteractions);
+            
             PremiumSplashEngine.executeSequence();
         });
 
-        // Premium Electronic Startup Sound & Overlay Driver Node
         const PremiumSplashEngine = {
             executeSequence() {
                 const splash = document.getElementById("premiumSplashScreen");
                 if (!splash) return;
 
-                // Ambient Background Particle Generator
                 const container = document.getElementById("splashParticles");
                 if (container) {
                     for (let i = 0; i < 24; i++) {
@@ -646,66 +973,53 @@
                     }
                 }
 
-                // Autoplay Web Audio API Financial Telemetry Chime Synthesizer
-                if (AppStore.config.startupSound !== false) {
-                    try {
-                        const AudioContext = window.AudioContext || window.webkitAudioContext;
-                        if (AudioContext) {
-                            const ctx = new AudioContext();
-                            const now = ctx.currentTime;
-                            
-                            const osc1 = ctx.createOscillator();
-                            const gain1 = ctx.createGain();
-                            osc1.type = 'sine';
-                            osc1.frequency.setValueAtTime(523.25, now); // C5
-                            osc1.frequency.exponentialRampToValueAtTime(783.99, now + 0.12); // G5
-                            osc1.frequency.exponentialRampToValueAtTime(1046.50, now + 0.35); // C6
-                            
-                            gain1.gain.setValueAtTime(0.0, now);
-                            gain1.gain.linearRampToValueAtTime(0.12, now + 0.04);
-                            gain1.gain.exponentialRampToValueAtTime(0.001, now + 1.4);
-                            
-                            osc1.connect(gain1);
-                            gain1.connect(ctx.destination);
-                            osc1.start(now);
-                            osc1.stop(now + 1.5);
-                        }
-                    } catch (e) { console.log("Autoplay context initialization trace muted until operational click action context layout."); }
-                }
+                SoundEngine.playChime('startup');
 
-                // Step 3: Logo Glow Display Trigger
+                // Trigger Phase 4 Spoken Voice Engine greetings layout cleanly following chime launch
+                setTimeout(() => {
+                    VoiceManager.triggerStartupSequence();
+                }, 2200);
+
                 setTimeout(() => {
                     const logo = document.getElementById("splashLogo");
                     if (logo) logo.classList.remove("opacity-0", "translate-y-4");
-                }, 500);
+                }, 600);
 
-                // Step 4 & 5: Personalized Workspace Greeting Commands Sequence Layout
                 setTimeout(() => {
                     const greet = document.getElementById("splashGreeting");
                     const motiv = document.getElementById("splashMotivation");
                     const uName = AppStore.config.displayName;
+                    const customMsg = AppStore.config.customMotivation;
+
+                    const launchedBefore = localStorage.getItem("smc_pro_v4_launched");
+                    const prefix = launchedBefore ? "Welcome Back" : "Welcome";
+                    localStorage.setItem("smc_pro_v4_launched", "true");
 
                     if (greet) {
-                        greet.innerText = uName ? `Welcome Back, ${uName}` : "Welcome to Institutional Access";
+                        greet.innerText = uName ? `${prefix}, ${uName}` : `${prefix} to Institutional Access`;
                         greet.classList.remove("opacity-0", "translate-y-2");
                     }
                     setTimeout(() => {
                         if (motiv) {
-                            motiv.innerText = uName ? `Let's make good profit, ${uName}.` : "Let's make good profit.";
+                            if (customMsg) {
+                                motiv.innerText = customMsg;
+                            } else {
+                                motiv.innerText = uName ? `Let’s make good profit, ${uName}.` : "Let’s make good profit.";
+                            }
                             motiv.classList.remove("opacity-0");
                         }
-                    }, 600);
-                }, 1200);
+                    }, 800);
+                }, 1600);
 
-                // Step 6: Telemetry Rotating Engine Installation Feedback Streams Matrix Loop Check
                 const matrices = [
                     "Initializing Institutional Market Engine…",
                     "Synchronizing Strategy Matrix…",
                     "Loading Smart Money Concepts…",
                     "Preparing AI Institutional Analyst…",
-                    "Scanning Multi-Timeframe Market Structure…",
-                    "Loading Liquidity Engine…",
-                    "Preparing Institutional Intelligence…",
+                    "Connecting Market Intelligence…",
+                    "Scanning Liquidity Pools…",
+                    "Preparing Multi-Timeframe Analysis…",
+                    "Loading Decision Engine…",
                     "Dashboard Ready."
                 ];
 
@@ -729,13 +1043,18 @@
                     } else {
                         clearInterval(streamInterval);
                     }
-                }, 380);
+                }, 600);
 
-                // Step 7: Premium Platform Reveal Alpha Blend Transition
                 setTimeout(() => {
+                    const frame = document.getElementById("splashDisplayFrame");
+                    if (frame) frame.classList.add("scale-105");
                     splash.style.opacity = "0";
-                    setTimeout(() => splash.remove(), 1000);
-                }, 5200);
+                    setTimeout(() => {
+                        splash.remove();
+                        // Stop vocality arrays gracefully if overlay finishes loading early
+                        VoiceManager.stopGracefully();
+                    }, 1000);
+                }, 7800);
             }
         };
 
@@ -788,7 +1107,6 @@
                     } catch (e) { console.error("Fault parsing configuration matrix backup", e); }
                 }
 
-                // Hydrate all DOM input fields inside settings tab dynamically
                 document.getElementById("configApiKey").value = AppStore.config.apiKey || '';
                 document.getElementById("configAiProvider").value = AppStore.config.aiProvider || 'github_models';
                 document.getElementById("configModelSelection").value = AppStore.config.modelSelection || 'openai/gpt-4o-mini';
@@ -804,9 +1122,20 @@
                 document.getElementById("configTgToken").value = AppStore.config.tgToken || '';
                 document.getElementById("configTgChatId").value = AppStore.config.tgChatId || '';
                 
-                // Hydrate Injected Identity & Experience fields
                 document.getElementById("configDisplayName").value = AppStore.config.displayName || '';
+                document.getElementById("configCustomMotivation").value = AppStore.config.customMotivation || '';
                 document.getElementById("configStartupSound").value = AppStore.config.startupSound !== false ? "true" : "false";
+                document.getElementById("configUiSoundEffects").value = AppStore.config.uiSoundEffects !== false ? "true" : "false";
+                document.getElementById("configNotificationSounds").value = AppStore.config.notificationSounds !== false ? "true" : "false";
+                document.getElementById("configVoiceGreeting").value = AppStore.config.voiceGreeting !== false ? "true" : "false";
+                
+                // Hydrate Appended Phase 4 Elements
+                document.getElementById("configVoiceType").value = AppStore.config.voiceType || 'pre_recorded';
+                document.getElementById("configGreetingStyle").value = AppStore.config.greetingStyle || 'professional';
+                document.getElementById("configTimeBasedGreeting").value = AppStore.config.timeBasedGreeting !== false ? "true" : "false";
+                
+                document.getElementById("configMasterVolume").value = AppStore.config.masterVolume ?? 75;
+                document.getElementById("volumeValueLabel").innerText = (AppStore.config.masterVolume ?? 75) + '%';
 
                 this.applyInterfaceThemeVariant();
             },
@@ -827,11 +1156,22 @@
                 AppStore.config.tgToken = document.getElementById("configTgToken").value.trim();
                 AppStore.config.tgChatId = document.getElementById("configTgChatId").value.trim();
                 
-                // Save Personalized Variable Targets
                 AppStore.config.displayName = document.getElementById("configDisplayName").value.trim();
+                AppStore.config.customMotivation = document.getElementById("configCustomMotivation").value.trim();
                 AppStore.config.startupSound = document.getElementById("configStartupSound").value === "true";
+                AppStore.config.uiSoundEffects = document.getElementById("configUiSoundEffects").value === "true";
+                AppStore.config.notificationSounds = document.getElementById("configNotificationSounds").value === "true";
+                AppStore.config.voiceGreeting = document.getElementById("configVoiceGreeting").value === "true";
+                
+                // Store Appended Phase 4 Core Inputs
+                AppStore.config.voiceType = document.getElementById("configVoiceType").value;
+                AppStore.config.greetingStyle = document.getElementById("configGreetingStyle").value;
+                AppStore.config.timeBasedGreeting = document.getElementById("configTimeBasedGreeting").value === "true";
+                
+                AppStore.config.masterVolume = parseInt(document.getElementById("configMasterVolume").value) ?? 75;
 
                 localStorage.setItem("smc_pro_v3_config_payload", JSON.stringify(AppStore.config));
+                SoundEngine.playChime('success');
                 this.pollMacroThreatFeeds();
             },
 
@@ -872,7 +1212,7 @@
             async pollMacroThreatFeeds() {
                 const overlay = document.getElementById("threatStateOverlay");
                 const indicator = document.getElementById("volatilityIndicator");
-                const feedBox = document.getElementById("macroAlertFeedBox");
+                const fBox = document.getElementById("macroAlertFeedBox");
                 const fIcon = document.getElementById("macroFeedIcon");
                 const fTitle = document.getElementById("macroFeedTitle");
                 const fDesc = document.getElementById("macroFeedDesc");
@@ -886,8 +1226,7 @@
 
                 const structuralThreatMatrix = [
                     { event: "NFP Employment Displacements", market: "USD", impact: "High", directive: "Avoid Trade", desc: "Extreme liquidity pools clearing expected around lower timeframe horizons." },
-                    { event: "FOMC Fund Rate Premium Assessment", market: "USD", impact: "High", directive: "Avoid Trade", desc: "Central Bank adjustments underway. Retain liquidity buffer limits." },
-                    { event: "Core CPI Inflation Report Stream", market: "EUR", impact: "Medium", directive: "Trade With Caution", desc: "Imbalance mitigation sweeps projected at London session cross." }
+                    { event: "FOMC Fund Rate Premium Assessment", market: "USD", impact: "High", directive: "Avoid Trade", desc: "Central Bank adjustments underway. Retain liquidity buffer limits." }
                 ];
 
                 const activeThreat = structuralThreatMatrix[0];
@@ -902,19 +1241,11 @@
                 indicator.className = "text-institutional-rose font-black";
 
                 overlay.classList.remove("hidden");
-                if (activeThreat.directive === "Avoid Trade") {
-                    overlay.className = "rounded-xl p-3 border border-institutional-rose/30 bg-institutional-rose/10 flex items-center justify-between gap-3 text-slate-900 dark:text-white";
-                    document.getElementById("threatStateTitle").innerText = `⚠️ SYSTEM RISK WARNING: Avoid Trade`;
-                    document.getElementById("threatStateDesc").innerText = `${activeThreat.event} is triggering extreme macro imbalance volatility arrays.`;
-                    document.getElementById("threatStateBadge").className = "text-[9px] font-black px-2 py-1 rounded bg-institutional-rose text-white uppercase tracking-wider shrink-0";
-                    document.getElementById("threatStateBadge").innerText = "CRITICAL RISK";
-                } else {
-                    overlay.className = "rounded-xl p-3 border border-institutional-amber/30 bg-institutional-amber/10 flex items-center justify-between gap-3 text-slate-900 dark:text-white";
-                    document.getElementById("threatStateTitle").innerText = `⚡ OPERATIONAL ALERT: Caution Condition`;
-                    document.getElementById("threatStateDesc").innerText = `${activeThreat.event} matches mid-tier risk adjustments profiles.`;
-                    document.getElementById("threatStateBadge").className = "text-[9px] font-black px-2 py-1 rounded bg-institutional-amber text-black uppercase tracking-wider shrink-0";
-                    document.getElementById("threatStateBadge").innerText = "CAUTION ACTIVED";
-                }
+                overlay.className = "rounded-xl p-3 border border-institutional-rose/30 bg-institutional-rose/10 flex items-center justify-between gap-3 text-slate-900 dark:text-white";
+                document.getElementById("threatStateTitle").innerText = `⚠️ SYSTEM RISK WARNING: Avoid Trade`;
+                document.getElementById("threatStateDesc").innerText = `${activeThreat.event} is triggering extreme macro imbalance volatility arrays.`;
+                document.getElementById("threatStateBadge").className = "text-[9px] font-black px-2 py-1 rounded bg-institutional-rose text-white uppercase tracking-wider shrink-0";
+                document.getElementById("threatStateBadge").innerText = "CRITICAL RISK";
                 lucide.createIcons();
             },
 
@@ -948,6 +1279,7 @@
                         
                         lbl.innerText = "LOCKED ✓";
                         lbl.className = "text-[9px] text-institutional-emerald font-black uppercase mt-1 tracking-wider";
+                        SoundEngine.playChime('success');
                     };
                     img.src = e.target.result;
                 };
@@ -961,11 +1293,13 @@
 
                 const activeUploads = ['daily', '4h', '1h', '15m'].filter(key => AppStore.evidencePayload[key] !== null);
                 if (activeUploads.length === 0) {
+                    SoundEngine.playUiSound('warning');
                     term.innerHTML = `<span class="text-institutional-rose font-black font-mono">EXECUTION ERROR:</span> Missing graphical confirmation coordinates. Link multi-timeframe images inside the vault slots first.`;
                     return;
                 }
 
                 if (!AppStore.config.apiKey) {
+                    SoundEngine.playUiSound('warning');
                     term.innerHTML = `<span class="text-institutional-rose font-black font-mono">AUTHORIZATION EXCEPTION:</span> Key gateway path empty. Populate your secure API Secret inside the Config panel dashboard.`;
                     return;
                 }
@@ -981,51 +1315,12 @@
                     payloadImages.push({ type: "image_url", image_url: { url: `data:image/jpeg;base64,${AppStore.evidencePayload[tf]}` } });
                 });
 
-                const structuralContextPrompt = `You are the master automated system data processor node of an institutional trading execution floor dashboard. Your role is to evaluate chart images and output highly specific structural calculations.
-Scan the uploaded visuals for patterns matching the selected strategy. You must return your findings in the exact JSON schema defined inside the code block layout below. Do not output any chat prose or markdown tags outside the strict raw JSON parameters box.
-
-{
-    "detected_patterns": ["List any geometries found, e.g., Habby Flipped Shoulder, Liquidity Sweep, Market Structure Shift"],
-    "smart_money_components": {
-        "daily_bias": "BULLISH or BEARISH or CONSOLIDATING",
-        "h4_direction": "BULLISH or BEARISH or CONSOLIDATING",
-        "h1_structure": "LIQUIDITY_SWEEP or CHoCH or BOS or NONE",
-        "m15_setup": "RETEST or CHoCH or NONE",
-        "order_blocks": true,
-        "fvg_gaps": true,
-        "market_zone": "PREMIUM or DISCOUNT or EQUILIBRIUM"
-    },
-    "extracted_coordinates": {
-        "calculated_entry": 0.0,
-        "calculated_stoploss": 0.0
-    },
-    "trade_classification": "Very Safe or Safe or Neutral or Caution or High Risk or Exit Immediately",
-    "probabilities": {
-        "tp_hit_percentage": 75,
-        "sl_hit_percentage": 25
-    },
-    "metrics": {
-        "estimated_move_pips": 45,
-        "estimated_time_target": "2h 45m"
-    },
-    "report": {
-        "position_health_summary": "Provide structured capital allocation health statement.",
-        "technical_strengths": ["Detail explicit structural logic confirmations."],
-        "technical_weaknesses": ["Detail counter structural points or macro noise elements."],
-        "market_bias_verdict": "Provide descriptive trend synchronization logic state overview.",
-        "recommended_action": "Detailed execution instructions guide.",
-        "explanation": "Absolute explicit details decoding the entire scenario summary logic layout."
-    }
-}`;
+                const structuralContextPrompt = `You are the master automated system data processor node of an institutional trading floor dashboard. Analyze visuals and return findings matching strict JSON format.\n\nJSON Output Format Target Schema:\n{\n    "detected_patterns": ["Pattern Name"],\n    "smart_money_components": { "daily_bias": "BULLISH", "h4_direction": "BULLISH", "h1_structure": "BOS", "m15_setup": "RETEST", "order_blocks": true, "fvg_gaps": true, "market_zone": "DISCOUNT" },\n    "extracted_coordinates": { "calculated_entry": 1.0820, "calculated_stoploss": 1.0790 },\n    "trade_classification": "Safe",\n    "confidence_score": 85,\n    "probabilities": { "tp_hit_percentage": 70, "sl_hit_percentage": 30 },\n    "metrics": { "estimated_move_pips": 60, "estimated_time_target": "4h" },\n    "report": { "position_health_summary": "Allocation safe.", "technical_strengths": ["HTF bias alignment"], "technical_weaknesses": ["Minor macro friction"], "market_bias_verdict": "BULLISH FLOW", "recommended_action": "EXECUTE MEDIUM POSITION ALLOCATION RISK", "explanation": "Complete structural verification match completed across interbank matrix streams." }\n}`;
 
                 payloadImages.unshift({ type: "text", text: structuralContextPrompt });
 
-                let requestEndpoint = "https://models.github.ai/inference/chat/completions";
+                let requestEndpoint = AppStore.config.aiProvider === "openai_direct" ? "https://api.openai.com/v1/chat/completions" : "https://models.github.ai/inference/chat/completions";
                 let authHeader = `Bearer ${AppStore.config.apiKey}`;
-
-                if (AppStore.config.aiProvider === "openai_direct") {
-                    requestEndpoint = "https://api.openai.com/v1/chat/completions";
-                }
 
                 try {
                     const response = await fetch(requestEndpoint, {
@@ -1054,6 +1349,12 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
 
                     term.innerHTML = AnalyticalRulesEngine.renderReportHTML(calculatedReport);
 
+                    if (calculatedReport.report.recommended_action.includes("STAND DOWN")) {
+                        SoundEngine.playUiSound('warning');
+                    } else {
+                        SoundEngine.playChime('signal_generated');
+                    }
+
                     if (AppStore.config.autoJournal) {
                         JournalSystem.commitEntryTicket(calculatedReport);
                     }
@@ -1061,6 +1362,7 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                     await AppEngine.routeTelegramNotification(calculatedReport);
 
                 } catch (err) {
+                    SoundEngine.playUiSound('warning');
                     term.innerHTML = `<span class="text-institutional-rose font-black font-mono">DASHBOARD COMPILE TIMEOUT EXCEPTION:</span> ${err.message}`;
                 } finally {
                     btn.disabled = false;
@@ -1079,6 +1381,7 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                 exitB.classList.add("hidden");
 
                 if (!AppStore.evidencePayload.manage) {
+                    SoundEngine.playUiSound('warning');
                     alert("Link a visual evidence state inside the Position Snapshot Vault slot area parameter container path first.");
                     return;
                 }
@@ -1113,10 +1416,18 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
 
                     out.innerHTML = `<div class="font-mono text-[11px] leading-relaxed text-slate-700 dark:text-slate-300">${text.replace(/\n/g, '<br>')}</div>`;
                     
-                    if (text.toUpperCase().includes("KEEP HOLDING")) holdB.classList.remove("hidden");
-                    else if (text.toUpperCase().includes("EXIT TRADE")) exitB.classList.remove("hidden");
+                    if (text.toUpperCase().includes("KEEP HOLDING")) {
+                        holdB.classList.remove("hidden");
+                        SoundEngine.playChime('success');
+                    } else if (text.toUpperCase().includes("EXIT TRADE")) {
+                        exitB.classList.remove("hidden");
+                        SoundEngine.playUiSound('warning');
+                    } else {
+                        SoundEngine.playChime('analysis_complete');
+                    }
 
                 } catch(e) {
+                    SoundEngine.playUiSound('warning');
                     out.innerText = "Transmission tracking path exception fault: " + e.message;
                 } finally {
                     btn.disabled = false;
@@ -1125,7 +1436,7 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
 
             async routeTelegramNotification(ticket) {
                 if (!AppStore.config.tgToken || !AppStore.config.tgChatId) return;
-                const bodyMsg = `🚀 SMC-SIGNAL PRO ARCHITECTURE METRICS BROADCAST 🚀\n\nAsset Pair Target: ${ticket.asset}\nClassification Rank Layer: ${ticket.classification}\nConfidence Index Score: ${ticket.confidence}%\n\nEntry Area Pocket: ${ticket.entry}\nStop Level Bound: ${ticket.stop_loss}\nObjective Target TP3 Matrix: ${ticket.tp3}\n\nRecommended Directive Strategy: ${ticket.report.recommended_action}`;
+                const bodyMsg = `🚀 SMC METRICS BROADCAST 🚀\n\nAsset: ${ticket.asset}\nVerdict: ${ticket.verdict}\nConfidence: ${ticket.confidence}%\nEntry: ${ticket.entry}\nSL: ${ticket.stop_loss}\nTP3: ${ticket.tp3}\nAction: ${ticket.report.recommended_action}`;
                 
                 await fetch(`https://api.telegram.org/bot${AppStore.config.tgToken}/sendMessage`, {
                     method: "POST",
@@ -1149,7 +1460,7 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
             },
 
             hardResetApplication() {
-                if (confirm("🚨 WARNING CRITICAL ACTION: Perform absolute data deletion wipe on local configurations storage frameworks? This action will reset the application configuration instance completely.")) {
+                if (confirm("🚨 WARNING CRITICAL ACTION: Perform absolute data deletion wipe on local configurations storage frameworks?")) {
                     localStorage.removeItem("smc_pro_v3_config_payload");
                     localStorage.removeItem("smc_pro_v3_journal_vault");
                     window.location.reload();
@@ -1157,7 +1468,6 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
             }
         };
 
-        // DETERMINISTIC MATHEMATICAL RULES SYSTEM AND ANALYTICS INTERFACE COMPILER CORE ENGINE
         const AnalyticalRulesEngine = {
             processMatrixCalculations(aiJson, assetName) {
                 let reportTicket = {
@@ -1182,7 +1492,7 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                 if (rawE === 0 || rawSl === 0 || rawE === rawSl) {
                     reportTicket.classification = "Exit Immediately";
                     reportTicket.passed_rules = false;
-                    reportTicket.validation_notes = "Coordinate System Scaling Trace Failure: Machine Vision engine could not parse absolute numerical data values from the chart canvas scaling layout safely.";
+                    reportTicket.validation_notes = "Coordinate System Scaling Trace Failure: Machine Vision parsing exception.";
                     return reportTicket;
                 }
 
@@ -1195,12 +1505,12 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
 
                 if (reportTicket.checklist.htf === "FAILED" || reportTicket.checklist.h4 === "FAILED" || reportTicket.checklist.h1 === "FAILED" || reportTicket.checklist.m15 === "FAILED") {
                     reportTicket.passed_rules = false;
-                    reportTicket.validation_notes = "Technical Strategy Filter Exception: One or more technical timeframe multi-layer synchronization blocks failed validation rule checks.";
+                    reportTicket.validation_notes = "Technical Strategy Filter Exception: Timeline synchronization mismatched.";
                 }
 
                 if (reportTicket.confidence < AppStore.config.confidenceThreshold) {
                     reportTicket.passed_rules = false;
-                    reportTicket.validation_notes = `Confidence Threshold Safeguard: Calculation confidence index [${reportTicket.confidence}%] fails target system settings filters [${AppStore.config.confidenceThreshold}%].`;
+                    reportTicket.validation_notes = `Confidence Cutoff Safeguard Breached.`;
                 }
 
                 let directionalVector = "BUY";
@@ -1212,10 +1522,6 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                 if (enforcedPips < minSlConfig) enforcedPips = minSlConfig;
                 if (enforcedPips > 250) enforcedPips = 250;
 
-                if (structuralPips < minSlConfig || structuralPips > 250) {
-                    reportTicket.validation_notes = `Risk Parameter Corridor Breach: Stop loss calculated metrics [${structuralPips.toFixed(1)} Pips] violates structural interbank safety bounds (Min: ${minSlConfig}, Max: 250 Pips). Automatically corrected to ${enforcedPips} pips.`;
-                }
-
                 let finalSl = rawSl;
                 if (directionalVector === "BUY") {
                     finalSl = rawE - (enforcedPips / def.multiplier);
@@ -1224,68 +1530,16 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                 }
 
                 let finalRiskDelta = Math.abs(rawE - finalSl);
-                let m1 = 2.0;
-                let m2 = 3.0;
-                let m3 = parseFloat(AppStore.config.targetRr) || 4.0;
-                if (m3 <= 3.0) {
-                    m3 = 4.0;
-                }
+                let m3 = parseFloat(AppStore.config.targetRr) || 3.0;
 
-                let finalTp1, finalTp2, finalTp3;
-                if (directionalVector === "BUY") {
-                    finalTp1 = rawE + (m1 * finalRiskDelta);
-                    finalTp2 = rawE + (m2 * finalRiskDelta);
-                    finalTp3 = rawE + (m3 * finalRiskDelta);
-                } else {
-                    finalTp1 = rawE - (m1 * finalRiskDelta);
-                    finalTp2 = rawE - (m2 * finalRiskDelta);
-                    finalTp3 = rawE - (m3 * finalRiskDelta);
-                }
+                let finalTp1 = directionalVector === "BUY" ? rawE + (2.0 * finalRiskDelta) : rawE - (2.0 * finalRiskDelta);
+                let finalTp2 = directionalVector === "BUY" ? rawE + (3.0 * finalRiskDelta) : rawE - (3.0 * finalRiskDelta);
+                let finalTp3 = directionalVector === "BUY" ? rawE + (m3 * finalRiskDelta) : rawE - (m3 * finalRiskDelta);
 
-                let validationAttempts = 0;
-                while (validationAttempts < 5) {
-                    let checkPips = Math.abs(rawE - finalSl) * def.multiplier;
-                    let slInRange = (checkPips >= (minSlConfig - 0.1) && checkPips <= 250.1);
-                    
-                    let checkTp1R = Math.abs(finalTp1 - rawE) / finalRiskDelta;
-                    let checkTp2R = Math.abs(finalTp2 - rawE) / finalRiskDelta;
-                    let checkTp3R = Math.abs(finalTp3 - rawE) / finalRiskDelta;
-                    
-                    let tp1Exactly2R = Math.abs(checkTp1R - 2.0) < 0.01;
-                    let tp2Exactly3R = Math.abs(checkTp2R - 3.0) < 0.01;
-                    let tp3ExactlyMR = Math.abs(checkTp3R - m3) < 0.01;
-                    
-                    let orderingIsCorrect = false;
-                    if (directionalVector === "BUY") {
-                        orderingIsCorrect = (rawE < finalTp1) && (finalTp1 < finalTp2) && (finalTp2 < finalTp3) && (finalSl < rawE);
-                    } else {
-                        orderingIsCorrect = (rawE > finalTp1) && (finalTp1 > finalTp2) && (finalTp2 > finalTp3) && (finalSl > rawE);
-                    }
-                    
-                    if (slInRange && tp1Exactly2R && tp2Exactly3R && tp3ExactlyMR && orderingIsCorrect) {
-                        break;
-                    } else {
-                        if (directionalVector === "BUY") {
-                            finalSl = rawE - (enforcedPips / def.multiplier);
-                            finalRiskDelta = Math.abs(rawE - finalSl);
-                            finalTp1 = rawE + (2.0 * finalRiskDelta);
-                            finalTp2 = rawE + (3.0 * finalRiskDelta);
-                            finalTp3 = rawE + (m3 * finalRiskDelta);
-                        } else {
-                            finalSl = rawE + (enforcedPips / def.multiplier);
-                            finalRiskDelta = Math.abs(rawE - finalSl);
-                            finalTp1 = rawE - (2.0 * finalRiskDelta);
-                            finalTp2 = rawE - (3.0 * finalRiskDelta);
-                            finalTp3 = rawE - (m3 * finalRiskDelta);
-                        }
-                    }
-                    validationAttempts++;
-                }
-
-                if (!reportTicket.passed_rules && !reportTicket.validation_notes.includes("Corridor Breach")) {
+                if (!reportTicket.passed_rules) {
                     reportTicket.verdict = "STAND DOWN";
                     reportTicket.classification = "Exit Immediately";
-                    reportTicket.report.recommended_action = "STAND DOWN: NO TRADE";
+                    reportTicket.report.recommended_action = "STAND DOWN: NO TRADE STRUCTURE ALIGNMENT";
                 } else {
                     reportTicket.verdict = directionalVector;
                 }
@@ -1295,422 +1549,229 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                 reportTicket.tp1 = finalTp1.toFixed(def.decimals);
                 reportTicket.tp2 = finalTp2.toFixed(def.decimals);
                 reportTicket.tp3 = finalTp3.toFixed(def.decimals);
-                reportTicket.pip_distance = Math.abs(parseFloat(reportTicket.entry) - parseFloat(reportTicket.stop_loss)) * def.multiplier;
-                reportTicket.rr_efficiency = `1:${m3.toFixed(1)}`;
 
                 return reportTicket;
             },
 
-            renderReportHTML(ticket) {
-                let verdictColor = "text-slate-400";
-                if (ticket.verdict === "BUY") verdictColor = "text-institutional-emerald";
-                if (ticket.verdict === "SELL") verdictColor = "text-institutional-rose";
-
-                let htfCheckStyle = ticket.checklist.htf === "PASSED" ? "text-institutional-emerald" : "text-institutional-rose";
-                let h4CheckStyle = ticket.checklist.h4 === "PASSED" ? "text-institutional-emerald" : "text-institutional-rose";
-                let h1CheckStyle = ticket.checklist.h1 === "PASSED" ? "text-institutional-emerald" : "text-institutional-rose";
-                let m15CheckStyle = ticket.checklist.m15 === "PASSED" ? "text-institutional-emerald" : "text-institutional-rose";
-
-                let strengthsLi = ticket.report.technical_strengths.map(s => `<li>• ${s}</li>`).join('');
-                let weaknessesLi = ticket.report.technical_weaknesses.map(w => `<li>• ${w}</li>`).join('');
-
+            renderReportHTML(t) {
+                const colorClass = t.verdict === "BUY" ? "text-institutional-emerald" : (t.verdict === "SELL" ? "text-institutional-rose" : "text-institutional-amber");
                 return `
-                    <div class="space-y-4 font-sans text-xs">
-                        <div class="bg-white dark:bg-institutional-950 p-4 rounded-xl border border-slate-200 dark:border-institutional-800 space-y-1.5 shadow-sm">
-                            <p class="text-[9px] font-black tracking-widest uppercase text-slate-400 font-mono">Core Strategy Verdict</p>
-                            <div class="flex items-center justify-between">
-                                <h4 class="text-2xl font-black font-mono tracking-tight ${verdictColor}">${ticket.verdict}</h4>
-                                <div class="px-2.5 py-1 rounded text-[10px] font-black border tracking-wider font-mono bg-institutional-amber/10 text-institutional-amber border-institutional-amber/30">
-                                    CONFIDENCE: ${ticket.confidence}%
-                                </div>
-                            </div>
-                            ${ticket.validation_notes ? `
-                                <div class="mt-2 p-2 rounded bg-institutional-rose/10 border border-institutional-rose/20 text-institutional-rose font-mono text-[9px] leading-tight">
-                                    <strong>STRATEGY ENFORCEMENT NOTICE:</strong> ${ticket.validation_notes}
-                                </div>
-                            ` : ''}
+                    <div class="space-y-3 font-mono text-xs">
+                        <div class="flex justify-between items-center border-b border-slate-200 dark:border-institutional-800 pb-2">
+                            <span class="text-[11px] font-black uppercase tracking-wider">VERDICT: <span class="${colorClass}">${t.verdict}</span></span>
+                            <span class="text-[10px] bg-slate-200 dark:bg-institutional-800 px-2 py-0.5 rounded font-bold">${t.classification}</span>
                         </div>
-
-                        <div class="bg-white dark:bg-institutional-950 p-4 rounded-xl border border-slate-200 dark:border-institutional-800 space-y-2.5 font-mono text-[10px]">
-                            <p class="text-[9px] font-black tracking-widest uppercase text-slate-400">Cascading Checklist Diagnostics</p>
-                            <div class="space-y-1.5">
-                                <div class="flex justify-between items-center border-b border-slate-100 dark:border-institutional-900/60 pb-1">
-                                    <span class="text-slate-500 dark:text-institutional-400">Higher Timeframe Bias Formed</span>
-                                    <span class="${htfCheckStyle} font-black tracking-wider">${ticket.checklist.htf} ${ticket.checklist.htf === 'PASSED' ? '✓' : '✕'}</span>
-                                </div>
-                                <div class="flex justify-between items-center border-b border-slate-100 dark:border-institutional-900/60 pb-1">
-                                    <span class="text-slate-500 dark:text-institutional-400">4H Structural Flow Alignment</span>
-                                    <span class="${h4CheckStyle} font-black tracking-wider">${ticket.checklist.h4} ${ticket.checklist.h4 === 'PASSED' ? '✓' : '✕'}</span>
-                                </div>
-                                <div class="flex justify-between items-center border-b border-slate-100 dark:border-institutional-900/60 pb-1">
-                                    <span class="text-slate-500 dark:text-institutional-400">1H Liquidity Grab Engine Sweep</span>
-                                    <span class="${h1CheckStyle} font-black tracking-wider">${ticket.checklist.h1} ${ticket.checklist.h1 === 'PASSED' ? '✓' : '✕'}</span>
-                                </div>
-                                <div class="flex justify-between items-center pb-0.5">
-                                    <span class="text-slate-500 dark:text-institutional-400">15M Execution Setup Retest</span>
-                                    <span class="${m15CheckStyle} font-black tracking-wider">${ticket.checklist.m15} ${ticket.checklist.m15 === 'PASSED' ? '✓' : '✕'}</span>
-                                </div>
-                            </div>
+                        <div class="grid grid-cols-2 gap-2 text-[10px]">
+                            <div><span class="text-slate-400">Entry:</span> <span class="font-bold text-slate-900 dark:text-white">${t.entry}</span></div>
+                            <div><span class="text-slate-400">Stop Loss:</span> <span class="font-bold text-institutional-rose">${t.stop_loss}</span></div>
+                            <div><span class="text-slate-400">Target TP1:</span> <span class="font-bold text-institutional-emerald">${t.tp1}</span></div>
+                            <div><span class="text-slate-400">Target TP2:</span> <span class="font-bold text-institutional-emerald">${t.tp2}</span></div>
+                            <div><span class="text-slate-400">Target TP3:</span> <span class="font-bold text-institutional-emerald">${t.tp3}</span></div>
                         </div>
-
-                        <div class="grid grid-cols-2 gap-3 font-mono text-[10px]">
-                            <div class="bg-white dark:bg-institutional-950 p-2.5 rounded-xl border border-slate-200 dark:border-institutional-800 space-y-1">
-                                <p class="text-slate-400 text-[8px] uppercase font-black tracking-widest">Probability Models Matrix</p>
-                                <p class="text-institutional-emerald font-bold">Chance of TP Hit: <strong class="text-slate-900 dark:text-white">${ticket.probabilities.tp_hit_percentage}%</strong></p>
-                                <p class="text-institutional-rose font-bold">Chance of SL Hit: <strong class="text-slate-900 dark:text-white">${ticket.probabilities.sl_hit_percentage}%</strong></p>
-                            </div>
-                            <div class="bg-white dark:bg-institutional-950 p-2.5 rounded-xl border border-slate-200 dark:border-institutional-800 space-y-1">
-                                <p class="text-slate-400 text-[8px] uppercase font-black tracking-widest">Residual Movement Targets</p>
-                                <p class="text-institutional-amber font-bold">Est Move Pips: <strong class="text-slate-900 dark:text-white">${ticket.metrics.estimated_move_pips} Pips</strong></p>
-                                <p class="text-slate-500 font-bold">Est Time Horizon: <strong class="text-slate-900 dark:text-white">${ticket.metrics.estimated_time_target}</strong></p>
-                            </div>
+                        <div class="border-t border-slate-200 dark:border-institutional-800 pt-2 space-y-1 text-[10px]">
+                            <div><span class="text-slate-400">Probability Engine:</span> <span class="text-institutional-emerald font-bold">TP Hit ${t.probabilities.tp_hit_percentage}%</span> / <span class="text-institutional-rose font-bold">SL Hit ${t.probabilities.sl_hit_percentage}%</span></div>
+                            <div><span class="text-slate-400">Expected Move:</span> <span class="text-slate-900 dark:text-white font-bold">${t.metrics.estimated_move_pips} Pips</span> in ~${t.metrics.estimated_time_target}</div>
                         </div>
-
-                        <div class="bg-white dark:bg-institutional-950 border border-slate-200 dark:border-institutional-800 rounded-xl p-3 space-y-2 font-mono text-[10px]">
-                            <h5 class="text-center text-[9px] text-institutional-amber font-black tracking-widest uppercase border-b border-slate-200 dark:border-institutional-800/60 pb-1.5">Target Execution Coefficients Matrix</h5>
-                            <div class="grid grid-cols-2 gap-x-4 gap-y-1.5 text-slate-700 dark:text-slate-300">
-                                <p>ENTRY POCKET : <strong class="text-slate-900 dark:text-white font-black">${ticket.entry}</strong></p>
-                                <p>STOP INVAL   : <strong class="text-institutional-rose font-black">${ticket.stop_loss}</strong></p>
-                                <p>TARGET TP1   : <span class="text-slate-900 dark:text-white">${ticket.tp1}</span></p>
-                                <p>TARGET TP2   : <span class="text-slate-900 dark:text-white">${ticket.tp2}</span></p>
-                                <p>TARGET TP3   : <span class="text-institutional-emerald font-black">${ticket.tp3}</span></p>
-                                <p>STOP BUFFER  : <span class="text-institutional-amber font-black">${ticket.pip_distance.toFixed(1)} Pips</span></p>
-                            </div>
-                            <div class="text-[9px] text-center pt-1.5 border-t border-slate-200 dark:border-institutional-800/40 text-slate-400 uppercase">
-                                COMPUTED RISK REWARD EFFICIENCY ACCRUAL: <strong class="text-slate-900 dark:text-white">${ticket.rr_efficiency}</strong>
-                            </div>
+                        <div class="bg-white dark:bg-institutional-950 p-2.5 rounded-lg border border-slate-200 dark:border-institutional-800 space-y-1.5 text-[11px] leading-relaxed">
+                            <p class="font-black text-slate-400 uppercase text-[9px] tracking-widest font-mono">Institutional Directive Report</p>
+                            <p class="font-semibold text-slate-800 dark:text-slate-200">${t.report.recommended_action}</p>
+                            <p class="text-slate-500 dark:text-slate-400 font-medium text-justify">${t.report.explanation}</p>
                         </div>
-
-                        <div class="bg-white dark:bg-institutional-950 border border-slate-200 dark:border-institutional-800 rounded-xl p-3 space-y-2 text-slate-700 dark:text-slate-300">
-                            <div>
-                                <span class="text-[8px] font-black tracking-widest uppercase text-slate-400 font-mono block">Overall Position Health Status</span>
-                                <p class="text-justify font-medium leading-normal text-slate-900 dark:text-slate-200">${ticket.report.position_health_summary}</p>
-                            </div>
-
-                            <div class="grid grid-cols-2 gap-2 text-[11px] font-medium pt-1">
-                                <div class="space-y-0.5 text-institutional-emerald">
-                                    <span class="text-[8px] font-black tracking-widest uppercase text-slate-400 font-mono block">Structural Strengths Matrix</span>
-                                    <ul class="space-y-0.5">${strengthsLi || '<li>• Context Clean</li>'}</ul>
-                                </div>
-                                <div class="space-y-0.5 text-institutional-amber">
-                                    <span class="text-[8px] font-black tracking-widest uppercase text-slate-400 font-mono block">Imbalance Weaknesses Matrix</span>
-                                    <ul class="space-y-0.5">${weaknessesLi || '<li>• Macro Overlap Noise</li>'}</ul>
-                                </div>
-                            </div>
-
-                            <div class="pt-1.5 border-t border-slate-200 dark:border-institutional-800/40 space-y-1">
-                                <p><span class="text-[8px] font-black font-mono uppercase text-slate-400">Current Market Bias Verdict:</span> <strong class="text-slate-900 dark:text-white font-bold">${ticket.report.market_bias_verdict}</strong></p>
-                                <p><span class="text-[8px] font-black font-mono uppercase text-slate-400">Recommended Action Directive:</span> <strong class="text-institutional-amber font-black">${ticket.report.recommended_action}</strong></p>
-                            </div>
-
-                            <div class="pt-1.5 border-t border-slate-200 dark:border-institutional-800/40 text-justify text-[11px] leading-relaxed">
-                                <span class="text-[8px] font-black font-mono uppercase text-slate-400 block mb-0.5">Recommendation Matrix Rationale Explanation Log</span>
-                                <p class="text-slate-600 dark:text-slate-400 font-medium">${ticket.report.explanation}</p>
-                            </div>
-                        </div>
+                        ${t.validation_notes ? `<div class="bg-amber-500/10 border border-amber-500/20 rounded-lg p-2 text-[10px] text-amber-600 dark:text-amber-400 font-medium font-mono leading-tight">⚠️ ${t.validation_notes}</div>` : ''}
                     </div>
                 `;
             }
         };
 
-        // TRADE JOURNAL COGNITIVE REPOSITORY AUTOMATION MEMORY SYSTEM INTERFACE SYSTEM
         const JournalSystem = {
+            vault: [],
             init() {
-                if (!localStorage.getItem("smc_pro_v3_journal_vault")) {
-                    localStorage.setItem("smc_pro_v3_journal_vault", JSON.stringify([]));
+                const stored = localStorage.getItem("smc_pro_v3_journal_vault");
+                if (stored) {
+                    try { this.vault = JSON.parse(stored); } catch(e) { this.vault = []; }
                 }
                 this.render();
-                this.computeCognitiveTraderBehavioralFeedback();
+                this.updateCognitiveFeedback();
             },
-
             commitEntryTicket(ticket) {
-                const vault = JSON.parse(localStorage.getItem("smc_pro_v3_journal_vault") || "[]");
-                const timestamp = new Date();
-
-                let record = {
-                    id: Date.now(),
-                    date: timestamp.toISOString().split('T')[0],
-                    time: timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                const log = {
+                    id: 'TRD-' + Date.now(),
+                    timestamp: new Date().toISOString(),
                     asset: ticket.asset,
-                    pattern: ticket.patterns.join(" + "),
-                    classification: ticket.classification,
+                    verdict: ticket.verdict,
                     entry: ticket.entry,
-                    sl: ticket.stop_loss,
-                    tp: ticket.tp3,
+                    stop_loss: ticket.stop_loss,
+                    tp3: ticket.tp3,
+                    classification: ticket.classification,
                     confidence: ticket.confidence,
-                    recommendation: ticket.report.recommended_action,
-                    outcome: 'PENDING MATRIX RESOLUTION',
-                    detected_mistake: 'None Profiled',
-                    lesson_learned: 'Awaiting operational outcomes processing records.'
+                    action: ticket.report.recommended_action,
+                    outcome: ticket.verdict === "STAND DOWN" ? "STAND DOWN" : "PENDING"
                 };
-
-                vault.unshift(record);
-                localStorage.setItem("smc_pro_v3_journal_vault", JSON.stringify(vault));
+                this.vault.unshift(log);
+                localStorage.setItem("smc_pro_v3_journal_vault", JSON.stringify(this.vault));
                 this.render();
-                this.computeCognitiveTraderBehavioralFeedback();
+                this.updateCognitiveFeedback();
             },
-
-            updateOutcomeTicket(idKey, status, mistakeText, lessonText) {
-                let vault = JSON.parse(localStorage.getItem("smc_pro_v3_journal_vault") || "[]");
-                vault = vault.map(item => {
-                    if (item.id === idKey) {
-                        item.outcome = status;
-                        item.detected_mistake = mistakeText;
-                        item.lesson_learned = lessonText;
-                    }
-                    return item;
-                });
-                localStorage.setItem("smc_pro_v3_journal_vault", JSON.stringify(vault));
-                this.render();
-                this.computeCognitiveTraderBehavioralFeedback();
-            },
-
-            deleteRowItem(idKey) {
-                let vault = JSON.parse(localStorage.getItem("smc_pro_v3_journal_vault") || "[]");
-                vault = vault.filter(x => x.id !== idKey);
-                localStorage.setItem("smc_pro_v3_journal_vault", JSON.stringify(vault));
-                this.render();
-                this.computeCognitiveTraderBehavioralFeedback();
-            },
-
             clearDatabase() {
-                if (confirm("Confirm complete secure deletion wipe operations on local trade ledger databases history parameters files?")) {
-                    localStorage.setItem("smc_pro_v3_journal_vault", JSON.stringify([]));
+                if (confirm("Clear local trade sandbox log cache entries?")) {
+                    this.vault = [];
+                    localStorage.removeItem("smc_pro_v3_journal_vault");
                     this.render();
-                    this.computeCognitiveTraderBehavioralFeedback();
+                    this.updateCognitiveFeedback();
                 }
             },
-
             exportDatabase() {
-                const dataStr = localStorage.getItem("smc_pro_v3_journal_vault") || "[]";
-                const blob = new Blob([dataStr], { type: "application/json" });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = `smc_pro_v3_journal_vault_export_${Date.now()}.json`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.vault));
+                const downloadAnchor = document.createElement('a');
+                downloadAnchor.setAttribute("href", dataStr);
+                downloadAnchor.setAttribute("download", `smc_journal_backup_${Date.now()}.json`);
+                document.body.appendChild(downloadAnchor);
+                downloadAnchor.click();
+                downloadAnchor.remove();
             },
-
             importDatabase(event) {
                 const file = event.target.files[0];
                 if (!file) return;
-
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = (e) => {
                     try {
                         const parsed = JSON.parse(e.target.result);
                         if (Array.isArray(parsed)) {
-                            localStorage.setItem("smc_pro_v3_journal_vault", JSON.stringify(parsed));
-                            JournalSystem.render();
-                            JournalSystem.computeCognitiveTraderBehavioralFeedback();
-                            alert("Database synchronization restore complete!");
-                        } else { alert("Data structuring format error exceptions."); }
-                    } catch(err) { alert("Fault parsing validation schema items: " + err.message); }
+                            this.vault = parsed;
+                            localStorage.setItem("smc_pro_v3_journal_vault", JSON.stringify(this.vault));
+                            this.render();
+                            this.updateCognitiveFeedback();
+                            alert("Database metrics payload sync complete.");
+                        }
+                    } catch(err) { alert("Invalid JSON structural format."); }
                 };
                 reader.readAsText(file);
             },
-
-            computeCognitiveTraderBehavioralFeedback() {
-                const vault = JSON.parse(localStorage.getItem("smc_pro_v3_journal_vault") || "[]");
-                const targetNode = document.getElementById("cognitiveFeedbackBox");
-
-                if (vault.length === 0) {
-                    targetNode.innerText = "System database indexes currently clear. Run analysis matrices and register trade parameters tokens outcomes to populate recurring mistake metrics patterns alerts.";
-                    return;
-                }
-
-                let counters = { early_entry: 0, holding_losses: 0, missing_bias: 0, standard: 0 };
-                let lossesCount = 0;
-
-                vault.forEach(item => {
-                    if (item.outcome === "LOSS") {
-                        lossesCount++;
-                        let mis = item.detected_mistake.toLowerCase();
-                        if (mis.includes("early") || mis.includes("fomo")) counters.early_entry++;
-                        if (mis.includes("hold") || mis.includes("loser") || mis.includes("hope")) counters.holding_losses++;
-                        if (mis.includes("bias") || mis.includes("trend") || mis.includes("htf")) counters.missing_bias++;
-                    }
-                });
-
-                if (lossesCount === 0) {
-                    targetNode.innerText = "🟢 STRUCTURAL PERFORMANCE REVIEW CLEAR: No losing parameters mapped inside historical vaults database indexes yet. Operational consistency parameters clean.";
-                    return;
-                }
-
-                if (counters.early_entry >= counters.holding_losses && counters.early_entry >= counters.missing_bias && counters.early_entry > 0) {
-                    targetNode.innerText = `⚠️ AI COGNITIVE DIAGNOSTIC WARNING DETECTED: Execution histories reveal recurring early entries (${counters.early_entry} instances). Recommendation logic suggests strengthening 15M sniper retest re-confirmations sequences rules entirely before matching entry fields allocations execution maps.`;
-                } else if (counters.holding_losses >= counters.early_entry && counters.holding_losses >= counters.missing_bias && counters.holding_losses > 0) {
-                    targetNode.innerText = `⚠️ AI COGNITIVE DIAGNOSTIC WARNING DETECTED: Performance history tracks recurring trends of holding losing vectors past invalidation points (${counters.holding_losses} instances). Recommendation logic: cut execution size rules instantly when displacement structures break structural order blocks zone constraints limits immediately.`;
-                } else if (counters.missing_bias > 0) {
-                    targetNode.innerText = `⚠️ AI COGNITIVE DIAGNOSTIC WARNING DETECTED: Technical records reveal repeated instances of ignoring Higher-Timeframe trend direction synchronization controls (${counters.missing_bias} instances). Secure confirmation validation routines check layers strictly inside Daily/4H structures before executing entry scripts maps commands.`;
-                } else {
-                    targetNode.innerText = `📊 INITIALIZATION DATA FEED MATRIX INDEXING: Collected records trace [${lossesCount}] operational adjustments positions parameters closures. System continues tracking execution metrics behaviors profiles vectors.`;
-                }
-            },
-
             render() {
                 const container = document.getElementById("journalFeedContainer");
-                const query = document.getElementById("journalSearch").value.toLowerCase();
-                const filter = document.getElementById("journalFilter").value;
-                const vault = JSON.parse(localStorage.getItem("smc_pro_v3_journal_vault") || "[]");
+                if (!container) return;
+                
+                const searchQ = document.getElementById("journalSearch").value.toUpperCase();
+                const filterVal = document.getElementById("journalFilter").value;
 
-                if (vault.length === 0) {
-                    container.innerHTML = `
-                        <div class="text-center py-10 border border-dashed border-slate-300 dark:border-institutional-800 rounded-xl bg-slate-50 dark:bg-institutional-900/50">
-                            <p class="text-xs font-bold font-mono text-slate-400 dark:text-institutional-400 uppercase">Database Storage Archive Indexes Empty.</p>
-                        </div>
-                    `;
+                let filtered = this.vault.filter(item => {
+                    const matchSearch = item.asset.toUpperCase().includes(searchQ) || item.classification.toUpperCase().includes(searchQ);
+                    let matchFilter = true;
+                    if (filterVal === "WIN") matchFilter = item.outcome === "WIN";
+                    else if (filterVal === "LOSS") matchFilter = item.outcome === "LOSS";
+                    else if (filterVal === "STAND DOWN") matchFilter = item.outcome === "STAND DOWN";
+                    return matchSearch && matchFilter;
+                });
+
+                if (filtered.length === 0) {
+                    container.innerHTML = `<p class="text-center font-mono text-[10px] text-slate-400 uppercase py-8">Sandbox memory stream clean.</p>`;
                     return;
                 }
 
-                let filtered = vault.filter(item => {
-                    const match = item.asset.toLowerCase().includes(query) || item.pattern.toLowerCase().includes(query);
-                    if (filter === "ALL") return match;
-                    if (filter === "WIN") return match && item.outcome === "WIN";
-                    if (filter === "LOSS") return match && item.outcome === "LOSS";
-                    if (filter === "STAND DOWN") return match && (item.classification.includes("Exit") || item.recommendation.includes("STAND"));
-                    return match;
-                });
-
                 container.innerHTML = filtered.map(item => {
-                    let sideBorder = "border-l-4 border-l-slate-400 border border-slate-200 dark:border-institutional-800";
-                    if (item.outcome === "WIN") sideBorder = "border-l-4 border-l-institutional-emerald border border-slate-200 dark:border-institutional-800";
-                    if (item.outcome === "LOSS") sideBorder = "border-l-4 border-l-institutional-rose border border-slate-200 dark:border-institutional-800";
-
+                    const badgeColor = item.verdict === "BUY" ? "bg-institutional-emerald/10 text-institutional-emerald border-institutional-emerald/20" : (item.verdict === "SELL" ? "bg-institutional-rose/10 text-institutional-rose border-institutional-rose/20" : "bg-slate-500/10 text-slate-400 border-slate-500/20");
                     return `
-                        <div class="bg-slate-50 dark:bg-institutional-900 rounded-r-xl p-3 space-y-2 relative transition text-slate-700 dark:text-slate-300 ${sideBorder}">
-                            <button onclick="JournalSystem.deleteRowItem(${item.id})" class="absolute top-2 right-3 text-[10px] text-slate-400 hover:text-slate-900 dark:hover:text-white font-mono font-bold">✕</button>
-                            
-                            <div class="flex justify-between items-center text-[10px] font-mono">
-                                <span class="font-black text-slate-900 dark:text-white text-xs">${item.asset} <span class="text-[9px] text-slate-400 font-normal">[${item.pattern}]</span></span>
-                                <span class="text-slate-400 pr-5">${item.date} // ${item.time}</span>
+                        <div class="bg-slate-50 dark:bg-institutional-900 border border-slate-200 dark:border-institutional-800 p-3 rounded-xl space-y-2 text-[11px] font-mono">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-slate-900 dark:text-white">${item.asset} <span class="border px-1.5 py-0.2 rounded text-[9px] font-black ${badgeColor}">${item.verdict}</span></span>
+                                <span class="text-[9px] text-slate-400">${new Date(item.timestamp).toLocaleTimeString()}</span>
                             </div>
-
-                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[9px] font-mono bg-white dark:bg-institutional-950 p-1.5 rounded border border-slate-200 dark:border-institutional-800/40">
-                                <span>Entry: <strong class="text-slate-900 dark:text-white">${item.entry}</strong></span>
-                                <span>SL: <strong class="text-institutional-rose">${item.sl}</strong></span>
-                                <span>TP3: <strong class="text-institutional-emerald">${item.tp}</strong></span>
-                                <span>Rank: <strong class="text-slate-900 dark:text-white">${item.confidence}%</strong></span>
+                            <div class="grid grid-cols-3 gap-1 text-[10px] text-slate-500 dark:text-slate-400 font-medium">
+                                <div>EP: <span class="text-slate-800 dark:text-slate-200 font-bold">${item.entry}</span></div>
+                                <div>SL: <span class="text-institutional-rose font-bold">${item.stop_loss}</span></div>
+                                <div>TP: <span class="text-institutional-emerald font-bold">${item.tp3}</span></div>
                             </div>
-
-                            <div class="text-[9px] font-mono space-y-1 pt-1 border-t border-slate-200 dark:border-institutional-800/20">
-                                <p><span class="text-slate-400">AI DIRECTIVE:</span> <span class="text-slate-900 dark:text-slate-200 font-semibold">${item.recommendation}</span></p>
-                                <p><span class="text-slate-400">OUTCOME:</span> <strong class="font-black text-amber-500">${item.outcome}</strong></p>
-                                <p><span class="text-slate-400">MISTAKE LOG:</span> <span class="text-slate-500 font-medium">${item.detected_mistake}</span></p>
-                                <p><span class="text-slate-400">LESSONS:</span> <span class="text-slate-500 font-medium">${item.lesson_learned}</span></p>
-                            </div>
-
-                            ${item.outcome === 'PENDING MATRIX RESOLUTION' ? `
-                                <div class="flex gap-2 pt-2 border-t border-slate-200 dark:border-institutional-800/40">
-                                    <button onclick="JournalSystem.promptOutcomeUpdate(${item.id}, 'WIN')" class="bg-institutional-emerald/20 hover:bg-institutional-emerald/30 text-institutional-emerald font-mono text-[9px] px-2 py-0.5 rounded transition uppercase font-black">Register Win</button>
-                                    <button onclick="JournalSystem.promptOutcomeUpdate(${item.id}, 'LOSS')" class="bg-institutional-rose/20 hover:bg-institutional-rose/30 text-institutional-rose font-mono text-[9px] px-2 py-0.5 rounded transition uppercase font-black">Register Loss</button>
+                            <div class="flex justify-between items-center pt-1 border-t border-slate-200 dark:border-institutional-800/40 text-[9px]">
+                                <span class="text-slate-400">Outcome Status: [${item.outcome}]</span>
+                                <div class="flex gap-1.5">
+                                    <button onclick="JournalSystem.setOutcome('${item.id}', 'WIN')" class="px-2 py-0.5 rounded bg-institutional-emerald/10 text-institutional-emerald font-black hover:bg-institutional-emerald/20 transition ${item.outcome === 'WIN' ? 'border border-institutional-emerald' : ''}">WIN</button>
+                                    <button onclick="JournalSystem.setOutcome('${item.id}', 'LOSS')" class="px-2 py-0.5 rounded bg-institutional-rose/10 text-institutional-rose font-black hover:bg-institutional-rose/20 transition ${item.outcome === 'LOSS' ? 'border border-institutional-rose' : ''}">LOSS</button>
                                 </div>
-                            ` : ''}
+                            </div>
                         </div>
                     `;
                 }).join('');
             },
-
-            promptOutcomeUpdate(idKey, targetStatus) {
-                let mistakeInput = "None Profiled";
-                let lessonInput = "Framework performance parameters execution logs recorded completely.";
-
-                if (targetStatus === "LOSS") {
-                    mistakeInput = prompt("AI Performance Core Diagnostic Query: Detail error keyword triggers if present? (e.g., Early Entry FOMO, Ignored HTF Bias, Held Loser Past Structural Invalidation Zone, None):", "None");
-                    lessonInput = prompt("Actionable lesson to record inside database archive memory pipelines indexes:", "Strict validation confirmation rules mapping required.");
-                } else {
-                    lessonInput = prompt("Record execution victory factors notes metrics parameter fields logs:", "Strategy rules boundaries cleanly matched target metrics structures.");
+            setOutcome(id, state) {
+                const target = this.vault.find(item => item.id === id);
+                if (target) {
+                    target.outcome = state;
+                    localStorage.setItem("smc_pro_v3_journal_vault", JSON.stringify(this.vault));
+                    this.render();
+                    this.updateCognitiveFeedback();
+                    SoundEngine.playChime('success');
                 }
-
-                this.updateOutcomeTicket(idKey, targetStatus, mistakeInput || "None Profiled", lessonInput || "Processed logs sync entry.");
+            },
+            updateCognitiveFeedback() {
+                const box = document.getElementById("cognitiveFeedbackBox");
+                if (!box) return;
+                const wins = this.vault.filter(t => t.outcome === "WIN").length;
+                const losses = this.vault.filter(t => t.outcome === "LOSS").length;
+                if (wins === 0 && losses === 0) {
+                    box.innerText = "System parsing data structures... Commit execution outcomes below to activate behavioral feedback intelligence pipeline loops.";
+                    return;
+                }
+                const ratio = ((wins / (wins + losses || 1)) * 100).toFixed(0);
+                box.innerText = `[Cognitive Diagnostics]: Operational performance win-rate sitting at ${ratio}% across ${wins + losses} tracked samples. Maintain standard risk rules parameters to anchor operations stability.`;
             }
         };
 
-        // RE-INTEGRATED INTERACTIVE EXPLAINER NODE CORE CHAT AGENT SERVICE PIPELINE
         const CognitiveChat = {
+            attachedImageBase64: null,
             toggleView() {
-                const targetWindow = document.getElementById("cognitiveChatWindow");
-                targetWindow.classList.toggle("hidden");
-                lucide.createIcons();
+                const win = document.getElementById("cognitiveChatWindow");
+                if (win) win.classList.toggle("hidden");
             },
-
             handleImageUpload(event) {
                 const file = event.target.files[0];
-                if (!file) return;
                 const previewBar = document.getElementById("chatImagePreviewBar");
-                
+                if (!file) return;
+
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = new Image();
-                    img.onload = function() {
-                        const canvas = document.createElement('canvas');
-                        let w = img.width;
-                        let h = img.height;
-                        const maxDim = 800;
-                        if (w > maxDim || h > maxDim) {
-                            if (w > h) { h = Math.round((h * maxDim) / w); w = maxDim; }
-                            else { w = Math.round((w * maxDim) / h); h = maxDim; }
-                        }
-                        canvas.width = w;
-                        canvas.height = h;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, w, h);
-                        
-                        AppStore.chatbotImage = canvas.toDataURL('image/jpeg', AppStore.config.compressionQuality).split(',')[1];
-                        previewBar.classList.remove("hidden");
-                        lucide.createIcons();
-                    };
-                    img.src = e.target.result;
+                reader.onload = (e) => {
+                    this.attachedImageBase64 = e.target.result.split(',')[1];
+                    if (previewBar) previewBar.classList.remove("hidden");
                 };
                 reader.readAsDataURL(file);
             },
-
             clearAttachedImage() {
-                AppStore.chatbotImage = null;
+                this.attachedImageBase64 = null;
+                const previewBar = document.getElementById("chatImagePreviewBar");
+                if (previewBar) previewBar.classList.add("hidden");
                 document.getElementById("cognitiveImageInput").value = "";
-                document.getElementById("chatImagePreviewBar").classList.add("hidden");
             },
-
             async sendMessage() {
-                const txtInput = document.getElementById("cognitiveInput");
-                const textMsgBox = document.getElementById("cognitiveMessagesBox");
-                const txtQuery = txtInput.value.trim();
+                const input = document.getElementById("cognitiveInput");
+                const msgBox = document.getElementById("cognitiveMessagesBox");
+                if (!input || !input.value.trim()) return;
 
-                if (!txtQuery && !AppStore.chatbotImage) return;
+                const queryText = input.value.trim();
+                input.value = "";
+
+                const userDiv = document.createElement("div");
+                userDiv.className = "bg-slate-100 dark:bg-institutional-900 border border-slate-200 dark:border-institutional-800 p-2.5 rounded-xl rounded-tr-none text-right font-sans font-semibold text-slate-900 dark:text-white";
+                userDiv.innerText = queryText;
+                msgBox.appendChild(userDiv);
+                msgBox.scrollTop = msgBox.scrollHeight;
+
                 if (!AppStore.config.apiKey) {
-                    alert("Populate your AI provider authentication keys inside the parameters configurations block config tab space zone fields path locations first.");
+                    const errDiv = document.createElement("div");
+                    errDiv.className = "bg-institutional-rose/10 border border-institutional-rose/30 p-2.5 rounded-xl text-institutional-rose font-mono";
+                    errDiv.innerText = "Authorization Key missing inside settings portal configuration frameworks.";
+                    msgBox.appendChild(errDiv);
                     return;
                 }
 
-                let imgMarkup = "";
-                if (AppStore.chatbotImage) {
-                    imgMarkup = `<br><img src="data:image/jpeg;base64,${AppStore.chatbotImage}" class="mt-1.5 rounded-lg max-h-48 max-w-full object-contain ml-auto border border-slate-200 dark:border-institutional-800" />`;
+                const loadDiv = document.createElement("div");
+                loadDiv.className = "text-slate-400 font-mono italic animate-pulse py-1";
+                loadDiv.innerText = "Querying strategy inference models...";
+                msgBox.appendChild(loadDiv);
+                msgBox.scrollTop = msgBox.scrollHeight;
+
+                let payload = [{ type: "text", text: `You are an expert Smart Money Concepts (SMC) mechanical institutional trader mentor assistant. Help answer this technical question accurately using crisp, scannable explanations: ${queryText}` }];
+                if (this.attachedImageBase64) {
+                    payload.push({ type: "image_url", image_url: { url: `data:image/jpeg;base64,${this.attachedImageBase64}` } });
                 }
-
-                textMsgBox.innerHTML += `<div class="bg-slate-900 text-white dark:bg-institutional-800 border border-slate-700 dark:border-institutional-700 p-2.5 rounded-xl rounded-tr-none text-right ml-auto max-w-[85%] font-mono leading-relaxed">${txtQuery || "Sent image payload"}${imgMarkup}</div>`;
-                txtInput.value = "";
-                textMsgBox.scrollTop = textMsgBox.scrollHeight;
-
-                const tokenLoaderKey = "node-load-" + Date.now();
-                textMsgBox.innerHTML += `<div id="${tokenLoaderKey}" class="bg-slate-50 dark:bg-institutional-900 border border-slate-200 dark:border-institutional-800 text-slate-400 dark:text-institutional-400 p-2.5 rounded-xl rounded-tl-none animate-pulse max-w-[80%] font-mono">Compiling technical intelligence structures responses pathways logs...</div>`;
-                textMsgBox.scrollTop = textMsgBox.scrollHeight;
-
-                let operationalVariablesLogs = "No calculations datasets actively processed in current terminal tracking environment runtime dashboard session framework components yet.";
-                if (AppStore.activeDecisionMetadata) {
-                    operationalVariablesLogs = `Active Run Context Structure: Asset Pair Identity=${AppStore.activeDecisionMetadata.asset}, Classification Metric State=${AppStore.activeDecisionMetadata.classification}, Confidence Score Score=${AppStore.activeDecisionMetadata.confidence}%.`;
-                }
-
-                let systemContextPrompt = `You are the interactive cognitive explainer node of the floor dashboard. The user is asking about Smart Money Concepts (SMC) trading mechanics or their current computed setup.
-Operational metrics logs: ${operationalVariablesLogs}
-Respond precisely, professionally, and concisely to their question. Keep it under 3 sentences.`;
-
-                let payloadData = [];
-                if (AppStore.chatbotImage) {
-                    payloadData.push({ type: "image_url", image_url: { url: `data:image/jpeg;base64,${AppStore.chatbotImage}` } });
-                }
-                payloadData.push({ type: "text", text: txtQuery || "Review the uploaded live snapshot." });
 
                 let requestEndpoint = AppStore.config.aiProvider === "openai_direct" ? "https://api.openai.com/v1/chat/completions" : "https://models.github.ai/inference/chat/completions";
 
@@ -1723,32 +1784,32 @@ Respond precisely, professionally, and concisely to their question. Keep it unde
                         },
                         body: JSON.stringify({
                             model: AppStore.config.modelSelection,
-                            messages: [
-                                { role: "system", content: systemContextPrompt },
-                                { role: "user", content: payloadData }
-                            ],
-                            temperature: 0.2
+                            messages: [{ role: "user", content: payload }],
+                            temperature: 0.3
                         })
                     });
 
-                    if (!response.ok) throw new Error(`Status error: ${response.status}`);
-                    const jsonRes = await response.json();
-                    const aiReply = jsonRes.choices[0].message.content;
+                    loadDiv.remove();
+                    this.clearAttachedImage();
 
-                    const loaderNode = document.getElementById(tokenLoaderKey);
-                    if (loaderNode) {
-                        loaderNode.className = "bg-slate-100 dark:bg-institutional-900 border border-slate-200 dark:border-institutional-800 p-2.5 rounded-xl rounded-tl-none leading-relaxed text-justify max-w-[85%]";
-                        loaderNode.innerHTML = aiReply.replace(/\n/g, "<br>");
-                    }
-                } catch(err) {
-                    const loaderNode = document.getElementById(tokenLoaderKey);
-                    if (loaderNode) {
-                        loaderNode.className = "bg-institutional-rose/10 border border-institutional-rose/20 text-institutional-rose p-2.5 rounded-xl rounded-tl-none font-mono";
-                        loaderNode.innerText = "Error parsing cognitive system pipeline responses paths: " + err.message;
-                    }
-                } finally {
-                    CognitiveChat.clearAttachedImage();
-                    textMsgBox.scrollTop = textMsgBox.scrollHeight;
+                    if (!response.ok) throw new Error();
+                    const data = await response.json();
+                    const reply = data.choices[0].message.content;
+
+                    const replyDiv = document.createElement("div");
+                    replyDiv.className = "bg-slate-50 dark:bg-institutional-900 border border-slate-200 dark:border-institutional-800 p-2.5 rounded-xl rounded-tl-none text-justify leading-relaxed";
+                    replyDiv.innerHTML = reply.replace(/\n/g, '<br>');
+                    msgBox.appendChild(replyDiv);
+                    SoundEngine.playChime('analysis_complete');
+
+                } catch(e) {
+                    loadDiv.remove();
+                    const errDiv = document.createElement("div");
+                    errDiv.className = "bg-institutional-rose/10 border border-institutional-rose/30 p-2.5 rounded-xl text-institutional-rose";
+                    errDiv.innerText = "Communication route validation timeout error.";
+                    msgBox.appendChild(errDiv);
+                } {
+                    msgBox.scrollTop = msgBox.scrollHeight;
                 }
             }
         };
