@@ -410,7 +410,7 @@
                         </div>
                         <div class="space-y-1">
                             <label class="block text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wide">Custom Motivational Msg</label>
-                            <input id="configCustomMotivation" type="text" oninput="AppEngine.saveConfigData()" placeholder="Let’s make good and profitable risk" class="w-full bg-white dark:bg-institutional-950 border border-slate-200 dark:border-institutional-800 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-institutional-amber">
+                            <input id="configCustomMotivation" type="text" oninput="AppEngine.saveConfigData()" placeholder="Let's make good and profitable risk" class="w-full bg-white dark:bg-institutional-950 border border-slate-200 dark:border-institutional-800 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-institutional-amber">
                         </div>
                     </div>
 
@@ -867,6 +867,51 @@
             JP225:  { type: 'index', label: 'JP225 (Nikkei)', multiplier: 1, decimals: 1 }
         };
 
+        // ================================================================
+        // STRATEGY DEFINITIONS — drives the strategy dropdown so each of
+        // the 3 options actually produces different AI instructions and
+        // different pass/fail gating inside AnalyticalRulesEngine.
+        // ================================================================
+        const StrategyDefinitions = {
+            flipped_shoulder: {
+                label: "Habby & Michael Flipped Shoulder",
+                aiInstruction: `STRATEGY FOCUS — HABBY & MICHAEL FLIPPED SHOULDER:
+Apply Habby's macro framework combined with Michael's precision execution model.
+HABBY (Daily/4H bias): Classify the market state as trending (Higher-Highs/Higher-Lows for bullish, Lower-Highs/Lower-Lows for bearish) or ranging/consolidating. Draw support/resistance using candle WICKS only. Apply role reversal logic: a broken resistance level becomes new support, and vice versa.
+MICHAEL (1H/15M execution): Once bias is set, locate the Head & Shoulders / ABC structural shift. Identify the "Shoulder" level as the Invalidation Zone (Point of Interest). The POI entry zone must be drawn using candle BODIES only — wicks are invalid for entries. The Stop Loss must sit just beyond the WICK of that same shoulder candle. Do not wait for price to retrace to the "Head" — the shoulder level itself is the valid entry once retested.
+Populate the "habby_michael_analysis" object with your findings.`,
+                schemaAddition: `"habby_michael_analysis": {
+        "market_state": "TRENDING_BULLISH or TRENDING_BEARISH or RANGING",
+        "invalidation_zone_detected": true,
+        "shoulder_body_entry_low": 0.0,
+        "shoulder_body_entry_high": 0.0,
+        "shoulder_wick_stop_level": 0.0
+    },`
+            },
+            liquidity_sweeps: {
+                label: "Pure Order Flow Liquidity Sweeps",
+                aiInstruction: `STRATEGY FOCUS — PURE ORDER FLOW LIQUIDITY SWEEPS:
+Only consider a setup valid if there is a clear liquidity sweep (a stop hunt beyond a prior high/low) visible on the 1H chart, followed by a confirmed reversal signature. Ignore trendlines and generic support/resistance for this strategy. The 15M chart must show a retest of the sweep origin before an entry is considered valid.
+Populate the "liquidity_sweep_analysis" object with your findings.`,
+                schemaAddition: `"liquidity_sweep_analysis": {
+        "sweep_confirmed": true,
+        "sweep_level": 0.0,
+        "reversal_confirmed": true,
+        "retest_confirmed": true
+    },`
+            },
+            market_structure_shift: {
+                label: "HTF Structural Breaker Alignment",
+                aiInstruction: `STRATEGY FOCUS — HTF STRUCTURAL BREAKER ALIGNMENT:
+Only consider a setup valid if the Daily, 4H, and 1H timeframes are all directionally aligned (all bullish or all bearish) AND the 1H shows a confirmed Break of Structure (BOS) / breaker block in that same direction. Reject or flag any setup where the higher timeframes disagree with each other.
+Populate the "htf_breaker_analysis" object with your findings.`,
+                schemaAddition: `"htf_breaker_analysis": {
+        "htf_alignment_confirmed": true,
+        "breaker_block_level": 0.0
+    },`
+            }
+        };
+
         // Master Application Lifecycle Entrypoint Trigger Architecture
         document.addEventListener("DOMContentLoaded", () => {
             AppEngine.initializeInterfaceAssetMenus();
@@ -937,7 +982,7 @@
                             if (customMsg) {
                                 motiv.innerText = customMsg;
                             } else {
-                                motiv.innerText = uName ? `Let’s make good and profitable risk, ${uName}.` : "Let’s make good and profitable risk.";
+                                motiv.innerText = uName ? `Let's make good and profitable risk, ${uName}.` : "Let's make good and profitable risk.";
                             }
                             motiv.classList.remove("opacity-0");
                         }
@@ -1157,7 +1202,7 @@
                 const activeThreat = structuralThreatMatrix[0];
                 AppStore.macroThreatFeeds = [activeThreat];
 
-                fBox.className = "p-2 rounded-lg bg-institutional-rose/10 border border-institutional-rose/30 flex items-center gap-2.5 transition-all duration-300";
+                feedBox.className = "p-2 rounded-lg bg-institutional-rose/10 border border-institutional-rose/30 flex items-center gap-2.5 transition-all duration-300";
                 fIcon.innerHTML = `<i data-lucide="shield-alert" class="w-4 h-4 text-institutional-rose"></i>`;
                 fTitle.innerText = `HIGH IMPACT: ${activeThreat.event}`;
                 fTitle.className = "text-[9px] font-black text-institutional-rose uppercase tracking-wide truncate";
@@ -1242,6 +1287,10 @@
                 badge.className = "bg-institutional-amber text-black rounded-md px-2 py-1 text-[9px] font-black tracking-wider uppercase pulse-element";
                 term.innerHTML = `<p class="text-institutional-amber font-mono text-[11px] uppercase animate-pulse">Running advanced machine vision array configurations... Querying backend intelligence structures.</p>`;
 
+                // Read the active strategy selection from the dropdown so it actually drives the AI prompt and rules engine
+                const selectedStrategyKey = document.getElementById("strategyRulesetSelect").value;
+                const activeStrategyDef = StrategyDefinitions[selectedStrategyKey] || StrategyDefinitions.flipped_shoulder;
+
                 let payloadImages = [];
                 activeUploads.forEach(tf => {
                     payloadImages.push({ type: "text", text: `--- TIME FRAME EVIDENCE REGION IDENTIFIER: ${tf.toUpperCase()} ---` });
@@ -1251,6 +1300,8 @@
                 const structuralContextPrompt = `You are the master automated system data processor node of an institutional trading execution floor dashboard. Your role is to evaluate chart images and output highly specific structural calculations.
 Scan the uploaded visuals for patterns matching the selected strategy. You must return your findings in the exact JSON schema defined inside the code block layout below. Do not output any chat prose or markdown tags outside the strict raw JSON parameters box.
 
+${activeStrategyDef.aiInstruction}
+
 {
     "detected_patterns": ["List any geometries found, e.g., Habby Flipped Shoulder, Liquidity Sweep, Market Structure Shift"],
     "smart_money_components": {
@@ -1258,10 +1309,21 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
         "h4_direction": "BULLISH or BEARISH or CONSOLIDATING",
         "h1_structure": "LIQUIDITY_SWEEP or CHoCH or BOS or NONE",
         "m15_setup": "RETEST or CHoCH or NONE",
-        "order_blocks": true,
-        "fvg_gaps": true,
+        "order_blocks": { "present": true, "zone_low": 0.0, "zone_high": 0.0 },
+        "fvg_gaps": { "present": true, "zone_low": 0.0, "zone_high": 0.0 },
         "market_zone": "PREMIUM or DISCOUNT or EQUILIBRIUM"
     },
+    "pattern_confluence": {
+        "structure_clarity": "HH_HL or LH_LL or UNCLEAR",
+        "support_resistance_respected": true,
+        "supply_demand_zone_present": true,
+        "trendline_present": true,
+        "fakeout_detected": false,
+        "breakout_confirmed": false,
+        "breakout_retested": false,
+        "price_action_signal": "Engulfing or Pin Bar or Rejection Wick or None"
+    },
+    ${activeStrategyDef.schemaAddition}
     "extracted_coordinates": {
         "calculated_entry": 0.0,
         "calculated_stoploss": 0.0
@@ -1316,7 +1378,7 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                     const rawRes = await response.json();
                     const aiExtraction = JSON.parse(rawRes.choices[0].message.content);
 
-                    const calculatedReport = AnalyticalRulesEngine.processMatrixCalculations(aiExtraction, AppStore.activeAsset);
+                    const calculatedReport = AnalyticalRulesEngine.processMatrixCalculations(aiExtraction, AppStore.activeAsset, selectedStrategyKey);
                     AppStore.activeDecisionMetadata = calculatedReport;
 
                     term.innerHTML = AnalyticalRulesEngine.renderReportHTML(calculatedReport);
@@ -1442,9 +1504,10 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
 
         // DETERMINISTIC MATHEMATICAL RULES SYSTEM AND ANALYTICS INTERFACE COMPILER CORE ENGINE
         const AnalyticalRulesEngine = {
-            processMatrixCalculations(aiJson, assetName) {
+            processMatrixCalculations(aiJson, assetName, strategyKey) {
                 let reportTicket = {
                     asset: assetName,
+                    strategy: strategyKey || 'flipped_shoulder',
                     classification: aiJson.trade_classification || "Neutral",
                     confidence: parseInt(aiJson.confidence_score) || 75,
                     patterns: aiJson.detected_patterns || ["Order Flow Structuring Pivot"],
@@ -1457,6 +1520,7 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
 
                 const coord = aiJson.extracted_coordinates || {};
                 const smc = aiJson.smart_money_components || {};
+                const pc = aiJson.pattern_confluence || {};
                 const def = AssetDefinitions[assetName] || { type: 'forex', multiplier: 10000, decimals: 5 };
 
                 let rawE = parseFloat(coord.calculated_entry) || 0;
@@ -1476,6 +1540,30 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                     m15: (smc.m15_setup && smc.m15_setup !== "NONE") ? "PASSED" : "FAILED"
                 };
 
+                // ============================================================
+                // STRATEGY-SPECIFIC GATING — makes each of the 3 dropdown
+                // strategies actually evaluate different criteria instead of
+                // sharing one generic checklist outcome.
+                // ============================================================
+                if (strategyKey === 'flipped_shoulder') {
+                    const hm = aiJson.habby_michael_analysis || {};
+                    if (hm.market_state === 'RANGING') {
+                        reportTicket.checklist.htf = "FAILED";
+                        reportTicket.checklist.h4 = "FAILED";
+                    }
+                    reportTicket.checklist.m15 = hm.invalidation_zone_detected ? reportTicket.checklist.m15 : "FAILED";
+                } else if (strategyKey === 'liquidity_sweeps') {
+                    const ls = aiJson.liquidity_sweep_analysis || {};
+                    reportTicket.checklist.h1 = (smc.h1_structure === "LIQUIDITY_SWEEP" && ls.sweep_confirmed) ? "PASSED" : "FAILED";
+                    reportTicket.checklist.m15 = (smc.m15_setup === "RETEST" && ls.retest_confirmed) ? "PASSED" : "FAILED";
+                } else if (strategyKey === 'market_structure_shift') {
+                    const hb = aiJson.htf_breaker_analysis || {};
+                    const aligned = (smc.daily_bias === smc.h4_direction) && smc.daily_bias !== "CONSOLIDATING" && !!smc.daily_bias;
+                    reportTicket.checklist.htf = aligned ? "PASSED" : "FAILED";
+                    reportTicket.checklist.h4 = aligned ? "PASSED" : "FAILED";
+                    reportTicket.checklist.h1 = (smc.h1_structure === "BOS" && hb.htf_alignment_confirmed) ? "PASSED" : "FAILED";
+                }
+
                 if (reportTicket.checklist.htf === "FAILED" || reportTicket.checklist.h4 === "FAILED" || reportTicket.checklist.h1 === "FAILED" || reportTicket.checklist.m15 === "FAILED") {
                     reportTicket.passed_rules = false;
                     reportTicket.validation_notes = "Technical Strategy Filter Exception: One or more technical timeframe multi-layer synchronization blocks failed validation rule checks.";
@@ -1484,6 +1572,26 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
                 if (reportTicket.confidence < AppStore.config.confidenceThreshold) {
                     reportTicket.passed_rules = false;
                     reportTicket.validation_notes = `Confidence Threshold Safeguard: Calculation confidence index [${reportTicket.confidence}%] fails target system settings filters [${AppStore.config.confidenceThreshold}%].`;
+                }
+
+                // ============================================================
+                // CONFLUENCE GATE — order_blocks, fvg_gaps and market_zone
+                // (plus the broader pattern_confluence readings) now actually
+                // participate in the pass/fail decision instead of being
+                // collected and discarded.
+                // ============================================================
+                let confluenceCount = 0;
+                if (smc.order_blocks && smc.order_blocks.present) confluenceCount++;
+                if (smc.fvg_gaps && smc.fvg_gaps.present) confluenceCount++;
+                if (smc.market_zone && smc.market_zone !== "EQUILIBRIUM") confluenceCount++;
+                if (pc.supply_demand_zone_present) confluenceCount++;
+                if (pc.breakout_confirmed && pc.breakout_retested) confluenceCount++;
+                if (pc.structure_clarity && pc.structure_clarity !== "UNCLEAR") confluenceCount++;
+                reportTicket.confluence_count = confluenceCount;
+
+                if (confluenceCount === 0) {
+                    reportTicket.passed_rules = false;
+                    reportTicket.validation_notes = "Confluence Filter Exception: No Order Block, Fair Value Gap, Premium/Discount zone, Supply/Demand zone, or confirmed breakout/structure confluence detected to support the setup.";
                 }
 
                 let directionalVector = "BUY";
@@ -1938,7 +2046,7 @@ Scan the uploaded visuals for patterns matching the selected strategy. You must 
             clearAttachedImage() {
                 AppStore.chatbotImage = null;
                 document.getElementById("cognitiveImageInput").value = "";
-                document.getElementById("chatImagePreviewBar").classAdd("hidden");
+                document.getElementById("chatImagePreviewBar").classList.add("hidden");
             },
 
             async sendMessage() {
