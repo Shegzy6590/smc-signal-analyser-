@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>SMC-Signal Pro v4.0</title>
+    <title>SMC-Signal Pro v3.0</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons CDN -->
@@ -126,7 +126,7 @@
         <div class="z-10 text-center space-y-6 max-w-md px-6 flex flex-col items-center transition-transform duration-1000 scale-95" id="splashDisplayFrame">
             <div id="splashLogo" class="opacity-0 transition-all duration-1000 transform translate-y-4">
                 <h1 class="text-2xl font-black tracking-tight text-white flex items-center gap-2">
-                    SMC-SIGNAL <span class="text-xs bg-[#f59e0b] text-black font-black px-2 py-0.5 rounded shadow-[0_0_15px_rgba(245,158,11,0.4)]">PRO v4.0</span>
+                    SMC-SIGNAL <span class="text-xs bg-[#f59e0b] text-black font-black px-2 py-0.5 rounded shadow-[0_0_15px_rgba(245,158,11,0.4)]">PRO v3.0</span>
                 </h1>
                 <p class="text-[9px] text-slate-400 uppercase tracking-widest font-bold mt-1">AI Institutional Market Platform</p>
             </div>
@@ -164,7 +164,7 @@
             <div class="flex justify-between items-center">
                 <div>
                     <h1 class="text-xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
-                        SMC-SIGNAL <span class="text-xs bg-institutional-amber text-black font-black px-1.5 py-0.5 rounded">PRO v4.0</span>
+                        SMC-SIGNAL <span class="text-xs bg-institutional-amber text-black font-black px-1.5 py-0.5 rounded">PRO v3.0</span>
                     </h1>
                     <p class="text-[10px] text-slate-400 dark:text-institutional-400 uppercase tracking-widest font-bold mt-0.5">AI Institutional Market Analyst</p>
                 </div>
@@ -321,7 +321,7 @@
                     </label>
                 </div>
 
-                <button id="executeManageBtn" onclick="SoundEngine.playUiSound('click'); AppEngine.executeManagementAnalysis()" class="w-full bg-slate-800 hover:bg-slate-700 dark:bg-institutional-800 dark:hover:bg-slate-700 text-white font-bold py-3 px-4 rounded-xl border border-slate-700 dark:border-institutional-700 transition tracking-wider text-xs uppercase font-mono">
+                <button id="executeManageBtn" onclick="SoundEngine.playUiSound('click'); AppEngine.executeManagementAnalysis()" class="w-full bg-slate-800 hover:bg-slate-700 dark:bg-institutional-800 dark:hover:bg-institutional-700 text-white font-bold py-3 px-4 rounded-xl border border-slate-700 dark:border-institutional-700 transition tracking-wider text-xs uppercase font-mono">
                     Evaluate Live Position Risk Balance
                 </button>
 
@@ -442,44 +442,17 @@
                             <div class="space-y-1">
                                 <label class="block text-[8px] font-black text-slate-400 uppercase">Voice Greeting</label>
                                 <select id="configVoiceGreeting" onchange="AppEngine.saveConfigData()" class="w-full bg-white dark:bg-institutional-900 border border-slate-200 dark:border-institutional-800 rounded px-1.5 py-1 text-xs focus:outline-none">
-                                    <option value="true" selected>☑ ON</option>
-                                    <option value="false">☐ OFF</option>
+                                    <option value="true">☑ ON</option>
+                                    <option value="false" selected>☐ OFF</option>
                                 </select>
                             </div>
                         </div>
-
-                        <!-- PHASE 4 ATLAS VOICE ENGINE APPENDED CONTROLS -->
-                        <div class="grid grid-cols-3 gap-2 text-[10px] pt-1 border-t border-slate-200 dark:border-institutional-800/40">
-                            <div class="space-y-1">
-                                <label class="block text-[8px] font-black text-slate-400 uppercase">Voice Type</label>
-                                <select id="configVoiceType" onchange="AppEngine.saveConfigData()" class="w-full bg-white dark:bg-institutional-900 border border-slate-200 dark:border-institutional-800 rounded px-1.5 py-1 text-xs focus:outline-none">
-                                    <option value="pre_recorded" selected>Pre-recorded</option>
-                                    <option value="future_tts">Future TTS Core</option>
-                                </select>
-                            </div>
-                            <div class="space-y-1">
-                                <label class="block text-[8px] font-black text-slate-400 uppercase">Greeting Style</label>
-                                <select id="configGreetingStyle" onchange="AppEngine.saveConfigData()" class="w-full bg-white dark:bg-institutional-900 border border-slate-200 dark:border-institutional-800 rounded px-1.5 py-1 text-xs focus:outline-none">
-                                    <option value="formal">Formal</option>
-                                    <option value="friendly">Friendly</option>
-                                    <option value="professional" selected>Professional</option>
-                                </select>
-                            </div>
-                            <div class="space-y-1">
-                                <label class="block text-[8px] font-black text-slate-400 uppercase">Time Greeting</label>
-                                <select id="configTimeBasedGreeting" onchange="AppEngine.saveConfigData()" class="w-full bg-white dark:bg-institutional-900 border border-slate-200 dark:border-institutional-800 rounded px-1.5 py-1 text-xs focus:outline-none">
-                                    <option value="true" selected>☑ ON</option>
-                                    <option value="false">☐ OFF</option>
-                                </select>
-                            </div>
-                        </div>
-
                         <div class="space-y-1 pt-1 border-t border-slate-200 dark:border-institutional-800/40">
                             <div class="flex justify-between items-center text-[8px] font-black text-slate-400 uppercase">
                                 <span>Master Volume Slider</span>
-                                <span id="volumeValueLabel">75%</span>
+                                <span id="volumeValueLabel">80%</span>
                             </div>
-                            <input id="configMasterVolume" type="range" min="0" max="100" value="75" oninput="document.getElementById('volumeValueLabel').innerText = this.value + '%'; AppEngine.saveConfigData();" class="w-full accent-amber-500 bg-slate-200 dark:bg-institutional-800 h-1 rounded-lg appearance-none cursor-pointer">
+                            <input id="configMasterVolume" type="range" min="0" max="100" value="80" oninput="document.getElementById('volumeValueLabel').innerText = this.value + '%'; AppEngine.saveConfigData();" class="w-full accent-amber-500 bg-slate-200 dark:bg-institutional-800 h-1 rounded-lg appearance-none cursor-pointer">
                         </div>
                     </div>
 
@@ -557,10 +530,10 @@
 
                 <!-- COMPLETE LEDGER DATABASE LOCAL DATA MANAGEMENT PACKETS COMPONENT ACTIONS -->
                 <div class="bg-slate-50 dark:bg-institutional-900 border border-slate-200 dark:border-institutional-800 rounded-xl p-4 space-y-3">
-                    <h3 class="text-[10px] font-black text-slate-400 dark:text-institutional-400 uppercase tracking-widest border-b border-slate-200 dark:border-institutional-800 pb-1.5 font-mono">4. Database Ledger Sandbox Sandbox Synchronization</h3>
+                    <h3 class="text-[10px] font-black text-slate-400 dark:text-institutional-400 uppercase tracking-widest border-b border-slate-200 dark:border-institutional-800 pb-1.5 font-mono">4. Database Ledger Sandbox Synchronization</h3>
                     <div class="grid grid-cols-2 gap-2">
-                        <button onclick="SoundEngine.playUiSound('click'); JournalSystem.exportDatabase()" class="text-[10px] bg-slate-200 hover:bg-slate-300 dark:bg-institutional-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-black py-2 rounded uppercase font-mono transition">Export Backup Matrix</button>
-                        <label class="text-[10px] bg-slate-200 hover:bg-slate-300 dark:bg-institutional-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-black py-2 rounded uppercase font-mono text-center cursor-pointer transition">
+                        <button onclick="SoundEngine.playUiSound('click'); JournalSystem.exportDatabase()" class="text-[10px] bg-slate-200 hover:bg-slate-300 dark:bg-institutional-800 dark:hover:bg-institutional-700 text-slate-800 dark:text-white font-black py-2 rounded uppercase font-mono transition">Export Backup Matrix</button>
+                        <label class="text-[10px] bg-slate-200 hover:bg-slate-300 dark:bg-institutional-800 dark:hover:bg-institutional-700 text-slate-800 dark:text-white font-black py-2 rounded uppercase font-mono text-center cursor-pointer transition">
                             Import Restore Data
                             <input type="file" accept=".json" class="hidden" onchange="JournalSystem.importDatabase(event)">
                         </label>
@@ -662,11 +635,8 @@
                 startupSound: true,
                 uiSoundEffects: true,
                 notificationSounds: true,
-                voiceGreeting: true,        // Phase 4: Enable Voice Greeting Default: ON
-                voiceType: 'pre_recorded',   // Phase 4: Voice Type Default: Pre-recorded Audio
-                greetingStyle: 'professional', // Phase 4: Greeting Style Default: Professional
-                timeBasedGreeting: true,    // Phase 4: Time Based Greeting Default: ON
-                masterVolume: 75
+                voiceGreeting: false,
+                masterVolume: 80
             },
             activeAsset: 'EURUSD',
             activeDecisionMetadata: null,
@@ -674,248 +644,187 @@
             chatbotImage: null
         };
 
-        // Low-Latency Dedicated Modular Audio Manager Infrastructure Core
+        // Low-Latency Pure Web Audio & Speech Synthesizer Sound System Core
         const SoundEngine = {
             audioCtx: null,
-            cache: {},
-            files: {
-                'startup': '/public/audio/system/startup-chime.mp3',
-                'startup_soft': '/public/audio/system/startup-soft.mp3',
-                'click': '/public/audio/ui/button-click.mp3',
-                'toggle': '/public/audio/ui/toggle.mp3',
-                'select': '/public/audio/ui/select.mp3',
-                'back': '/public/audio/ui/back.mp3',
-                'success': '/public/audio/notification/success.mp3',
-                'warning': '/public/audio/notification/warning.mp3',
-                'error': '/public/audio/notification/error.mp3',
-                'notification': '/public/audio/notification/notification.mp3',
-                'analysis_complete': '/public/audio/notification/analysis-complete.mp3',
-                'buy_signal': '/public/audio/notification/buy-signal.mp3',
-                'sell_signal': '/public/audio/notification/sell-signal.mp3'
-            },
-            initialized: false,
 
-            init() {
-                if (this.initialized) return;
-                try {
+            getctx() {
+                if (!this.audioCtx) {
                     const AudioContext = window.AudioContext || window.webkitAudioContext;
-                    if (AudioContext) {
-                        this.audioCtx = new AudioContext();
-                        this.initialized = true;
-                        this.preloadAll();
-                    }
-                } catch (e) {
-                    console.warn("Audio Context init blocked or unsupported.", e);
+                    if (AudioContext) this.audioCtx = new AudioContext();
                 }
-            },
-
-            unlock() {
-                this.init();
+                // Unlock frozen contexts if needed
                 if (this.audioCtx && this.audioCtx.state === 'suspended') {
-                    this.audioCtx.resume().catch(() => null);
+                    this.audioCtx.resume();
                 }
-            },
-
-            async preloadAll() {
-                const relevantKeys = ['startup', 'startup_soft', 'click', 'toggle', 'select', 'back', 'success', 'warning', 'error', 'notification', 'analysis_complete', 'buy_signal', 'sell_signal'];
-                relevantKeys.forEach(key => {
-                    this.preloadFile(key, this.files[key]);
-                });
-            },
-
-            async preloadFile(key, url) {
-                if (this.cache[key]) return this.cache[key];
-                try {
-                    const response = await fetch(url);
-                    if (!response.ok) return null;
-                    const arrayBuffer = await response.arrayBuffer();
-                    if (this.audioCtx) {
-                        const audioBuffer = await this.audioCtx.decodeAudioData(arrayBuffer);
-                        this.cache[key] = audioBuffer;
-                        return audioBuffer;
-                    }
-                } catch (e) {}
-                return null;
+                return this.audioCtx;
             },
 
             getVolumeGain() {
-                return (AppStore.config.masterVolume ?? 75) / 100;
-            },
-
-            playBuffer(key) {
-                this.unlock();
-                if (!this.audioCtx) return;
-                
-                const buffer = this.cache[key];
-                if (!buffer) return;
-
-                try {
-                    const source = this.audioCtx.createBufferSource();
-                    source.buffer = buffer;
-
-                    const gainNode = this.audioCtx.createGain();
-                    gainNode.gain.setValueAtTime(this.getVolumeGain(), this.audioCtx.currentTime);
-
-                    source.connect(gainNode);
-                    gainNode.connect(this.audioCtx.destination);
-                    source.start(0);
-                } catch (e) {}
+                return (AppStore.config.masterVolume ?? 80) / 100;
             },
 
             playChime(type) {
+                const ctx = this.getctx();
+                if (!ctx) return;
+                const now = ctx.currentTime;
+                const volume = this.getVolumeGain();
+
+                const masterGain = ctx.createGain();
+                masterGain.gain.setValueAtTime(volume * 0.4, now);
+                masterGain.connect(ctx.destination);
+
                 if (type === 'startup') {
-                    if (AppStore.config.startupSound === false) return;
-                    this.playBuffer('startup');
+                    // Soft, Elegant, Futuristic FinTech inspired sequence
+                    const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6 arpeggio
+                    notes.forEach((freq, idx) => {
+                        const osc = ctx.createOscillator();
+                        const gainNode = ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, now + idx * 0.12);
+                        
+                        gainNode.gain.setValueAtTime(0, now + idx * 0.12);
+                        gainNode.gain.linearRampToValueAtTime(0.2, now + idx * 0.12 + 0.04);
+                        gainNode.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.12 + 1.2);
+                        
+                        osc.connect(gainNode);
+                        gainNode.connect(masterGain);
+                        osc.start(now + idx * 0.12);
+                        osc.stop(now + idx * 0.12 + 1.5);
+                    });
                 } else if (type === 'analysis_complete') {
-                    if (AppStore.config.notificationSounds === false) return;
-                    this.playBuffer('analysis_complete');
+                    // Mid frequency harmonic resolution pair
+                    [600, 900].forEach(freq => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, now);
+                        gain.gain.setValueAtTime(0.15, now);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+                        osc.connect(gain);
+                        gain.connect(masterGain);
+                        osc.start(now);
+                        osc.stop(now + 0.7);
+                    });
                 } else if (type === 'signal_generated') {
-                    if (AppStore.config.notificationSounds === false) return;
-                    if (AppStore.activeDecisionMetadata && AppStore.activeDecisionMetadata.verdict === 'BUY') {
-                        this.playBuffer('buy_signal');
-                    } else if (AppStore.activeDecisionMetadata && AppStore.activeDecisionMetadata.verdict === 'SELL') {
-                        this.playBuffer('sell_signal');
-                    } else {
-                        this.playBuffer('notification');
-                    }
+                    // Premium dual-tone notification ring
+                    const osc1 = ctx.createOscillator();
+                    const osc2 = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    
+                    osc1.type = 'sine'; osc1.frequency.setValueAtTime(880, now);
+                    osc2.type = 'sine'; osc2.frequency.setValueAtTime(1320, now + 0.08);
+                    
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+                    
+                    osc1.connect(gain); osc2.connect(gain);
+                    gain.connect(masterGain);
+                    osc1.start(now); osc2.start(now);
+                    osc1.stop(now + 0.9); osc2.stop(now + 0.9);
                 } else if (type === 'success') {
-                    if (AppStore.config.notificationSounds === false) return;
-                    this.playBuffer('success');
+                    // Upward short fourth clean confirmation tone
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(659.25, now); // E5
+                    osc.frequency.setValueAtTime(880.00, now + 0.08); // A5
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                    osc.connect(gain); gain.connect(masterGain);
+                    osc.start(now); osc.stop(now + 0.4);
                 }
             },
 
-            uiSoundEffects(action) {
-                if (AppStore.config.uiSoundEffects === false) return;
-                if (action === 'click' || action === 'panel_open' || action === 'panel_close') {
-                    this.playBuffer('click');
-                } else if (action === 'warning' || action === 'error') {
-                    if (AppStore.config.notificationSounds === false) return;
-                    this.playBuffer(action);
-                } else if (this.files[action]) {
-                    this.playBuffer(action);
-                } else {
-                    this.playBuffer('click'); 
-                }
-            },
-            
             playUiSound(action) {
-                this.uiSoundEffects(action);
-            }
-        };
+                if (AppStore.config.uiSoundEffects === false) return;
+                const ctx = this.getctx();
+                if (!ctx) return;
+                const now = ctx.currentTime;
+                const volume = this.getVolumeGain();
 
-        // PHASE 4: DEDICATED MODULAR VOICE MANAGER ARCHITECTURE
-        const VoiceManager = {
-            queue: [],
-            currentAudio: null,
-            isPlaying: false,
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
 
-            async playTrack(trackKey) {
-                if (!AppStore.config.voiceGreeting) return;
-                if (AppStore.config.startupSound === false) return;
-
-                // Support decoupled substitution of future cloud text-to-speech providers cleanly
-                if (AppStore.config.voiceType === 'future_tts') {
-                    console.log(`[VoiceManager TTS Core] Abstract rendering vocal syntax pipeline for sequence track: ${trackKey}`);
-                    return;
+                if (action === 'click') {
+                    // Short understated operational pop
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(1200, now);
+                    gain.gain.setValueAtTime(volume * 0.05, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+                    osc.start(now); osc.stop(now + 0.05);
+                } else if (action === 'panel_open') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.exponentialRampToValueAtTime(700, now + 0.08);
+                    gain.gain.setValueAtTime(volume * 0.08, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+                    osc.start(now); osc.stop(now + 0.15);
+                } else if (action === 'panel_close') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(700, now);
+                    osc.frequency.exponentialRampToValueAtTime(350, now + 0.08);
+                    gain.gain.setValueAtTime(volume * 0.08, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+                    osc.start(now); osc.stop(now + 0.15);
+                } else if (action === 'warning') {
+                    if (AppStore.config.notificationSounds === false) return;
+                    // Low frequency safe warning tone
+                    const osc2 = ctx.createOscillator();
+                    osc.type = 'sawtooth'; osc2.type = 'sine';
+                    osc.frequency.setValueAtTime(180, now);
+                    osc2.frequency.setValueAtTime(182, now);
+                    gain.gain.setValueAtTime(volume * 0.1, now);
+                    gain.gain.linearRampToValueAtTime(0.02, now + 0.15);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+                    osc2.connect(gain);
+                    osc.start(now); osc2.start(now);
+                    osc.stop(now + 0.45); osc2.stop(now + 0.45);
                 }
+            },
 
-                const voiceFileMap = {
-                    'good_morning': '/public/audio/voice/good-morning.mp3',
-                    'good_afternoon': '/public/audio/voice/good-afternoon.mp3',
-                    'good_evening': '/public/audio/voice/good-evening.mp3',
-                    'good_night': '/public/audio/voice/good-night.mp3',
-                    'welcome_back': '/public/audio/voice/welcome-back.mp3',
-                    'welcome': '/public/audio/voice/welcome.mp3',
-                    'atlas_introduction': '/public/audio/voice/atlas-introduction.mp3',
-                    'ai_ready': '/public/audio/voice/ai-ready.mp3',
-                    'market_ready': '/public/audio/voice/market-ready.mp3',
-                    'lets_make_smart_trades': '/public/audio/voice/lets-make-smart-trades.mp3',
-                    'lets_make_good_profit': '/public/audio/voice/lets-make-good-profit.mp3'
+            triggerVoiceGreeting() {
+                if (AppStore.config.voiceGreeting !== true || !('speechSynthesis' in window)) return;
+                
+                // Construct personalized sentence structures
+                const uName = AppStore.config.displayName ? AppStore.config.displayName : "";
+                const primaryGreet = uName ? `Welcome back, ${uName}. AI trading engine ready.` : "Welcome. AI trading engine ready.";
+                const secondaryMotivation = AppStore.config.customMotivation ? AppStore.config.customMotivation : "Let's make good profit.";
+
+                const utterance1 = new SpeechSynthesisUtterance(primaryGreet);
+                const utterance2 = new SpeechSynthesisUtterance(secondaryMotivation);
+                
+                // Professional calm, neutral accent voice tuning
+                window.speechSynthesis.cancel(); 
+                
+                const configureVoice = (utt) => {
+                    const voices = window.speechSynthesis.getVoices();
+                    // Fallback filtering to acquire clear premium sounding native text speech rendering vectors
+                    const preferredVoice = voices.find(v => v.name.includes('Google US English') || v.name.includes('Natural') || v.lang === 'en-US');
+                    if (preferredVoice) utt.voice = preferredVoice;
+                    utt.rate = 0.92;
+                    utt.pitch = 1.0;
+                    utt.volume = this.getVolumeGain() * 0.85;
                 };
 
-                const url = voiceFileMap[trackKey];
-                if (!url) return;
+                configureVoice(utterance1);
+                configureVoice(utterance2);
 
-                return new Promise((resolve) => {
-                    try {
-                        const audio = new Audio(url);
-                        this.currentAudio = audio;
-                        audio.volume = (AppStore.config.masterVolume ?? 75) / 100;
-
-                        audio.onended = () => {
-                            this.currentAudio = null;
-                            resolve();
-                        };
-                        audio.onerror = () => {
-                            // Fail cleanly and silently without browser errors if track coordinates are missing
-                            this.currentAudio = null;
-                            resolve();
-                        };
-                        audio.play().catch(() => {
-                            resolve();
-                        });
-                    } catch (e) {
-                        resolve();
-                    }
-                });
-            },
-
-            addToQueue(trackKey) {
-                this.queue.push(trackKey);
-                this.processQueue();
-            },
-
-            async processQueue() {
-                if (this.isPlaying) return;
-                this.isPlaying = true;
-
-                while (this.queue.length > 0) {
-                    const track = this.queue.shift();
-                    await this.playTrack(track);
-                }
-
-                this.isPlaying = false;
-            },
-
-            stopGracefully() {
-                this.queue = [];
-                if (this.currentAudio) {
-                    try { this.currentAudio.pause(); } catch(e){}
-                    this.currentAudio = null;
-                }
-                this.isPlaying = false;
-            },
-
-            triggerStartupSequence() {
-                if (!AppStore.config.voiceGreeting) return;
-
-                // 1. Time-Based Greeting Node
-                let timeGreeting = 'good_morning';
-                if (AppStore.config.timeBasedGreeting) {
-                    const hours = new Date().getHours();
-                    if (hours >= 5 && hours < 12) timeGreeting = 'good_morning';
-                    else if (hours >= 12 && hours < 17) timeGreeting = 'good_afternoon';
-                    else if (hours >= 17 && hours < 22) timeGreeting = 'good_evening';
-                    else timeGreeting = 'good_night';
-                }
-                this.addToQueue(timeGreeting);
-
-                // 2. Personal Display Name Integration
-                if (AppStore.config.displayName) {
-                    this.addToQueue('welcome_back');
-                } else {
-                    this.addToQueue('welcome');
-                }
-
-                // 3. Spoken Telemetry Sequences Pipeline
-                this.addToQueue('atlas_introduction');
-                this.addToQueue('ai_ready');
-                this.addToQueue('market_ready');
-                this.addToQueue('lets_make_smart_trades');
-                this.addToQueue('lets_make_good_profit');
+                // Play back commands sequencing structure safely
+                setTimeout(() => {
+                    window.speechSynthesis.speak(utterance1);
+                    utterance1.onend = () => {
+                        setTimeout(() => {
+                            window.speechSynthesis.speak(utterance2);
+                        }, 600);
+                    };
+                }, 300);
             }
         };
 
+        // Complete Extended Financial Instruments Reference Matrix Mapping Database Array
         const AssetDefinitions = {
             EURUSD: { type: 'forex', label: 'EURUSD (Forex)', multiplier: 10000, decimals: 5 },
             GBPUSD: { type: 'forex', label: 'GBPUSD (Forex)', multiplier: 10000, decimals: 5 },
@@ -927,11 +836,38 @@
             EURGBP: { type: 'forex', label: 'EURGBP (Forex)', multiplier: 10000, decimals: 5 },
             EURJPY: { type: 'forex', label: 'EURJPY (Forex)', multiplier: 100, decimals: 3 },
             GBPJPY: { type: 'forex', label: 'GBPJPY (Forex)', multiplier: 100, decimals: 3 },
+            GBPCHF: { type: 'forex', label: 'GBPCHF (Forex)', multiplier: 10000, decimals: 5 },
+            EURAUD: { type: 'forex', label: 'EURAUD (Forex)', multiplier: 10000, decimals: 5 },
+            EURNZD: { type: 'forex', label: 'EURNZD (Forex)', multiplier: 10000, decimals: 5 },
+            AUDNZD: { type: 'forex', label: 'AUDNZD (Forex)', multiplier: 10000, decimals: 5 },
+            AUDJPY: { type: 'forex', label: 'AUDJPY (Forex)', multiplier: 100, decimals: 3 },
+            AUDCAD: { type: 'forex', label: 'AUDCAD (Forex)', multiplier: 10000, decimals: 5 },
+            AUDCHF: { type: 'forex', label: 'AUDCHF (Forex)', multiplier: 10000, decimals: 5 },
+            CADJPY: { type: 'forex', label: 'CADJPY (Forex)', multiplier: 100, decimals: 3 },
+            CHFJPY: { type: 'forex', label: 'CHFJPY (Forex)', multiplier: 100, decimals: 3 },
+            NZDJPY: { type: 'forex', label: 'NZDJPY (Forex)', multiplier: 100, decimals: 3 },
+            NZDCAD: { type: 'forex', label: 'NZDCAD (Forex)', multiplier: 10000, decimals: 5 },
+            NZDCHF: { type: 'forex', label: 'NZDCHF (Forex)', multiplier: 10000, decimals: 5 },
+            GBPAUD: { type: 'forex', label: 'GBPAUD (Forex)', multiplier: 10000, decimals: 5 },
+            GBPCAD: { type: 'forex', label: 'GBPCAD (Forex)', multiplier: 10000, decimals: 5 },
+            GBPNZD: { type: 'forex', label: 'GBPNZD (Forex)', multiplier: 10000, decimals: 5 },
+            EURCAD: { type: 'forex', label: 'EURCAD (Forex)', multiplier: 10000, decimals: 5 },
+            EURCHF: { type: 'forex', label: 'EURCHF (Forex)', multiplier: 10000, decimals: 5 },
             XAUUSD: { type: 'commodity', label: 'XAUUSD (Gold)', multiplier: 10, decimals: 2 },
+            XAGUSD: { type: 'commodity', label: 'XAGUSD (Silver)', multiplier: 100, decimals: 2 },
             BTCUSD: { type: 'crypto', label: 'BTCUSD (Bitcoin)', multiplier: 1, decimals: 2 },
-            NAS100: { type: 'index', label: 'NAS100 (Nasdaq)', multiplier: 1, decimals: 1 }
+            ETHUSD: { type: 'crypto', label: 'ETHUSD (Ethereum)', multiplier: 1, decimals: 2 },
+            SOLUSD: { type: 'crypto', label: 'SOLUSD (Solana)', multiplier: 1, decimals: 2 },
+            BNBUSD: { type: 'crypto', label: 'BNBUSD (Binance)', multiplier: 1, decimals: 2 },
+            US30:   { type: 'index', label: 'US30 (Dow Jones)', multiplier: 1, decimals: 1 },
+            NAS100: { type: 'index', label: 'NAS100 (Nasdaq)', multiplier: 1, decimals: 1 },
+            SPX500: { type: 'index', label: 'SPX500 (S&P 500)', multiplier: 1, decimals: 1 },
+            GER40:  { type: 'index', label: 'GER40 (DAX)', multiplier: 1, decimals: 1 },
+            UK100:  { type: 'index', label: 'UK100 (FTSE)', multiplier: 1, decimals: 1 },
+            JP225:  { type: 'index', label: 'JP225 (Nikkei)', multiplier: 1, decimals: 1 }
         };
 
+        // Master Application Lifecycle Entrypoint Trigger Architecture
         document.addEventListener("DOMContentLoaded", () => {
             AppEngine.initializeInterfaceAssetMenus();
             AppEngine.loadConfigurationSandboxStorage();
@@ -940,24 +876,25 @@
             AppEngine.pollMacroThreatFeeds();
             lucide.createIcons();
             
+            // Global click capture protocol to resolve browser autoplay constraints layers automatically
             const unlockInteractions = () => {
-                SoundEngine.unlock();
+                SoundEngine.getctx();
                 window.removeEventListener('click', unlockInteractions);
                 window.removeEventListener('touchstart', unlockInteractions);
-                window.removeEventListener('keydown', unlockInteractions);
             };
             window.addEventListener('click', unlockInteractions);
             window.addEventListener('touchstart', unlockInteractions);
-            window.addEventListener('keydown', unlockInteractions);
             
             PremiumSplashEngine.executeSequence();
         });
 
+        // Premium Electronic Startup Sound & Overlay Driver Node
         const PremiumSplashEngine = {
             executeSequence() {
                 const splash = document.getElementById("premiumSplashScreen");
                 if (!splash) return;
 
+                // Ambient Background Particle Generator
                 const container = document.getElementById("splashParticles");
                 if (container) {
                     for (let i = 0; i < 24; i++) {
@@ -973,30 +910,26 @@
                     }
                 }
 
-                SoundEngine.playChime('startup');
+                // Autoplay Web Audio API Financial Telemetry Chime Synthesizer
+                if (AppStore.config.startupSound !== false) {
+                    SoundEngine.playChime('startup');
+                }
 
-                // Trigger Phase 4 Spoken Voice Engine greetings layout cleanly following chime launch
-                setTimeout(() => {
-                    VoiceManager.triggerStartupSequence();
-                }, 2200);
-
+                // Step 3: Logo Glow Display Trigger
                 setTimeout(() => {
                     const logo = document.getElementById("splashLogo");
                     if (logo) logo.classList.remove("opacity-0", "translate-y-4");
                 }, 600);
 
+                // Step 4 & 5: Personalized Workspace Greeting Commands Sequence Layout
                 setTimeout(() => {
                     const greet = document.getElementById("splashGreeting");
                     const motiv = document.getElementById("splashMotivation");
                     const uName = AppStore.config.displayName;
                     const customMsg = AppStore.config.customMotivation;
 
-                    const launchedBefore = localStorage.getItem("smc_pro_v4_launched");
-                    const prefix = launchedBefore ? "Welcome Back" : "Welcome";
-                    localStorage.setItem("smc_pro_v4_launched", "true");
-
                     if (greet) {
-                        greet.innerText = uName ? `${prefix}, ${uName}` : `${prefix} to Institutional Access`;
+                        greet.innerText = uName ? `Welcome Back, ${uName}` : "Welcome to Institutional Access";
                         greet.classList.remove("opacity-0", "translate-y-2");
                     }
                     setTimeout(() => {
@@ -1004,13 +937,16 @@
                             if (customMsg) {
                                 motiv.innerText = customMsg;
                             } else {
-                                motiv.innerText = uName ? `Let’s make good profit, ${uName}.` : "Let’s make good profit.";
+                                motiv.innerText = uName ? `Let’s make good and profitable risk, ${uName}.` : "Let’s make good and profitable risk.";
                             }
                             motiv.classList.remove("opacity-0");
                         }
+                        // Execute high quality speech greeting node safely if requested by preferences
+                        SoundEngine.triggerVoiceGreeting();
                     }, 800);
                 }, 1600);
 
+                // Telemetry Rotating Engine Installation Feedback Streams Matrix Loop Check
                 const matrices = [
                     "Initializing Institutional Market Engine…",
                     "Synchronizing Strategy Matrix…",
@@ -1045,15 +981,12 @@
                     }
                 }, 600);
 
+                // Premium Platform Reveal Alpha Blend Transition (7.8 Seconds Duration Config)
                 setTimeout(() => {
                     const frame = document.getElementById("splashDisplayFrame");
                     if (frame) frame.classList.add("scale-105");
                     splash.style.opacity = "0";
-                    setTimeout(() => {
-                        splash.remove();
-                        // Stop vocality arrays gracefully if overlay finishes loading early
-                        VoiceManager.stopGracefully();
-                    }, 1000);
+                    setTimeout(() => splash.remove(), 1000);
                 }, 7800);
             }
         };
@@ -1107,6 +1040,7 @@
                     } catch (e) { console.error("Fault parsing configuration matrix backup", e); }
                 }
 
+                // Hydrate all DOM input fields inside settings tab dynamically
                 document.getElementById("configApiKey").value = AppStore.config.apiKey || '';
                 document.getElementById("configAiProvider").value = AppStore.config.aiProvider || 'github_models';
                 document.getElementById("configModelSelection").value = AppStore.config.modelSelection || 'openai/gpt-4o-mini';
@@ -1122,20 +1056,15 @@
                 document.getElementById("configTgToken").value = AppStore.config.tgToken || '';
                 document.getElementById("configTgChatId").value = AppStore.config.tgChatId || '';
                 
+                // Hydrate Injected Identity & Experience fields
                 document.getElementById("configDisplayName").value = AppStore.config.displayName || '';
                 document.getElementById("configCustomMotivation").value = AppStore.config.customMotivation || '';
                 document.getElementById("configStartupSound").value = AppStore.config.startupSound !== false ? "true" : "false";
                 document.getElementById("configUiSoundEffects").value = AppStore.config.uiSoundEffects !== false ? "true" : "false";
                 document.getElementById("configNotificationSounds").value = AppStore.config.notificationSounds !== false ? "true" : "false";
-                document.getElementById("configVoiceGreeting").value = AppStore.config.voiceGreeting !== false ? "true" : "false";
-                
-                // Hydrate Appended Phase 4 Elements
-                document.getElementById("configVoiceType").value = AppStore.config.voiceType || 'pre_recorded';
-                document.getElementById("configGreetingStyle").value = AppStore.config.greetingStyle || 'professional';
-                document.getElementById("configTimeBasedGreeting").value = AppStore.config.timeBasedGreeting !== false ? "true" : "false";
-                
-                document.getElementById("configMasterVolume").value = AppStore.config.masterVolume ?? 75;
-                document.getElementById("volumeValueLabel").innerText = (AppStore.config.masterVolume ?? 75) + '%';
+                document.getElementById("configVoiceGreeting").value = AppStore.config.voiceGreeting === true ? "true" : "false";
+                document.getElementById("configMasterVolume").value = AppStore.config.masterVolume ?? 80;
+                document.getElementById("volumeValueLabel").innerText = (AppStore.config.masterVolume ?? 80) + '%';
 
                 this.applyInterfaceThemeVariant();
             },
@@ -1156,19 +1085,14 @@
                 AppStore.config.tgToken = document.getElementById("configTgToken").value.trim();
                 AppStore.config.tgChatId = document.getElementById("configTgChatId").value.trim();
                 
+                // Save Personalized Variable Targets
                 AppStore.config.displayName = document.getElementById("configDisplayName").value.trim();
                 AppStore.config.customMotivation = document.getElementById("configCustomMotivation").value.trim();
                 AppStore.config.startupSound = document.getElementById("configStartupSound").value === "true";
                 AppStore.config.uiSoundEffects = document.getElementById("configUiSoundEffects").value === "true";
                 AppStore.config.notificationSounds = document.getElementById("configNotificationSounds").value === "true";
                 AppStore.config.voiceGreeting = document.getElementById("configVoiceGreeting").value === "true";
-                
-                // Store Appended Phase 4 Core Inputs
-                AppStore.config.voiceType = document.getElementById("configVoiceType").value;
-                AppStore.config.greetingStyle = document.getElementById("configGreetingStyle").value;
-                AppStore.config.timeBasedGreeting = document.getElementById("configTimeBasedGreeting").value === "true";
-                
-                AppStore.config.masterVolume = parseInt(document.getElementById("configMasterVolume").value) ?? 75;
+                AppStore.config.masterVolume = parseInt(document.getElementById("configMasterVolume").value) ?? 80;
 
                 localStorage.setItem("smc_pro_v3_config_payload", JSON.stringify(AppStore.config));
                 SoundEngine.playChime('success');
@@ -1212,7 +1136,7 @@
             async pollMacroThreatFeeds() {
                 const overlay = document.getElementById("threatStateOverlay");
                 const indicator = document.getElementById("volatilityIndicator");
-                const fBox = document.getElementById("macroAlertFeedBox");
+                const feedBox = document.getElementById("macroAlertFeedBox");
                 const fIcon = document.getElementById("macroFeedIcon");
                 const fTitle = document.getElementById("macroFeedTitle");
                 const fDesc = document.getElementById("macroFeedDesc");
@@ -1226,7 +1150,8 @@
 
                 const structuralThreatMatrix = [
                     { event: "NFP Employment Displacements", market: "USD", impact: "High", directive: "Avoid Trade", desc: "Extreme liquidity pools clearing expected around lower timeframe horizons." },
-                    { event: "FOMC Fund Rate Premium Assessment", market: "USD", impact: "High", directive: "Avoid Trade", desc: "Central Bank adjustments underway. Retain liquidity buffer limits." }
+                    { event: "FOMC Fund Rate Premium Assessment", market: "USD", impact: "High", directive: "Avoid Trade", desc: "Central Bank adjustments underway. Retain liquidity buffer limits." },
+                    { event: "Core CPI Inflation Report Stream", market: "EUR", impact: "Medium", directive: "Trade With Caution", desc: "Imbalance mitigation sweeps projected at London session cross." }
                 ];
 
                 const activeThreat = structuralThreatMatrix[0];
@@ -1241,11 +1166,19 @@
                 indicator.className = "text-institutional-rose font-black";
 
                 overlay.classList.remove("hidden");
-                overlay.className = "rounded-xl p-3 border border-institutional-rose/30 bg-institutional-rose/10 flex items-center justify-between gap-3 text-slate-900 dark:text-white";
-                document.getElementById("threatStateTitle").innerText = `⚠️ SYSTEM RISK WARNING: Avoid Trade`;
-                document.getElementById("threatStateDesc").innerText = `${activeThreat.event} is triggering extreme macro imbalance volatility arrays.`;
-                document.getElementById("threatStateBadge").className = "text-[9px] font-black px-2 py-1 rounded bg-institutional-rose text-white uppercase tracking-wider shrink-0";
-                document.getElementById("threatStateBadge").innerText = "CRITICAL RISK";
+                if (activeThreat.directive === "Avoid Trade") {
+                    overlay.className = "rounded-xl p-3 border border-institutional-rose/30 bg-institutional-rose/10 flex items-center justify-between gap-3 text-slate-900 dark:text-white";
+                    document.getElementById("threatStateTitle").innerText = `⚠️ SYSTEM RISK WARNING: Avoid Trade`;
+                    document.getElementById("threatStateDesc").innerText = `${activeThreat.event} is triggering extreme macro imbalance volatility arrays.`;
+                    document.getElementById("threatStateBadge").className = "text-[9px] font-black px-2 py-1 rounded bg-institutional-rose text-white uppercase tracking-wider shrink-0";
+                    document.getElementById("threatStateBadge").innerText = "CRITICAL RISK";
+                } else {
+                    overlay.className = "rounded-xl p-3 border border-institutional-amber/30 bg-institutional-amber/10 flex items-center justify-between gap-3 text-slate-900 dark:text-white";
+                    document.getElementById("threatStateTitle").innerText = `⚡ OPERATIONAL ALERT: Caution Condition`;
+                    document.getElementById("threatStateDesc").innerText = `${activeThreat.event} matches mid-tier risk adjustments profiles.`;
+                    document.getElementById("threatStateBadge").className = "text-[9px] font-black px-2 py-1 rounded bg-institutional-amber text-black uppercase tracking-wider shrink-0";
+                    document.getElementById("threatStateBadge").innerText = "CAUTION ACTIVED";
+                }
                 lucide.createIcons();
             },
 
@@ -1315,12 +1248,51 @@
                     payloadImages.push({ type: "image_url", image_url: { url: `data:image/jpeg;base64,${AppStore.evidencePayload[tf]}` } });
                 });
 
-                const structuralContextPrompt = `You are the master automated system data processor node of an institutional trading floor dashboard. Analyze visuals and return findings matching strict JSON format.\n\nJSON Output Format Target Schema:\n{\n    "detected_patterns": ["Pattern Name"],\n    "smart_money_components": { "daily_bias": "BULLISH", "h4_direction": "BULLISH", "h1_structure": "BOS", "m15_setup": "RETEST", "order_blocks": true, "fvg_gaps": true, "market_zone": "DISCOUNT" },\n    "extracted_coordinates": { "calculated_entry": 1.0820, "calculated_stoploss": 1.0790 },\n    "trade_classification": "Safe",\n    "confidence_score": 85,\n    "probabilities": { "tp_hit_percentage": 70, "sl_hit_percentage": 30 },\n    "metrics": { "estimated_move_pips": 60, "estimated_time_target": "4h" },\n    "report": { "position_health_summary": "Allocation safe.", "technical_strengths": ["HTF bias alignment"], "technical_weaknesses": ["Minor macro friction"], "market_bias_verdict": "BULLISH FLOW", "recommended_action": "EXECUTE MEDIUM POSITION ALLOCATION RISK", "explanation": "Complete structural verification match completed across interbank matrix streams." }\n}`;
+                const structuralContextPrompt = `You are the master automated system data processor node of an institutional trading execution floor dashboard. Your role is to evaluate chart images and output highly specific structural calculations.
+Scan the uploaded visuals for patterns matching the selected strategy. You must return your findings in the exact JSON schema defined inside the code block layout below. Do not output any chat prose or markdown tags outside the strict raw JSON parameters box.
+
+{
+    "detected_patterns": ["List any geometries found, e.g., Habby Flipped Shoulder, Liquidity Sweep, Market Structure Shift"],
+    "smart_money_components": {
+        "daily_bias": "BULLISH or BEARISH or CONSOLIDATING",
+        "h4_direction": "BULLISH or BEARISH or CONSOLIDATING",
+        "h1_structure": "LIQUIDITY_SWEEP or CHoCH or BOS or NONE",
+        "m15_setup": "RETEST or CHoCH or NONE",
+        "order_blocks": true,
+        "fvg_gaps": true,
+        "market_zone": "PREMIUM or DISCOUNT or EQUILIBRIUM"
+    },
+    "extracted_coordinates": {
+        "calculated_entry": 0.0,
+        "calculated_stoploss": 0.0
+    },
+    "trade_classification": "Very Safe or Safe or Neutral or Caution or High Risk or Exit Immediately",
+    "probabilities": {
+        "tp_hit_percentage": 75,
+        "sl_hit_percentage": 25
+    },
+    "metrics": {
+        "estimated_move_pips": 45,
+        "estimated_time_target": "2h 45m"
+    },
+    "report": {
+        "position_health_summary": "Provide structured capital allocation health statement.",
+        "technical_strengths": ["Detail explicit structural logic confirmations."],
+        "technical_weaknesses": ["Detail counter structural points or macro noise elements."],
+        "market_bias_verdict": "Provide descriptive trend synchronization logic state overview.",
+        "recommended_action": "Detailed execution instructions guide.",
+        "explanation": "Absolute explicit details decoding the entire scenario summary logic layout."
+    }
+}`;
 
                 payloadImages.unshift({ type: "text", text: structuralContextPrompt });
 
-                let requestEndpoint = AppStore.config.aiProvider === "openai_direct" ? "https://api.openai.com/v1/chat/completions" : "https://models.github.ai/inference/chat/completions";
+                let requestEndpoint = "https://models.github.ai/inference/chat/completions";
                 let authHeader = `Bearer ${AppStore.config.apiKey}`;
+
+                if (AppStore.config.aiProvider === "openai_direct") {
+                    requestEndpoint = "https://api.openai.com/v1/chat/completions";
+                }
 
                 try {
                     const response = await fetch(requestEndpoint, {
@@ -1436,7 +1408,7 @@
 
             async routeTelegramNotification(ticket) {
                 if (!AppStore.config.tgToken || !AppStore.config.tgChatId) return;
-                const bodyMsg = `🚀 SMC METRICS BROADCAST 🚀\n\nAsset: ${ticket.asset}\nVerdict: ${ticket.verdict}\nConfidence: ${ticket.confidence}%\nEntry: ${ticket.entry}\nSL: ${ticket.stop_loss}\nTP3: ${ticket.tp3}\nAction: ${ticket.report.recommended_action}`;
+                const bodyMsg = `🚀 SMC-SIGNAL PRO ARCHITECTURE METRICS BROADCAST 🚀\n\nAsset Pair Target: ${ticket.asset}\nClassification Rank Layer: ${ticket.classification}\nConfidence Index Score: ${ticket.confidence}%\n\nEntry Area Pocket: ${ticket.entry}\nStop Level Bound: ${ticket.stop_loss}\nObjective Target TP3 Matrix: ${ticket.tp3}\n\nRecommended Directive Strategy: ${ticket.report.recommended_action}`;
                 
                 await fetch(`https://api.telegram.org/bot${AppStore.config.tgToken}/sendMessage`, {
                     method: "POST",
@@ -1460,7 +1432,7 @@
             },
 
             hardResetApplication() {
-                if (confirm("🚨 WARNING CRITICAL ACTION: Perform absolute data deletion wipe on local configurations storage frameworks?")) {
+                if (confirm("🚨 WARNING CRITICAL ACTION: Perform absolute data deletion wipe on local configurations storage frameworks? This action will reset the application configuration instance completely.")) {
                     localStorage.removeItem("smc_pro_v3_config_payload");
                     localStorage.removeItem("smc_pro_v3_journal_vault");
                     window.location.reload();
@@ -1468,6 +1440,7 @@
             }
         };
 
+        // DETERMINISTIC MATHEMATICAL RULES SYSTEM AND ANALYTICS INTERFACE COMPILER CORE ENGINE
         const AnalyticalRulesEngine = {
             processMatrixCalculations(aiJson, assetName) {
                 let reportTicket = {
@@ -1492,7 +1465,7 @@
                 if (rawE === 0 || rawSl === 0 || rawE === rawSl) {
                     reportTicket.classification = "Exit Immediately";
                     reportTicket.passed_rules = false;
-                    reportTicket.validation_notes = "Coordinate System Scaling Trace Failure: Machine Vision parsing exception.";
+                    reportTicket.validation_notes = "Coordinate System Scaling Trace Failure: Machine Vision engine could not parse absolute numerical data values from the chart canvas scaling layout safely.";
                     return reportTicket;
                 }
 
@@ -1505,12 +1478,12 @@
 
                 if (reportTicket.checklist.htf === "FAILED" || reportTicket.checklist.h4 === "FAILED" || reportTicket.checklist.h1 === "FAILED" || reportTicket.checklist.m15 === "FAILED") {
                     reportTicket.passed_rules = false;
-                    reportTicket.validation_notes = "Technical Strategy Filter Exception: Timeline synchronization mismatched.";
+                    reportTicket.validation_notes = "Technical Strategy Filter Exception: One or more technical timeframe multi-layer synchronization blocks failed validation rule checks.";
                 }
 
                 if (reportTicket.confidence < AppStore.config.confidenceThreshold) {
                     reportTicket.passed_rules = false;
-                    reportTicket.validation_notes = `Confidence Cutoff Safeguard Breached.`;
+                    reportTicket.validation_notes = `Confidence Threshold Safeguard: Calculation confidence index [${reportTicket.confidence}%] fails target system settings filters [${AppStore.config.confidenceThreshold}%].`;
                 }
 
                 let directionalVector = "BUY";
@@ -1522,6 +1495,10 @@
                 if (enforcedPips < minSlConfig) enforcedPips = minSlConfig;
                 if (enforcedPips > 250) enforcedPips = 250;
 
+                if (structuralPips < minSlConfig || structuralPips > 250) {
+                    reportTicket.validation_notes = `Risk Parameter Corridor Breach: Stop loss calculated metrics [${structuralPips.toFixed(1)} Pips] violates structural interbank safety bounds (Min: ${minSlConfig}, Max: 250 Pips). Automatically corrected to ${enforcedPips} pips.`;
+                }
+
                 let finalSl = rawSl;
                 if (directionalVector === "BUY") {
                     finalSl = rawE - (enforcedPips / def.multiplier);
@@ -1530,16 +1507,68 @@
                 }
 
                 let finalRiskDelta = Math.abs(rawE - finalSl);
-                let m3 = parseFloat(AppStore.config.targetRr) || 3.0;
+                let m1 = 2.0;
+                let m2 = 3.0;
+                let m3 = parseFloat(AppStore.config.targetRr) || 4.0;
+                if (m3 <= 3.0) {
+                    m3 = 4.0;
+                }
 
-                let finalTp1 = directionalVector === "BUY" ? rawE + (2.0 * finalRiskDelta) : rawE - (2.0 * finalRiskDelta);
-                let finalTp2 = directionalVector === "BUY" ? rawE + (3.0 * finalRiskDelta) : rawE - (3.0 * finalRiskDelta);
-                let finalTp3 = directionalVector === "BUY" ? rawE + (m3 * finalRiskDelta) : rawE - (m3 * finalRiskDelta);
+                let finalTp1, finalTp2, finalTp3;
+                if (directionalVector === "BUY") {
+                    finalTp1 = rawE + (m1 * finalRiskDelta);
+                    finalTp2 = rawE + (m2 * finalRiskDelta);
+                    finalTp3 = rawE + (m3 * finalRiskDelta);
+                } else {
+                    finalTp1 = rawE - (m1 * finalRiskDelta);
+                    finalTp2 = rawE - (m2 * finalRiskDelta);
+                    finalTp3 = rawE - (m3 * finalRiskDelta);
+                }
 
-                if (!reportTicket.passed_rules) {
+                let validationAttempts = 0;
+                while (validationAttempts < 5) {
+                    let checkPips = Math.abs(rawE - finalSl) * def.multiplier;
+                    let slInRange = (checkPips >= (minSlConfig - 0.1) && checkPips <= 250.1);
+                    
+                    let checkTp1R = Math.abs(finalTp1 - rawE) / finalRiskDelta;
+                    let checkTp2R = Math.abs(finalTp2 - rawE) / finalRiskDelta;
+                    let checkTp3R = Math.abs(finalTp3 - rawE) / finalRiskDelta;
+                    
+                    let tp1Exactly2R = Math.abs(checkTp1R - 2.0) < 0.01;
+                    let tp2Exactly3R = Math.abs(checkTp2R - 3.0) < 0.01;
+                    let tp3ExactlyMR = Math.abs(checkTp3R - m3) < 0.01;
+                    
+                    let orderingIsCorrect = false;
+                    if (directionalVector === "BUY") {
+                        orderingIsCorrect = (rawE < finalTp1) && (finalTp1 < finalTp2) && (finalTp2 < finalTp3) && (finalSl < rawE);
+                    } else {
+                        orderingIsCorrect = (rawE > finalTp1) && (finalTp1 > finalTp2) && (finalTp2 > finalTp3) && (finalSl > rawE);
+                    }
+                    
+                    if (slInRange && tp1Exactly2R && tp2Exactly3R && tp3ExactlyMR && orderingIsCorrect) {
+                        break;
+                    } else {
+                        if (directionalVector === "BUY") {
+                            finalSl = rawE - (enforcedPips / def.multiplier);
+                            finalRiskDelta = Math.abs(rawE - finalSl);
+                            finalTp1 = rawE + (2.0 * finalRiskDelta);
+                            finalTp2 = rawE + (3.0 * finalRiskDelta);
+                            finalTp3 = rawE + (m3 * finalRiskDelta);
+                        } else {
+                            finalSl = rawE + (enforcedPips / def.multiplier);
+                            finalRiskDelta = Math.abs(rawE - finalSl);
+                            finalTp1 = rawE - (2.0 * finalRiskDelta);
+                            finalTp2 = rawE - (3.0 * finalRiskDelta);
+                            finalTp3 = rawE - (m3 * finalRiskDelta);
+                        }
+                    }
+                    validationAttempts++;
+                }
+
+                if (!reportTicket.passed_rules && !reportTicket.validation_notes.includes("Corridor Breach")) {
                     reportTicket.verdict = "STAND DOWN";
                     reportTicket.classification = "Exit Immediately";
-                    reportTicket.report.recommended_action = "STAND DOWN: NO TRADE STRUCTURE ALIGNMENT";
+                    reportTicket.report.recommended_action = "STAND DOWN: NO TRADE";
                 } else {
                     reportTicket.verdict = directionalVector;
                 }
@@ -1549,234 +1578,403 @@
                 reportTicket.tp1 = finalTp1.toFixed(def.decimals);
                 reportTicket.tp2 = finalTp2.toFixed(def.decimals);
                 reportTicket.tp3 = finalTp3.toFixed(def.decimals);
+                reportTicket.pip_distance = Math.abs(parseFloat(reportTicket.entry) - parseFloat(reportTicket.stop_loss)) * def.multiplier;
+                reportTicket.rr_efficiency = `1:${m3.toFixed(1)}`;
 
                 return reportTicket;
             },
 
-            renderReportHTML(t) {
-                const colorClass = t.verdict === "BUY" ? "text-institutional-emerald" : (t.verdict === "SELL" ? "text-institutional-rose" : "text-institutional-amber");
+            renderReportHTML(ticket) {
+                let verdictColor = "text-slate-400";
+                if (ticket.verdict === "BUY") verdictColor = "text-institutional-emerald";
+                if (ticket.verdict === "SELL") verdictColor = "text-institutional-rose";
+
+                let htfCheckStyle = ticket.checklist.htf === "PASSED" ? "text-institutional-emerald" : "text-institutional-rose";
+                let h4CheckStyle = ticket.checklist.h4 === "PASSED" ? "text-institutional-emerald" : "text-institutional-rose";
+                let h1CheckStyle = ticket.checklist.h1 === "PASSED" ? "text-institutional-emerald" : "text-institutional-rose";
+                let m15CheckStyle = ticket.checklist.m15 === "PASSED" ? "text-institutional-emerald" : "text-institutional-rose";
+
+                let strengthsLi = ticket.report.technical_strengths.map(s => `<li>• ${s}</li>`).join('');
+                let weaknessesLi = ticket.report.technical_weaknesses.map(w => `<li>• ${w}</li>`).join('');
+
                 return `
-                    <div class="space-y-3 font-mono text-xs">
-                        <div class="flex justify-between items-center border-b border-slate-200 dark:border-institutional-800 pb-2">
-                            <span class="text-[11px] font-black uppercase tracking-wider">VERDICT: <span class="${colorClass}">${t.verdict}</span></span>
-                            <span class="text-[10px] bg-slate-200 dark:bg-institutional-800 px-2 py-0.5 rounded font-bold">${t.classification}</span>
+                    <div class="space-y-4 font-sans text-xs">
+                        <div class="bg-white dark:bg-institutional-950 p-4 rounded-xl border border-slate-200 dark:border-institutional-800 space-y-1.5 shadow-sm">
+                            <p class="text-[9px] font-black tracking-widest uppercase text-slate-400 font-mono">Core Strategy Verdict</p>
+                            <div class="flex items-center justify-between">
+                                <h4 class="text-2xl font-black font-mono tracking-tight ${verdictColor}">${ticket.verdict}</h4>
+                                <div class="px-2.5 py-1 rounded text-[10px] font-black border tracking-wider font-mono bg-institutional-amber/10 text-institutional-amber border-institutional-amber/30">
+                                    CONFIDENCE: ${ticket.confidence}%
+                                </div>
+                            </div>
+                            ${ticket.validation_notes ? `
+                                <div class="mt-2 p-2 rounded bg-institutional-rose/10 border border-institutional-rose/20 text-institutional-rose font-mono text-[9px] leading-tight">
+                                    <strong>STRATEGY ENFORCEMENT NOTICE:</strong> ${ticket.validation_notes}
+                                </div>
+                            ` : ''}
                         </div>
-                        <div class="grid grid-cols-2 gap-2 text-[10px]">
-                            <div><span class="text-slate-400">Entry:</span> <span class="font-bold text-slate-900 dark:text-white">${t.entry}</span></div>
-                            <div><span class="text-slate-400">Stop Loss:</span> <span class="font-bold text-institutional-rose">${t.stop_loss}</span></div>
-                            <div><span class="text-slate-400">Target TP1:</span> <span class="font-bold text-institutional-emerald">${t.tp1}</span></div>
-                            <div><span class="text-slate-400">Target TP2:</span> <span class="font-bold text-institutional-emerald">${t.tp2}</span></div>
-                            <div><span class="text-slate-400">Target TP3:</span> <span class="font-bold text-institutional-emerald">${t.tp3}</span></div>
+
+                        <div class="bg-white dark:bg-institutional-950 p-4 rounded-xl border border-slate-200 dark:border-institutional-800 space-y-2.5 font-mono text-[10px]">
+                            <p class="text-[9px] font-black tracking-widest uppercase text-slate-400">Cascading Checklist Diagnostics</p>
+                            <div class="space-y-1.5">
+                                <div class="flex justify-between items-center border-b border-slate-100 dark:border-institutional-900/60 pb-1">
+                                    <span class="text-slate-500 dark:text-institutional-400">Higher Timeframe Bias Formed</span>
+                                    <span class="${htfCheckStyle} font-black tracking-wider">${ticket.checklist.htf} ${ticket.checklist.htf === 'PASSED' ? '✓' : '✕'}</span>
+                                </div>
+                                <div class="flex justify-between items-center border-b border-slate-100 dark:border-institutional-900/60 pb-1">
+                                    <span class="text-slate-500 dark:text-institutional-400">4H Structural Flow Alignment</span>
+                                    <span class="${h4CheckStyle} font-black tracking-wider">${ticket.checklist.h4} ${ticket.checklist.h4 === 'PASSED' ? '✓' : '✕'}</span>
+                                </div>
+                                <div class="flex justify-between items-center border-b border-slate-100 dark:border-institutional-900/60 pb-1">
+                                    <span class="text-slate-500 dark:text-institutional-400">1H Liquidity Grab Engine Sweep</span>
+                                    <span class="${h1CheckStyle} font-black tracking-wider">${ticket.checklist.h1} ${ticket.checklist.h1 === 'PASSED' ? '✓' : '✕'}</span>
+                                </div>
+                                <div class="flex justify-between items-center pb-0.5">
+                                    <span class="text-slate-500 dark:text-institutional-400">15M Execution Setup Retest</span>
+                                    <span class="${m15CheckStyle} font-black tracking-wider">${ticket.checklist.m15} ${ticket.checklist.m15 === 'PASSED' ? '✓' : '✕'}</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="border-t border-slate-200 dark:border-institutional-800 pt-2 space-y-1 text-[10px]">
-                            <div><span class="text-slate-400">Probability Engine:</span> <span class="text-institutional-emerald font-bold">TP Hit ${t.probabilities.tp_hit_percentage}%</span> / <span class="text-institutional-rose font-bold">SL Hit ${t.probabilities.sl_hit_percentage}%</span></div>
-                            <div><span class="text-slate-400">Expected Move:</span> <span class="text-slate-900 dark:text-white font-bold">${t.metrics.estimated_move_pips} Pips</span> in ~${t.metrics.estimated_time_target}</div>
+
+                        <div class="grid grid-cols-2 gap-3 font-mono text-[10px]">
+                            <div class="bg-white dark:bg-institutional-950 p-2.5 rounded-xl border border-slate-200 dark:border-institutional-800 space-y-1">
+                                <p class="text-slate-400 text-[8px] uppercase font-black tracking-widest">Probability Models Matrix</p>
+                                <p class="text-institutional-emerald font-bold">Chance of TP Hit: <strong class="text-slate-900 dark:text-white">${ticket.probabilities.tp_hit_percentage}%</strong></p>
+                                <p class="text-institutional-rose font-bold">Chance of SL Hit: <strong class="text-slate-900 dark:text-white">${ticket.probabilities.sl_hit_percentage}%</strong></p>
+                            </div>
+                            <div class="bg-white dark:bg-institutional-950 p-2.5 rounded-xl border border-slate-200 dark:border-institutional-800 space-y-1">
+                                <p class="text-slate-400 text-[8px] uppercase font-black tracking-widest">Residual Movement Targets</p>
+                                <p class="text-institutional-amber font-bold">Est Move Pips: <strong class="text-slate-900 dark:text-white">${ticket.metrics.estimated_move_pips} Pips</strong></p>
+                                <p class="text-slate-500 font-bold">Est Time Horizon: <strong class="text-slate-900 dark:text-white">${ticket.metrics.estimated_time_target}</strong></p>
+                            </div>
                         </div>
-                        <div class="bg-white dark:bg-institutional-950 p-2.5 rounded-lg border border-slate-200 dark:border-institutional-800 space-y-1.5 text-[11px] leading-relaxed">
-                            <p class="font-black text-slate-400 uppercase text-[9px] tracking-widest font-mono">Institutional Directive Report</p>
-                            <p class="font-semibold text-slate-800 dark:text-slate-200">${t.report.recommended_action}</p>
-                            <p class="text-slate-500 dark:text-slate-400 font-medium text-justify">${t.report.explanation}</p>
+
+                        <div class="bg-white dark:bg-institutional-950 border border-slate-200 dark:border-institutional-800 rounded-xl p-3 space-y-2 font-mono text-[10px]">
+                            <h5 class="text-center text-[9px] text-institutional-amber font-black tracking-widest uppercase border-b border-slate-200 dark:border-institutional-800/60 pb-1.5">Target Execution Coefficients Matrix</h5>
+                            <div class="grid grid-cols-2 gap-x-4 gap-y-1.5 text-slate-700 dark:text-slate-300">
+                                <p>ENTRY POCKET : <strong class="text-slate-900 dark:text-white font-black">${ticket.entry}</strong></p>
+                                <p>STOP INVAL   : <strong class="text-institutional-rose font-black">${ticket.stop_loss}</strong></p>
+                                <p>TARGET TP1   : <span class="text-slate-900 dark:text-white">${ticket.tp1}</span></p>
+                                <p>TARGET TP2   : <span class="text-slate-900 dark:text-white">${ticket.tp2}</span></p>
+                                <p>TARGET TP3   : <span class="text-institutional-emerald font-black">${ticket.tp3}</span></p>
+                                <p>STOP BUFFER  : <span class="text-institutional-amber font-black">${ticket.pip_distance.toFixed(1)} Pips</span></p>
+                            </div>
+                            <div class="text-[9px] text-center pt-1.5 border-t border-slate-200 dark:border-institutional-800/40 text-slate-400 uppercase">
+                                COMPUTED RISK REWARD EFFICIENCY ACCRUAL: <strong class="text-slate-900 dark:text-white">${ticket.rr_efficiency}</strong>
+                            </div>
                         </div>
-                        ${t.validation_notes ? `<div class="bg-amber-500/10 border border-amber-500/20 rounded-lg p-2 text-[10px] text-amber-600 dark:text-amber-400 font-medium font-mono leading-tight">⚠️ ${t.validation_notes}</div>` : ''}
+
+                        <div class="bg-white dark:bg-institutional-950 border border-slate-200 dark:border-institutional-800 rounded-xl p-3 space-y-2 text-slate-700 dark:text-slate-300">
+                            <div>
+                                <span class="text-[8px] font-black tracking-widest uppercase text-slate-400 font-mono block">Overall Position Health Status</span>
+                                <p class="text-justify font-medium leading-normal text-slate-900 dark:text-slate-200">${ticket.report.position_health_summary}</p>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2 text-[11px] font-medium pt-1">
+                                <div class="space-y-0.5 text-institutional-emerald">
+                                    <span class="text-[8px] font-black tracking-widest uppercase text-slate-400 font-mono block">Structural Strengths Matrix</span>
+                                    <ul class="space-y-0.5">${strengthsLi || '<li>• Context Clean</li>'}</ul>
+                                </div>
+                                <div class="space-y-0.5 text-institutional-amber">
+                                    <span class="text-[8px] font-black tracking-widest uppercase text-slate-400 font-mono block">Imbalance Weaknesses Matrix</span>
+                                    <ul class="space-y-0.5">${weaknessesLi || '<li>• Macro Overlap Noise</li>'}</ul>
+                                </div>
+                            </div>
+
+                            <div class="pt-1.5 border-t border-slate-200 dark:border-institutional-800/40 space-y-1">
+                                <p><span class="text-[8px] font-black font-mono uppercase text-slate-400">Current Market Bias Verdict:</span> <strong class="text-slate-900 dark:text-white font-bold">${ticket.report.market_bias_verdict}</strong></p>
+                                <p><span class="text-[8px] font-black font-mono uppercase text-slate-400">Recommended Action Directive:</span> <strong class="text-institutional-amber font-black">${ticket.report.recommended_action}</strong></p>
+                            </div>
+
+                            <div class="pt-1.5 border-t border-slate-200 dark:border-institutional-800/40 text-justify text-[11px] leading-relaxed">
+                                <span class="text-[8px] font-black font-mono uppercase text-slate-400 block mb-0.5">Recommendation Matrix Rationale Explanation Log</span>
+                                <p class="text-slate-600 dark:text-slate-400 font-medium">${ticket.report.explanation}</p>
+                            </div>
+                        </div>
                     </div>
                 `;
             }
         };
 
+        // TRADE JOURNAL COGNITIVE REPOSITORY AUTOMATION MEMORY SYSTEM INTERFACE SYSTEM
         const JournalSystem = {
-            vault: [],
             init() {
-                const stored = localStorage.getItem("smc_pro_v3_journal_vault");
-                if (stored) {
-                    try { this.vault = JSON.parse(stored); } catch(e) { this.vault = []; }
+                if (!localStorage.getItem("smc_pro_v3_journal_vault")) {
+                    localStorage.setItem("smc_pro_v3_journal_vault", JSON.stringify([]));
                 }
                 this.render();
-                this.updateCognitiveFeedback();
+                this.computeCognitiveTraderBehavioralFeedback();
             },
+
             commitEntryTicket(ticket) {
-                const log = {
-                    id: 'TRD-' + Date.now(),
-                    timestamp: new Date().toISOString(),
+                const vault = JSON.parse(localStorage.getItem("smc_pro_v3_journal_vault") || "[]");
+                const timestamp = new Date();
+
+                let record = {
+                    id: Date.now(),
+                    date: timestamp.toISOString().split('T')[0],
+                    time: timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                     asset: ticket.asset,
-                    verdict: ticket.verdict,
-                    entry: ticket.entry,
-                    stop_loss: ticket.stop_loss,
-                    tp3: ticket.tp3,
+                    pattern: ticket.patterns.join(" + "),
                     classification: ticket.classification,
+                    entry: ticket.entry,
+                    sl: ticket.stop_loss,
+                    tp: ticket.tp3,
                     confidence: ticket.confidence,
-                    action: ticket.report.recommended_action,
-                    outcome: ticket.verdict === "STAND DOWN" ? "STAND DOWN" : "PENDING"
+                    recommendation: ticket.report.recommended_action,
+                    outcome: 'PENDING MATRIX RESOLUTION',
+                    detected_mistake: 'None Profiled',
+                    lesson_learned: 'Awaiting operational outcomes processing records.'
                 };
-                this.vault.unshift(log);
-                localStorage.setItem("smc_pro_v3_journal_vault", JSON.stringify(this.vault));
+
+                vault.unshift(record);
+                localStorage.setItem("smc_pro_v3_journal_vault", JSON.stringify(vault));
                 this.render();
-                this.updateCognitiveFeedback();
+                this.computeCognitiveTraderBehavioralFeedback();
             },
+
+            updateOutcomeTicket(idKey, status, mistakeText, lessonText) {
+                let vault = JSON.parse(localStorage.getItem("smc_pro_v3_journal_vault") || "[]");
+                vault = vault.map(item => {
+                    if (item.id === idKey) {
+                        item.outcome = status;
+                        item.detected_mistake = mistakeText;
+                        item.lesson_learned = lessonText;
+                    }
+                    return item;
+                });
+                localStorage.setItem("smc_pro_v3_journal_vault", JSON.stringify(vault));
+                this.render();
+                this.computeCognitiveTraderBehavioralFeedback();
+            },
+
+            deleteRowItem(idKey) {
+                let vault = JSON.parse(localStorage.getItem("smc_pro_v3_journal_vault") || "[]");
+                vault = vault.filter(x => x.id !== idKey);
+                localStorage.setItem("smc_pro_v3_journal_vault", JSON.stringify(vault));
+                this.render();
+                this.computeCognitiveTraderBehavioralFeedback();
+            },
+
             clearDatabase() {
-                if (confirm("Clear local trade sandbox log cache entries?")) {
-                    this.vault = [];
-                    localStorage.removeItem("smc_pro_v3_journal_vault");
+                if (confirm("Confirm complete secure deletion wipe operations on local trade ledger databases history parameters files?")) {
+                    localStorage.setItem("smc_pro_v3_journal_vault", JSON.stringify([]));
                     this.render();
-                    this.updateCognitiveFeedback();
+                    this.computeCognitiveTraderBehavioralFeedback();
                 }
             },
+
             exportDatabase() {
-                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.vault));
-                const downloadAnchor = document.createElement('a');
-                downloadAnchor.setAttribute("href", dataStr);
-                downloadAnchor.setAttribute("download", `smc_journal_backup_${Date.now()}.json`);
-                document.body.appendChild(downloadAnchor);
-                downloadAnchor.click();
-                downloadAnchor.remove();
+                const dataStr = localStorage.getItem("smc_pro_v3_journal_vault") || "[]";
+                const blob = new Blob([dataStr], { type: "application/json" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `smc_pro_v3_journal_vault_export_${Date.now()}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
             },
+
             importDatabase(event) {
                 const file = event.target.files[0];
                 if (!file) return;
+
                 const reader = new FileReader();
-                reader.onload = (e) => {
+                reader.onload = function(e) {
                     try {
                         const parsed = JSON.parse(e.target.result);
                         if (Array.isArray(parsed)) {
-                            this.vault = parsed;
-                            localStorage.setItem("smc_pro_v3_journal_vault", JSON.stringify(this.vault));
-                            this.render();
-                            this.updateCognitiveFeedback();
-                            alert("Database metrics payload sync complete.");
-                        }
-                    } catch(err) { alert("Invalid JSON structural format."); }
+                            localStorage.setItem("smc_pro_v3_journal_vault", JSON.stringify(parsed));
+                            JournalSystem.render();
+                            JournalSystem.computeCognitiveTraderBehavioralFeedback();
+                            alert("Database synchronization restore complete!");
+                        } else { alert("Data structuring format error exceptions."); }
+                    } catch(err) { alert("Fault parsing validation schema items: " + err.message); }
                 };
                 reader.readAsText(file);
             },
+
+            computeCognitiveTraderBehavioralFeedback() {
+                const vault = JSON.parse(localStorage.getItem("smc_pro_v3_journal_vault") || "[]");
+                const targetNode = document.getElementById("cognitiveFeedbackBox");
+
+                if (vault.length === 0) {
+                    targetNode.innerText = "System database indexes currently clear. Run analysis matrices and register trade parameters tokens outcomes to populate recurring mistake mistakes patterns alerts.";
+                    return;
+                }
+
+                let counters = { early_entry: 0, holding_losses: 0, missing_bias: 0, standard: 0 };
+                let lossesCount = 0;
+
+                vault.forEach(item => {
+                    if (item.outcome === "LOSS") {
+                        lossesCount++;
+                        let mis = item.detected_mistake.toLowerCase();
+                        if (mis.includes("early") || mis.includes("fomo")) counters.early_entry++;
+                        if (mis.includes("hold") || mis.includes("loser") || mis.includes("hope")) counters.holding_losses++;
+                        if (mis.includes("bias") || mis.includes("trend") || mis.includes("htf")) counters.missing_bias++;
+                    }
+                });
+
+                if (lossesCount === 0) {
+                    targetNode.innerText = "🟢 STRUCTURAL PERFORMANCE REVIEW CLEAR: No losing parameters mapped inside historical vaults database indexes yet. Operational consistency parameters clean.";
+                    return;
+                }
+
+                if (counters.early_entry >= counters.holding_losses && counters.early_entry >= counters.missing_bias && counters.early_entry > 0) {
+                    targetNode.innerText = `⚠️ AI COGNITIVE DIAGNOSTIC WARNING DETECTED: Execution histories reveal recurring early entries (${counters.early_entry} instances). Recommendation logic suggests strengthening 15M sniper retest re-confirmations sequences rules entirely before matching entry fields allocations execution maps.`;
+                } else if (counters.holding_losses >= counters.early_entry && counters.holding_losses >= counters.missing_bias && counters.holding_losses > 0) {
+                    targetNode.innerText = `⚠️ AI COGNITIVE DIAGNOSTIC WARNING DETECTED: Historical traces indicate instances of micro holding structural drawdowns losses positions (${counters.holding_losses} logs). Invalidate trading risk buffers allocation vectors manually.`;
+                } else if (counters.missing_bias > 0) {
+                    targetNode.innerText = `⚠️ AI COGNITIVE DIAGNOSTIC WARNING DETECTED: Trading accounts metrics point to execution vectors running out of sync from Macro HTF structural trends bias parameters. Confirm your multi-timeframe checklist layers matches absolute alignments.`;
+                } else {
+                    targetNode.innerText = "📊 COGNITIVE ANALYSIS LOG: System compiling performance histories patterns metrics data blocks... Retain operational consistency layers.";
+                }
+            },
+
             render() {
-                const container = document.getElementById("journalFeedContainer");
-                if (!container) return;
-                
-                const searchQ = document.getElementById("journalSearch").value.toUpperCase();
+                const vault = JSON.parse(localStorage.getItem("smc_pro_v3_journal_vault") || "[]");
+                const target = document.getElementById("journalFeedContainer");
+                const searchTxt = document.getElementById("journalSearch").value.toLowerCase();
                 const filterVal = document.getElementById("journalFilter").value;
 
-                let filtered = this.vault.filter(item => {
-                    const matchSearch = item.asset.toUpperCase().includes(searchQ) || item.classification.toUpperCase().includes(searchQ);
-                    let matchFilter = true;
-                    if (filterVal === "WIN") matchFilter = item.outcome === "WIN";
-                    else if (filterVal === "LOSS") matchFilter = item.outcome === "LOSS";
-                    else if (filterVal === "STAND DOWN") matchFilter = item.outcome === "STAND DOWN";
-                    return matchSearch && matchFilter;
+                target.innerHTML = "";
+                
+                const filtered = vault.filter(item => {
+                    const matchSearch = item.asset.toLowerCase().includes(searchTxt) || item.pattern.toLowerCase().includes(searchTxt);
+                    if (filterVal === "ALL") return matchSearch;
+                    if (filterVal === "STAND DOWN") return matchSearch && item.recommendation.includes("STAND DOWN");
+                    return matchSearch && item.outcome === filterVal;
                 });
 
                 if (filtered.length === 0) {
-                    container.innerHTML = `<p class="text-center font-mono text-[10px] text-slate-400 uppercase py-8">Sandbox memory stream clean.</p>`;
+                    target.innerHTML = `<p class="text-[10px] font-mono text-center text-slate-400 uppercase py-8">No ledger metrics rows found matching operational parameters criteria selection.</p>`;
                     return;
                 }
 
-                container.innerHTML = filtered.map(item => {
-                    const badgeColor = item.verdict === "BUY" ? "bg-institutional-emerald/10 text-institutional-emerald border-institutional-emerald/20" : (item.verdict === "SELL" ? "bg-institutional-rose/10 text-institutional-rose border-institutional-rose/20" : "bg-slate-500/10 text-slate-400 border-slate-500/20");
-                    return `
-                        <div class="bg-slate-50 dark:bg-institutional-900 border border-slate-200 dark:border-institutional-800 p-3 rounded-xl space-y-2 text-[11px] font-mono">
-                            <div class="flex justify-between items-center">
-                                <span class="font-bold text-slate-900 dark:text-white">${item.asset} <span class="border px-1.5 py-0.2 rounded text-[9px] font-black ${badgeColor}">${item.verdict}</span></span>
-                                <span class="text-[9px] text-slate-400">${new Date(item.timestamp).toLocaleTimeString()}</span>
+                filtered.forEach(item => {
+                    let outcomeBg = "bg-slate-100 dark:bg-institutional-900 border-slate-200 dark:border-institutional-800 text-slate-500";
+                    if (item.outcome === "WIN") outcomeBg = "bg-institutional-emerald/10 border-institutional-emerald/20 text-institutional-emerald";
+                    if (item.outcome === "LOSS") outcomeBg = "bg-institutional-rose/10 border-institutional-rose/20 text-institutional-rose";
+
+                    const card = document.createElement("div");
+                    card.className = "bg-white dark:bg-institutional-900 border border-slate-200 dark:border-institutional-800/80 rounded-xl p-3.5 space-y-3 font-sans text-xs shadow-sm";
+                    card.innerHTML = `
+                        <div class="flex justify-between items-start border-b border-slate-100 dark:border-institutional-800/40 pb-2">
+                            <div>
+                                <h4 class="font-black font-mono text-slate-900 dark:text-white text-sm">${item.asset} <span class="text-[9px] text-slate-400 font-normal">@ ${item.date} ${item.time}</span></h4>
+                                <p class="text-[9px] font-bold text-amber-500 font-mono mt-0.5 uppercase tracking-wide">${item.pattern}</p>
                             </div>
-                            <div class="grid grid-cols-3 gap-1 text-[10px] text-slate-500 dark:text-slate-400 font-medium">
-                                <div>EP: <span class="text-slate-800 dark:text-slate-200 font-bold">${item.entry}</span></div>
-                                <div>SL: <span class="text-institutional-rose font-bold">${item.stop_loss}</span></div>
-                                <div>TP: <span class="text-institutional-emerald font-bold">${item.tp3}</span></div>
+                            <span class="text-[9px] font-black font-mono border px-2 py-0.5 rounded tracking-wider ${outcomeBg}">${item.outcome}</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-1.5 font-mono text-[9px] text-slate-500 dark:text-slate-400">
+                            <p>ENTRY: <strong class="text-slate-800 dark:text-slate-200">${item.entry}</strong></p>
+                            <p>STOP: <strong class="text-slate-800 dark:text-slate-200">${item.sl}</strong></p>
+                            <p>TARGET: <strong class="text-slate-800 dark:text-slate-200">${item.tp}</strong></p>
+                        </div>
+
+                        <div class="bg-slate-50 dark:bg-institutional-950 p-2 rounded-lg text-[10px] space-y-1 font-medium">
+                            <p class="text-slate-700 dark:text-slate-300"><span class="text-[8px] font-mono text-slate-400 uppercase block">Behavioral Mistake Tag</span> ${item.detected_mistake}</p>
+                            <p class="text-slate-600 dark:text-slate-400 border-t border-slate-100 dark:border-institutional-800/40 pt-1"><span class="text-[8px] font-mono text-slate-400 uppercase block">Strategic Lesson Learned</span> ${item.lesson_learned}</p>
+                        </div>
+
+                        <div class="flex justify-between items-center pt-1.5">
+                            <div class="flex gap-1.5">
+                                <button onclick="SoundEngine.playUiSound('click'); JournalSystem.promptOutcomeUpdate(${item.id}, 'WIN')" class="bg-institutional-emerald/10 border border-institutional-emerald/20 text-institutional-emerald text-[9px] font-black font-mono px-2 py-1 rounded uppercase hover:bg-institutional-emerald/20">Mark Win</button>
+                                <button onclick="SoundEngine.playUiSound('click'); JournalSystem.promptOutcomeUpdate(${item.id}, 'LOSS')" class="bg-institutional-rose/10 border border-institutional-rose/20 text-institutional-rose text-[9px] font-black font-mono px-2 py-1 rounded uppercase hover:bg-institutional-rose/20">Mark Loss</button>
                             </div>
-                            <div class="flex justify-between items-center pt-1 border-t border-slate-200 dark:border-institutional-800/40 text-[9px]">
-                                <span class="text-slate-400">Outcome Status: [${item.outcome}]</span>
-                                <div class="flex gap-1.5">
-                                    <button onclick="JournalSystem.setOutcome('${item.id}', 'WIN')" class="px-2 py-0.5 rounded bg-institutional-emerald/10 text-institutional-emerald font-black hover:bg-institutional-emerald/20 transition ${item.outcome === 'WIN' ? 'border border-institutional-emerald' : ''}">WIN</button>
-                                    <button onclick="JournalSystem.setOutcome('${item.id}', 'LOSS')" class="px-2 py-0.5 rounded bg-institutional-rose/10 text-institutional-rose font-black hover:bg-institutional-rose/20 transition ${item.outcome === 'LOSS' ? 'border border-institutional-rose' : ''}">LOSS</button>
-                                </div>
-                            </div>
+                            <button onclick="SoundEngine.playUiSound('warning'); JournalSystem.deleteRowItem(${item.id})" class="text-slate-400 hover:text-institutional-rose text-[10px] font-bold">Wipe Item</button>
                         </div>
                     `;
-                }).join('');
+                    target.appendChild(card);
+                });
             },
-            setOutcome(id, state) {
-                const target = this.vault.find(item => item.id === id);
-                if (target) {
-                    target.outcome = state;
-                    localStorage.setItem("smc_pro_v3_journal_vault", JSON.stringify(this.vault));
-                    this.render();
-                    this.updateCognitiveFeedback();
-                    SoundEngine.playChime('success');
+
+            promptOutcomeUpdate(idKey, status) {
+                const mistakePrompt = status === "WIN" ? "None Profiled" : prompt("Specify primary behavioral mistake vector (e.g. FOMO Early Entry, Breached Position Stop Management limits):");
+                const lessonPrompt = prompt("Commit specific structural lesson metrics data for account optimization processing balances:");
+                if (lessonPrompt !== null) {
+                    this.updateOutcomeTicket(idKey, status, mistakePrompt || "None Profiled", lessonPrompt || "Operational matrix metrics parsed.");
                 }
-            },
-            updateCognitiveFeedback() {
-                const box = document.getElementById("cognitiveFeedbackBox");
-                if (!box) return;
-                const wins = this.vault.filter(t => t.outcome === "WIN").length;
-                const losses = this.vault.filter(t => t.outcome === "LOSS").length;
-                if (wins === 0 && losses === 0) {
-                    box.innerText = "System parsing data structures... Commit execution outcomes below to activate behavioral feedback intelligence pipeline loops.";
-                    return;
-                }
-                const ratio = ((wins / (wins + losses || 1)) * 100).toFixed(0);
-                box.innerText = `[Cognitive Diagnostics]: Operational performance win-rate sitting at ${ratio}% across ${wins + losses} tracked samples. Maintain standard risk rules parameters to anchor operations stability.`;
             }
         };
 
+        // INTERACTIVE TELEMETRY KNOWLEDGE REPOSITORY CHAT EXPLAINER MODULE
         const CognitiveChat = {
-            attachedImageBase64: null,
             toggleView() {
                 const win = document.getElementById("cognitiveChatWindow");
-                if (win) win.classList.toggle("hidden");
+                if (win.classList.contains("hidden")) {
+                    win.classList.remove("hidden");
+                } else {
+                    win.classList.add("hidden");
+                }
             },
+
             handleImageUpload(event) {
                 const file = event.target.files[0];
-                const previewBar = document.getElementById("chatImagePreviewBar");
+                const preview = document.getElementById("chatImagePreviewBar");
                 if (!file) return;
 
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    this.attachedImageBase64 = e.target.result.split(',')[1];
-                    if (previewBar) previewBar.classList.remove("hidden");
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let w = img.width; let h = img.height;
+                        if (w > 500) { h = Math.round((h * 500) / w); w = 500; }
+                        canvas.width = w; canvas.height = h;
+                        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                        AppStore.chatbotImage = canvas.toDataURL('image/jpeg', 0.6).split(',')[1];
+                        preview.classList.remove("hidden");
+                        SoundEngine.playChime('success');
+                    };
+                    img.src = e.target.result;
                 };
                 reader.readAsDataURL(file);
             },
+
             clearAttachedImage() {
-                this.attachedImageBase64 = null;
-                const previewBar = document.getElementById("chatImagePreviewBar");
-                if (previewBar) previewBar.classList.add("hidden");
+                AppStore.chatbotImage = null;
                 document.getElementById("cognitiveImageInput").value = "";
+                document.getElementById("chatImagePreviewBar").classAdd("hidden");
             },
+
             async sendMessage() {
-                const input = document.getElementById("cognitiveInput");
-                const msgBox = document.getElementById("cognitiveMessagesBox");
-                if (!input || !input.value.trim()) return;
+                const inp = document.getElementById("cognitiveInput");
+                const box = document.getElementById("cognitiveMessagesBox");
+                const txt = inp.value.trim();
 
-                const queryText = input.value.trim();
-                input.value = "";
-
-                const userDiv = document.createElement("div");
-                userDiv.className = "bg-slate-100 dark:bg-institutional-900 border border-slate-200 dark:border-institutional-800 p-2.5 rounded-xl rounded-tr-none text-right font-sans font-semibold text-slate-900 dark:text-white";
-                userDiv.innerText = queryText;
-                msgBox.appendChild(userDiv);
-                msgBox.scrollTop = msgBox.scrollHeight;
-
+                if (!txt && !AppStore.chatbotImage) return;
                 if (!AppStore.config.apiKey) {
-                    const errDiv = document.createElement("div");
-                    errDiv.className = "bg-institutional-rose/10 border border-institutional-rose/30 p-2.5 rounded-xl text-institutional-rose font-mono";
-                    errDiv.innerText = "Authorization Key missing inside settings portal configuration frameworks.";
-                    msgBox.appendChild(errDiv);
+                    alert("Configure your bearer authorization secrets endpoints keys pathway inside the config panel dashboard workspace framework first.");
                     return;
                 }
 
-                const loadDiv = document.createElement("div");
-                loadDiv.className = "text-slate-400 font-mono italic animate-pulse py-1";
-                loadDiv.innerText = "Querying strategy inference models...";
-                msgBox.appendChild(loadDiv);
-                msgBox.scrollTop = msgBox.scrollHeight;
+                const userMsgNode = document.createElement("div");
+                userMsgNode.className = "bg-slate-100 dark:bg-institutional-800 p-2.5 rounded-xl rounded-tr-none text-right font-medium leading-relaxed max-w-[85%] ml-auto";
+                userMsgNode.innerText = txt || "[Visual Attached Matrix Payload Embed]";
+                box.appendChild(userMsgNode);
+                inp.value = "";
+                box.scrollTop = box.scrollHeight;
 
-                let payload = [{ type: "text", text: `You are an expert Smart Money Concepts (SMC) mechanical institutional trader mentor assistant. Help answer this technical question accurately using crisp, scannable explanations: ${queryText}` }];
-                if (this.attachedImageBase64) {
-                    payload.push({ type: "image_url", image_url: { url: `data:image/jpeg;base64,${this.attachedImageBase64}` } });
+                const loaderNode = document.createElement("div");
+                loaderNode.className = "text-slate-400 font-mono text-[9px] animate-pulse py-1";
+                loaderNode.innerText = "SMC Core parsing linguistic vectors... Querying neural weights array configurations.";
+                box.appendChild(loaderNode);
+                box.scrollTop = box.scrollHeight;
+
+                let contentPayload = [{ type: "text", text: txt || "Analyze this attached trading operations structural visual canvas snapshot frame link." }];
+                if (AppStore.chatbotImage) {
+                    contentPayload.push({ type: "image_url", image_url: { url: `data:image/jpeg;base64,${AppStore.chatbotImage}` } });
+                    this.clearAttachedImage();
                 }
 
-                let requestEndpoint = AppStore.config.aiProvider === "openai_direct" ? "https://api.openai.com/v1/chat/completions" : "https://models.github.ai/inference/chat/completions";
+                let endpt = AppStore.config.aiProvider === "openai_direct" ? "https://api.openai.com/v1/chat/completions" : "https://models.github.ai/inference/chat/completions";
 
                 try {
-                    const response = await fetch(requestEndpoint, {
+                    const response = await fetch(endpt, {
                         method: "POST",
                         headers: {
                             "Authorization": `Bearer ${AppStore.config.apiKey}`,
@@ -1784,32 +1982,33 @@
                         },
                         body: JSON.stringify({
                             model: AppStore.config.modelSelection,
-                            messages: [{ role: "user", content: payload }],
+                            messages: [
+                                { role: "system", content: "You are the primary interactive algorithmic trading specialist voice of the SMC-SIGNAL PRO dashboard terminal floor framework. Answer technical architecture queries concisely." },
+                                { role: "user", content: contentPayload }
+                            ],
                             temperature: 0.3
                         })
                     });
 
-                    loadDiv.remove();
-                    this.clearAttachedImage();
+                    loaderNode.remove();
+                    const res = await response.json();
+                    const replyText = res.choices[0].message.content;
 
-                    if (!response.ok) throw new Error();
-                    const data = await response.json();
-                    const reply = data.choices[0].message.content;
-
-                    const replyDiv = document.createElement("div");
-                    replyDiv.className = "bg-slate-50 dark:bg-institutional-900 border border-slate-200 dark:border-institutional-800 p-2.5 rounded-xl rounded-tl-none text-justify leading-relaxed";
-                    replyDiv.innerHTML = reply.replace(/\n/g, '<br>');
-                    msgBox.appendChild(replyDiv);
+                    const systemMsgNode = document.createElement("div");
+                    systemMsgNode.className = "bg-slate-50 dark:bg-institutional-900 border border-slate-200 dark:border-institutional-800 p-2.5 rounded-xl rounded-tl-none text-justify leading-relaxed";
+                    systemMsgNode.innerHTML = `<p class="font-medium">${replyText.replace(/\n/g, '<br>')}</p>`;
+                    box.appendChild(systemMsgNode);
+                    
                     SoundEngine.playChime('analysis_complete');
 
                 } catch(e) {
-                    loadDiv.remove();
-                    const errDiv = document.createElement("div");
-                    errDiv.className = "bg-institutional-rose/10 border border-institutional-rose/30 p-2.5 rounded-xl text-institutional-rose";
-                    errDiv.innerText = "Communication route validation timeout error.";
-                    msgBox.appendChild(errDiv);
-                } {
-                    msgBox.scrollTop = msgBox.scrollHeight;
+                    loaderNode.remove();
+                    const errNode = document.createElement("div");
+                    errNode.className = "text-institutional-rose font-mono font-black text-[9px]";
+                    errNode.innerText = "CRITICAL CHAT LOG PIPELINE ERROR: " + e.message;
+                    box.appendChild(errNode);
+                } finally {
+                    box.scrollTop = box.scrollHeight;
                 }
             }
         };
