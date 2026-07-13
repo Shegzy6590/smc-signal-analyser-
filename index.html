@@ -213,6 +213,8 @@
                             <option value="flipped_shoulder" selected>Habby & Michael Flipped Shoulder</option>
                             <option value="liquidity_sweeps">Pure Order Flow Liquidity Sweeps</option>
                             <option value="market_structure_shift">HTF Structural Breaker Alignment</option>
+                            <option value="break_retest">Horizontal Break & Retest</option>
+                            <option value="confluence_check">Run All Strategies — Confluence Check</option>
                         </select>
                     </div>
                 </div>
@@ -872,6 +874,24 @@
         // the 3 options actually produces different AI instructions and
         // different pass/fail gating inside AnalyticalRulesEngine.
         // ================================================================
+        // ================================================================
+        // ECONOMIC CALENDAR 2026 — confirmed official dates sourced from
+        // the Federal Reserve (federalreserve.gov) and the Bureau of Labor
+        // Statistics (bls.gov). Hardcoded and date-checked locally, so the
+        // news filter works with zero API calls and zero ongoing cost.
+        // ================================================================
+        const EconomicCalendar2026 = {
+            // FOMC dates run through 2027 since the Federal Reserve has already
+            // published that schedule. NFP/CPI stay at 2026 only because the
+            // BLS has not released 2027 dates yet — they typically publish
+            // the next year's schedule later in the year.
+            lastCoveredDate: "2027-12-08",
+            fomcMeetings: ["2026-01-27","2026-01-28","2026-03-17","2026-03-18","2026-04-28","2026-04-29","2026-06-16","2026-06-17","2026-07-28","2026-07-29","2026-09-15","2026-09-16","2026-10-27","2026-10-28","2026-12-08","2026-12-09","2027-01-26","2027-01-27","2027-03-16","2027-03-17","2027-04-27","2027-04-28","2027-06-08","2027-06-09","2027-07-27","2027-07-28","2027-09-14","2027-09-15","2027-10-26","2027-10-27","2027-12-07","2027-12-08"],
+            fomcMinutes: ["2026-02-18","2026-04-08","2026-05-20","2026-07-08","2026-08-19","2026-10-07","2026-11-18","2026-12-30","2027-02-17","2027-04-07","2027-05-19","2027-06-30","2027-08-18","2027-10-06","2027-11-17","2027-12-29"],
+            nfp: ["2026-01-09","2026-02-11","2026-03-06","2026-04-03","2026-05-08","2026-06-05","2026-07-02","2026-08-07","2026-09-04","2026-10-02","2026-11-06","2026-12-04"],
+            cpi: ["2026-01-13","2026-02-13","2026-03-11","2026-04-10","2026-05-12","2026-06-10","2026-07-14","2026-08-12","2026-09-11","2026-10-14","2026-11-10","2026-12-10"]
+        };
+
         const StrategyDefinitions = {
             flipped_shoulder: {
                 label: "Habby & Michael Flipped Shoulder",
@@ -909,7 +929,73 @@ Populate the "htf_breaker_analysis" object with your findings.`,
         "htf_alignment_confirmed": true,
         "breaker_block_level": 0.0
     },`
+            },
+            break_retest: {
+                label: "Horizontal Break & Retest",
+                aiInstruction: `STRATEGY FOCUS — HORIZONTAL BREAK & RETEST:
+
+PART 1 — TREND IDENTIFICATION (Daily, 4H, 1H, 15M all contribute):
+For each of these four timeframes, classify the trend as BULLISH, BEARISH, or RANGING. A ranging read means price is bouncing between a clear ceiling and floor with no directional progress — report this honestly per timeframe using daily_bias, h4_direction, h1_structure and m15_setup as normal. This trend read is the context; it does not by itself trigger a trade.
+
+PART 2 — THE BREAK & RETEST MECHANIC (owned specifically by the 1H and 15M charts):
+STEP 1 — IDENTIFY KEY ZONES: On the 1H and 15M charts, map the recent swing high (resistance zone) and recent swing low (support zone) that price has been reacting to.
+STEP 2 — WAIT FOR A CLEAN BREAKOUT: Do not chase. A valid breakout only exists if a candle CLOSES cleanly through the resistance ceiling (bullish) or the support floor (bearish) — a wick alone does not count, and price merely approaching or testing the zone for the first time is NOT a breakout. If this hasn't happened, breakout_candle_closed_beyond_zone must be false and breakout_direction must be NONE.
+STEP 3 — WATCH FOR THE RETEST: After a genuine breakout, wait for price to return and test that exact same broken level. Apply role reversal explicitly: if resistance broke upward, that old resistance is now the new support; if support broke downward, that old support is now the new resistance. price_returned_to_zone_after_breakout must only be true if price has genuinely come back to touch that flipped level.
+STEP 4 — CONFIRMATION & EXECUTION: At the retest, one of these candlestick patterns must print and close back in the breakout direction:
+   Trigger A: Doji/small-bodied candle inside the zone immediately followed by a large engulfing candle back in the breakout direction.
+   Trigger B: 2-3 consecutive candles with long wicks penetrating the zone but failing to close past it (zone actively defended as the new role).
+   Trigger C: Pin bar / tailed bar sweeping the zone with a small body closing away from the zone.
+   Trigger D: Inside bar compression directly on the zone; entry triggers on break of that inside bar's high/low.
+STEP 5 — ENTRY & RISK: Enter on the close of the confirmation candle (buy at the new support retest, sell at the new resistance retest). Stop Loss sits safely beyond the zone — below the low of the confirmation candle/zone for buys, above the high for sells. Take Profit holds a strict, non-negotiable 1:3 Risk-to-Reward Ratio, held until target is hit.
+
+Set "sequence_valid" to true ONLY if Steps 1 through 4 all clearly and verifiably happened, in that order, on the 1H or 15M chart. If price has only reached a zone for the first time, or broke out but has not yet retested, or retested but no valid confirmation candle printed, sequence_valid MUST be false — do not round up a partial setup to "close enough."
+
+Populate the "break_retest_analysis" object with your findings, including the exact broken zone price range (broken_zone_low to broken_zone_high) so it can be displayed to the trader.`,
+                schemaAddition: `"break_retest_analysis": {
+        "resistance_zone_high": 0.0,
+        "resistance_zone_low": 0.0,
+        "support_zone_high": 0.0,
+        "support_zone_low": 0.0,
+        "breakout_candle_closed_beyond_zone": true,
+        "breakout_direction": "BULLISH or BEARISH or NONE",
+        "broken_zone_low": 0.0,
+        "broken_zone_high": 0.0,
+        "role_reversal_applied": true,
+        "price_returned_to_zone_after_breakout": true,
+        "retest_confirmation_candle_present": true,
+        "trigger_type": "A or B or C or D or NONE",
+        "confirmation_candle_closed_away_from_zone": true,
+        "sl_reference_level": 0.0,
+        "sequence_valid": true
+    },`
             }
+        };
+
+        // Added as a property assignment (not inside the literal above) so it
+        // can safely reference the other four strategy definitions once they
+        // already exist.
+        StrategyDefinitions.confluence_check = {
+            label: "Run All Strategies — Confluence Check",
+            aiInstruction: `STRATEGY FOCUS — RUN ALL STRATEGIES (CONFLUENCE CHECK):
+Evaluate the charts independently against all four strategy frameworks below, exactly as if you were running each one separately and had no knowledge of the others. Do not blend their rules together, and do not let one framework's conclusion influence another's — a genuine setup for one framework does not need to also satisfy a different framework's logic, and a framework whose conditions are not met should be reported as such honestly, even if others confirm. Populate every one of the four analysis objects below independently and honestly.
+
+--- FRAMEWORK 1: HABBY & MICHAEL FLIPPED SHOULDER ---
+${StrategyDefinitions.flipped_shoulder.aiInstruction}
+
+--- FRAMEWORK 2: PURE ORDER FLOW LIQUIDITY SWEEPS ---
+${StrategyDefinitions.liquidity_sweeps.aiInstruction}
+
+--- FRAMEWORK 3: HTF STRUCTURAL BREAKER ALIGNMENT ---
+${StrategyDefinitions.market_structure_shift.aiInstruction}
+
+--- FRAMEWORK 4: HORIZONTAL BREAK & RETEST ---
+${StrategyDefinitions.break_retest.aiInstruction}
+
+For "extracted_coordinates", use whichever single framework above produced the clearest, most confident, most safely-confirmed entry — state in the explanation field which framework that was and why the others did not qualify.`,
+            schemaAddition: `${StrategyDefinitions.flipped_shoulder.schemaAddition}
+    ${StrategyDefinitions.liquidity_sweeps.schemaAddition}
+    ${StrategyDefinitions.market_structure_shift.schemaAddition}
+    ${StrategyDefinitions.break_retest.schemaAddition}`
         };
 
         // Master Application Lifecycle Entrypoint Trigger Architecture
@@ -1193,13 +1279,42 @@ Populate the "htf_breaker_analysis" object with your findings.`,
                     return;
                 }
 
-                const structuralThreatMatrix = [
-                    { event: "NFP Employment Displacements", market: "USD", impact: "High", directive: "Avoid Trade", desc: "Extreme liquidity pools clearing expected around lower timeframe horizons." },
-                    { event: "FOMC Fund Rate Premium Assessment", market: "USD", impact: "High", directive: "Avoid Trade", desc: "Central Bank adjustments underway. Retain liquidity buffer limits." },
-                    { event: "Core CPI Inflation Report Stream", market: "EUR", impact: "Medium", directive: "Trade With Caution", desc: "Imbalance mitigation sweeps projected at London session cross." }
-                ];
+                const todayStr = new Date().toISOString().split('T')[0];
+                let activeThreat = null;
 
-                const activeThreat = structuralThreatMatrix[0];
+                if (EconomicCalendar2026.fomcMeetings.includes(todayStr)) {
+                    activeThreat = { event: "FOMC Interest Rate Decision", market: "USD", impact: "High", directive: "Avoid Trade", desc: "Federal Reserve rate decision and press conference scheduled today. Extreme volatility risk across all USD pairs." };
+                } else if (EconomicCalendar2026.nfp.includes(todayStr)) {
+                    activeThreat = { event: "NFP Employment Situation Report", market: "USD", impact: "High", directive: "Avoid Trade", desc: "Non-Farm Payrolls release scheduled today at 8:30 AM ET. Extreme liquidity sweep risk around release time." };
+                } else if (EconomicCalendar2026.cpi.includes(todayStr)) {
+                    activeThreat = { event: "CPI Inflation Report", market: "USD", impact: "High", directive: "Avoid Trade", desc: "Consumer Price Index release scheduled today at 8:30 AM ET. High volatility expected across USD pairs." };
+                } else if (EconomicCalendar2026.fomcMinutes.includes(todayStr)) {
+                    activeThreat = { event: "FOMC Meeting Minutes Release", market: "USD", impact: "Medium", directive: "Trade With Caution", desc: "Federal Reserve meeting minutes released today at 2:00 PM ET. Possible tone-driven volatility." };
+                }
+
+                if (!activeThreat) {
+                    overlay.classList.add("hidden");
+                    AppStore.macroThreatFeeds = [];
+                    feedBox.className = "p-2 rounded-lg bg-white dark:bg-institutional-950 border border-slate-200 dark:border-institutional-800 flex items-center gap-2.5 transition-all duration-300";
+                    fIcon.innerHTML = `<i data-lucide="shield-check" class="w-4 h-4 text-institutional-emerald"></i>`;
+                    fTitle.innerText = "No High Impact Events Detected";
+                    fTitle.className = "text-[9px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-wide truncate";
+                    // Quiet coverage-window flag: NFP/CPI are only hardcoded through
+                    // 2026 (BLS hasn't published 2027 yet), so once past that date
+                    // this tells the trader to refresh the dates rather than
+                    // silently reporting "safe" with stale/missing data.
+                    const lastNfpCpiDate = EconomicCalendar2026.nfp[EconomicCalendar2026.nfp.length - 1];
+                    if (todayStr > lastNfpCpiDate) {
+                        fDesc.innerText = "System architecture clear for standard evaluation. NOTE: NFP/CPI calendar data covers through Dec 2026 — send updated dates to refresh this filter.";
+                    } else {
+                        fDesc.innerText = "System architecture clear for standard multi-timeframe evaluation sequences.";
+                    }
+                    indicator.innerText = "NEWS FILTER: SAFE";
+                    indicator.className = "text-institutional-emerald font-black";
+                    lucide.createIcons();
+                    return;
+                }
+
                 AppStore.macroThreatFeeds = [activeThreat];
 
                 feedBox.className = "p-2 rounded-lg bg-institutional-rose/10 border border-institutional-rose/30 flex items-center gap-2.5 transition-all duration-300";
@@ -1300,6 +1415,13 @@ Populate the "htf_breaker_analysis" object with your findings.`,
                 const structuralContextPrompt = `You are the master automated system data processor node of an institutional trading execution floor dashboard. Your role is to evaluate chart images and output highly specific structural calculations.
 Scan the uploaded visuals for patterns matching the selected strategy. You must return your findings in the exact JSON schema defined inside the code block layout below. Do not output any chat prose or markdown tags outside the strict raw JSON parameters box.
 
+GLOBAL SAFE-ENTRY & PATTERN INTEGRITY RULES (apply to every strategy, no exceptions):
+1. NO GUESSING: Only report a pattern, structure, or confirmation as present if it is clearly and unambiguously visible on the chart. If evidence is ambiguous, ragged, or you are inferring rather than seeing it, report it as absent/NONE/false and lower confidence accordingly. A plausible-looking but unconfirmed setup must never be reported as confirmed.
+2. GENUINE CANDLESTICK CONFIRMATION REQUIRED: Every signal must be backed by a real, nameable candlestick pattern (engulfing, pin bar, doji-to-momentum, inside bar, rejection wick cluster, etc.) actually visible at the decision point — not just "price is near a level."
+3. GENUINE CHART PATTERN AWARENESS: Where relevant, identify actual chart-level patterns (double top, double bottom, head and shoulders, flag, wedge, triangle) rather than treating every touch of a level as tradeable. Report chart_pattern_detected honestly, including "None" if nothing qualifies.
+4. LIQUIDITY-SWEEP / SAFE-ENTRY CHECK (critical): Before confirming any entry, check whether there is an obvious untapped liquidity pool (equal highs/lows, an unswept wick cluster, an unmitigated old high/low) sitting close beyond the proposed entry, in the direction the trade would initially need to survive. If price is likely to sweep that pool and trigger a stop loss BEFORE the real move develops, set liquidity_sweep_risk_near_entry to true — this makes the setup unsafe even if the pattern otherwise looks valid. Only set it false if the entry sits at a point that has already absorbed nearby liquidity or has a clean run to target.
+5. STOP LOSS BUFFER RULE: calculated_stoploss must clear the full wick extreme of the reaction candle/zone plus a small buffer — never place it exactly at the swing point or mid-wick, since that is the first place a stop-hunt will reach. This applies to extracted_coordinates for every strategy.
+
 ${activeStrategyDef.aiInstruction}
 
 {
@@ -1321,7 +1443,9 @@ ${activeStrategyDef.aiInstruction}
         "fakeout_detected": false,
         "breakout_confirmed": false,
         "breakout_retested": false,
-        "price_action_signal": "Engulfing or Pin Bar or Rejection Wick or None"
+        "price_action_signal": "Engulfing or Pin Bar or Rejection Wick or None",
+        "chart_pattern_detected": "Double Top or Double Bottom or Head and Shoulders or Flag or Wedge or None",
+        "liquidity_sweep_risk_near_entry": false
     },
     ${activeStrategyDef.schemaAddition}
     "extracted_coordinates": {
@@ -1378,10 +1502,12 @@ ${activeStrategyDef.aiInstruction}
                     const rawRes = await response.json();
                     const aiExtraction = JSON.parse(rawRes.choices[0].message.content);
 
-                    const calculatedReport = AnalyticalRulesEngine.processMatrixCalculations(aiExtraction, AppStore.activeAsset, selectedStrategyKey);
+                    const calculatedReport = selectedStrategyKey === 'confluence_check'
+                        ? AnalyticalRulesEngine.processConfluenceCheck(aiExtraction, AppStore.activeAsset)
+                        : AnalyticalRulesEngine.processMatrixCalculations(aiExtraction, AppStore.activeAsset, selectedStrategyKey);
                     AppStore.activeDecisionMetadata = calculatedReport;
 
-                    term.innerHTML = AnalyticalRulesEngine.renderReportHTML(calculatedReport);
+                    term.innerHTML = (selectedStrategyKey === 'confluence_check' ? AnalyticalRulesEngine.renderConfluenceBreakdown(calculatedReport) : '') + AnalyticalRulesEngine.renderReportHTML(calculatedReport);
 
                     if (calculatedReport.report.recommended_action.includes("STAND DOWN")) {
                         SoundEngine.playUiSound('warning');
@@ -1504,6 +1630,118 @@ ${activeStrategyDef.aiInstruction}
 
         // DETERMINISTIC MATHEMATICAL RULES SYSTEM AND ANALYTICS INTERFACE COMPILER CORE ENGINE
         const AnalyticalRulesEngine = {
+            // ============================================================
+            // Reusable pass/fail check for a single strategy's checklist
+            // rules, used by the Confluence Check mode. This mirrors the
+            // exact same per-strategy override logic already used inside
+            // processMatrixCalculations below — kept as a separate function
+            // so the existing single-strategy path is never touched.
+            // ============================================================
+            evaluateStrategyPass(smc, aiJson, strategyKey) {
+                let checklist = {
+                    htf: (smc.daily_bias && smc.daily_bias !== "CONSOLIDATING") ? "PASSED" : "FAILED",
+                    h4: (smc.h4_direction && smc.h4_direction !== "CONSOLIDATING") ? "PASSED" : "FAILED",
+                    h1: (smc.h1_structure && smc.h1_structure !== "NONE") ? "PASSED" : "FAILED",
+                    m15: (smc.m15_setup && smc.m15_setup !== "NONE") ? "PASSED" : "FAILED"
+                };
+
+                if (strategyKey === 'flipped_shoulder') {
+                    const hm = aiJson.habby_michael_analysis || {};
+                    if (hm.market_state === 'RANGING') {
+                        checklist.htf = "FAILED";
+                        checklist.h4 = "FAILED";
+                    }
+                    checklist.m15 = hm.invalidation_zone_detected ? checklist.m15 : "FAILED";
+                } else if (strategyKey === 'liquidity_sweeps') {
+                    const ls = aiJson.liquidity_sweep_analysis || {};
+                    checklist.h1 = (smc.h1_structure === "LIQUIDITY_SWEEP" && ls.sweep_confirmed) ? "PASSED" : "FAILED";
+                    checklist.m15 = (smc.m15_setup === "RETEST" && ls.retest_confirmed) ? "PASSED" : "FAILED";
+                } else if (strategyKey === 'market_structure_shift') {
+                    const hb = aiJson.htf_breaker_analysis || {};
+                    const aligned = (smc.daily_bias === smc.h4_direction) && smc.daily_bias !== "CONSOLIDATING" && !!smc.daily_bias;
+                    checklist.htf = aligned ? "PASSED" : "FAILED";
+                    checklist.h4 = aligned ? "PASSED" : "FAILED";
+                    checklist.h1 = (smc.h1_structure === "BOS" && hb.htf_alignment_confirmed) ? "PASSED" : "FAILED";
+                } else if (strategyKey === 'break_retest') {
+                    const br = aiJson.break_retest_analysis || {};
+                    const validBreakout = br.breakout_candle_closed_beyond_zone === true && br.breakout_direction && br.breakout_direction !== "NONE";
+                    const validRetest = br.price_returned_to_zone_after_breakout === true && br.retest_confirmation_candle_present === true && br.trigger_type && br.trigger_type !== "NONE" && br.confirmation_candle_closed_away_from_zone === true;
+                    checklist.h1 = validBreakout ? "PASSED" : "FAILED";
+                    checklist.m15 = validRetest ? "PASSED" : "FAILED";
+                    if (br.sequence_valid !== true) {
+                        checklist.h1 = "FAILED";
+                        checklist.m15 = "FAILED";
+                    }
+                }
+
+                return checklist.htf === "PASSED" && checklist.h4 === "PASSED" && checklist.h1 === "PASSED" && checklist.m15 === "PASSED";
+            },
+
+            // ============================================================
+            // Confluence Check — runs the same deterministic math as a
+            // normal single-strategy ticket (via processMatrixCalculations
+            // below, called with a strategyKey that matches none of its
+            // per-strategy branches), then layers on an independent
+            // pass/fail read from all 4 strategies. Requires at least 3 of
+            // 4 to agree before it can ever return BUY/SELL — otherwise it
+            // forces STAND DOWN, regardless of what the base ticket said.
+            // ============================================================
+            processConfluenceCheck(aiJson, assetName) {
+                let reportTicket = this.processMatrixCalculations(aiJson, assetName, 'confluence_check');
+                const smc = aiJson.smart_money_components || {};
+
+                const strategyKeys = ['flipped_shoulder', 'liquidity_sweeps', 'market_structure_shift', 'break_retest'];
+                const strategyLabels = {
+                    flipped_shoulder: "Habby & Michael Flipped Shoulder",
+                    liquidity_sweeps: "Pure Order Flow Liquidity Sweeps",
+                    market_structure_shift: "HTF Structural Breaker Alignment",
+                    break_retest: "Horizontal Break & Retest"
+                };
+
+                let breakdown = {};
+                let agreeCount = 0;
+                strategyKeys.forEach(key => {
+                    const passed = this.evaluateStrategyPass(smc, aiJson, key);
+                    breakdown[key] = passed;
+                    if (passed) agreeCount++;
+                });
+
+                reportTicket.confluenceBreakdown = breakdown;
+                reportTicket.confluenceLabels = strategyLabels;
+                reportTicket.confluenceAgreeCount = agreeCount;
+
+                if (agreeCount < 3) {
+                    reportTicket.verdict = "STAND DOWN";
+                    reportTicket.classification = "Exit Immediately";
+                    reportTicket.passed_rules = false;
+                    reportTicket.report.recommended_action = "STAND DOWN: NO TRADE";
+                    reportTicket.validation_notes = `Confluence Filter Exception: Only ${agreeCount} of 4 strategies independently confirmed this setup. Minimum required for a live BUY/SELL signal is 3 of 4.`;
+                }
+
+                return reportTicket;
+            },
+
+            renderConfluenceBreakdown(ticket) {
+                if (!ticket.confluenceBreakdown) return '';
+                const rows = Object.keys(ticket.confluenceBreakdown).map(key => {
+                    const passed = ticket.confluenceBreakdown[key];
+                    const style = passed ? "text-institutional-emerald" : "text-institutional-rose";
+                    return `<div class="flex justify-between items-center border-b border-slate-100 dark:border-institutional-900/60 pb-1">
+                        <span class="text-slate-500 dark:text-institutional-400">${ticket.confluenceLabels[key]}</span>
+                        <span class="${style} font-black tracking-wider">${passed ? 'CONFIRMS ✓' : 'NO SETUP ✕'}</span>
+                    </div>`;
+                }).join('');
+                return `
+                    <div class="bg-white dark:bg-institutional-950 p-4 rounded-xl border border-slate-200 dark:border-institutional-800 space-y-2.5 font-mono text-[10px] mb-4">
+                        <p class="text-[9px] font-black tracking-widest uppercase text-slate-400">Multi-Strategy Confluence Breakdown</p>
+                        <div class="space-y-1.5">${rows}</div>
+                        <div class="text-[9px] text-center pt-1.5 border-t border-slate-200 dark:border-institutional-800/40 text-slate-400 uppercase">
+                            AGREEMENT SCORE: <strong class="text-slate-900 dark:text-white">${ticket.confluenceAgreeCount} OF 4 STRATEGIES CONFIRM</strong>
+                        </div>
+                    </div>
+                `;
+            },
+
             processMatrixCalculations(aiJson, assetName, strategyKey) {
                 let reportTicket = {
                     asset: assetName,
@@ -1529,6 +1767,7 @@ ${activeStrategyDef.aiInstruction}
                 if (rawE === 0 || rawSl === 0 || rawE === rawSl) {
                     reportTicket.classification = "Exit Immediately";
                     reportTicket.passed_rules = false;
+                    reportTicket.checklist = { htf: "FAILED", h4: "FAILED", h1: "FAILED", m15: "FAILED" };
                     reportTicket.validation_notes = "Coordinate System Scaling Trace Failure: Machine Vision engine could not parse absolute numerical data values from the chart canvas scaling layout safely.";
                     return reportTicket;
                 }
@@ -1562,6 +1801,24 @@ ${activeStrategyDef.aiInstruction}
                     reportTicket.checklist.htf = aligned ? "PASSED" : "FAILED";
                     reportTicket.checklist.h4 = aligned ? "PASSED" : "FAILED";
                     reportTicket.checklist.h1 = (smc.h1_structure === "BOS" && hb.htf_alignment_confirmed) ? "PASSED" : "FAILED";
+                } else if (strategyKey === 'break_retest') {
+                    const br = aiJson.break_retest_analysis || {};
+                    const validBreakout = br.breakout_candle_closed_beyond_zone === true && br.breakout_direction && br.breakout_direction !== "NONE";
+                    const validRetest = br.price_returned_to_zone_after_breakout === true && br.retest_confirmation_candle_present === true && br.trigger_type && br.trigger_type !== "NONE" && br.confirmation_candle_closed_away_from_zone === true;
+                    reportTicket.checklist.h1 = validBreakout ? "PASSED" : "FAILED";
+                    reportTicket.checklist.m15 = validRetest ? "PASSED" : "FAILED";
+                    // Hard gate: the full range → breakout → retest → confirmation
+                    // sequence must be explicitly confirmed in order. A setup that
+                    // is only mid-breakout or only approaching a level (like an
+                    // unconfirmed retest) fails here even if individual pieces
+                    // above looked partially true.
+                    if (br.sequence_valid !== true) {
+                        reportTicket.checklist.h1 = "FAILED";
+                        reportTicket.checklist.m15 = "FAILED";
+                    }
+                    if (br.broken_zone_low && br.broken_zone_high) {
+                        reportTicket.breakRetestZone = { low: parseFloat(br.broken_zone_low).toFixed(def.decimals), high: parseFloat(br.broken_zone_high).toFixed(def.decimals) };
+                    }
                 }
 
                 if (reportTicket.checklist.htf === "FAILED" || reportTicket.checklist.h4 === "FAILED" || reportTicket.checklist.h1 === "FAILED" || reportTicket.checklist.m15 === "FAILED") {
@@ -1587,7 +1844,20 @@ ${activeStrategyDef.aiInstruction}
                 if (pc.supply_demand_zone_present) confluenceCount++;
                 if (pc.breakout_confirmed && pc.breakout_retested) confluenceCount++;
                 if (pc.structure_clarity && pc.structure_clarity !== "UNCLEAR") confluenceCount++;
+                if (pc.chart_pattern_detected && pc.chart_pattern_detected !== "None") confluenceCount++;
                 reportTicket.confluence_count = confluenceCount;
+
+                // ============================================================
+                // SAFE-ENTRY / LIQUIDITY-SWEEP GATE — directly targets setups
+                // where price would likely sweep a nearby untapped liquidity
+                // pool and trigger the stop loss before the real move
+                // develops. This is a hard override: it fails the setup even
+                // if every other check passed.
+                // ============================================================
+                if (pc.liquidity_sweep_risk_near_entry === true) {
+                    reportTicket.passed_rules = false;
+                    reportTicket.validation_notes = "Safe-Entry Filter Exception: An untapped liquidity pool sits near the proposed entry and is likely to be swept before the real move develops — stop loss would be hit first. Setup rejected for safety.";
+                }
 
                 if (confluenceCount === 0) {
                     reportTicket.passed_rules = false;
@@ -1621,6 +1891,12 @@ ${activeStrategyDef.aiInstruction}
                 if (m3 <= 3.0) {
                     m3 = 4.0;
                 }
+                // Horizontal Break & Retest strategy requires a strict, non-negotiable 1:3 RR ladder, overriding the general target RR for this strategy only
+                if (strategyKey === 'break_retest') {
+                    m1 = 1.0;
+                    m2 = 2.0;
+                    m3 = 3.0;
+                }
 
                 let finalTp1, finalTp2, finalTp3;
                 if (directionalVector === "BUY") {
@@ -1642,8 +1918,8 @@ ${activeStrategyDef.aiInstruction}
                     let checkTp2R = Math.abs(finalTp2 - rawE) / finalRiskDelta;
                     let checkTp3R = Math.abs(finalTp3 - rawE) / finalRiskDelta;
                     
-                    let tp1Exactly2R = Math.abs(checkTp1R - 2.0) < 0.01;
-                    let tp2Exactly3R = Math.abs(checkTp2R - 3.0) < 0.01;
+                    let tp1Exactly2R = Math.abs(checkTp1R - m1) < 0.01;
+                    let tp2Exactly3R = Math.abs(checkTp2R - m2) < 0.01;
                     let tp3ExactlyMR = Math.abs(checkTp3R - m3) < 0.01;
                     
                     let orderingIsCorrect = false;
@@ -1659,14 +1935,14 @@ ${activeStrategyDef.aiInstruction}
                         if (directionalVector === "BUY") {
                             finalSl = rawE - (enforcedPips / def.multiplier);
                             finalRiskDelta = Math.abs(rawE - finalSl);
-                            finalTp1 = rawE + (2.0 * finalRiskDelta);
-                            finalTp2 = rawE + (3.0 * finalRiskDelta);
+                            finalTp1 = rawE + (m1 * finalRiskDelta);
+                            finalTp2 = rawE + (m2 * finalRiskDelta);
                             finalTp3 = rawE + (m3 * finalRiskDelta);
                         } else {
                             finalSl = rawE + (enforcedPips / def.multiplier);
                             finalRiskDelta = Math.abs(rawE - finalSl);
-                            finalTp1 = rawE - (2.0 * finalRiskDelta);
-                            finalTp2 = rawE - (3.0 * finalRiskDelta);
+                            finalTp1 = rawE - (m1 * finalRiskDelta);
+                            finalTp2 = rawE - (m2 * finalRiskDelta);
                             finalTp3 = rawE - (m3 * finalRiskDelta);
                         }
                     }
@@ -1721,6 +1997,13 @@ ${activeStrategyDef.aiInstruction}
                                 </div>
                             ` : ''}
                         </div>
+
+                        ${ticket.breakRetestZone ? `
+                        <div class="bg-institutional-amber/10 border border-institutional-amber/30 rounded-xl p-3 text-center">
+                            <p class="text-[9px] font-black uppercase tracking-widest text-institutional-amber font-mono">Retest Zone Advisory</p>
+                            <p class="text-xs font-bold text-slate-900 dark:text-white mt-1 font-mono">Wait for price to pull back or retest from this price zone to this price zone (${ticket.breakRetestZone.low} - ${ticket.breakRetestZone.high})</p>
+                        </div>
+                        ` : ''}
 
                         <div class="bg-white dark:bg-institutional-950 p-4 rounded-xl border border-slate-200 dark:border-institutional-800 space-y-2.5 font-mono text-[10px]">
                             <p class="text-[9px] font-black tracking-widest uppercase text-slate-400">Cascading Checklist Diagnostics</p>
